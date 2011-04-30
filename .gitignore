@@ -1,0 +1,10 @@
+*.log
+*.pdf
+*~
+winEdtLicence.txt
+*.bak
+*.toc
+*.out
+*.aux
+*.nav
+*.smn

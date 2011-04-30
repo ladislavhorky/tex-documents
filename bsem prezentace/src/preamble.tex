@@ -1,0 +1,75 @@
+%% Základní nastavení a packages
+\documentclass[compress,mathserif]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[czech]{babel}
+%~ \usepackage{amsthm}
+%~ \usepackage{amsmath}
+%~ \usepackage{amssymb}
+
+% Témata
+\usetheme{Warsaw}
+\beamertemplateballitem
+%~ \usecolortheme{lily}
+
+% Základní jednotky ams
+%~ \theoremstyle{definition}
+%~ \newtheorem{define}{Definice}[section]
+%~ \newtheorem{convention}[define]{Úmluva}
+%~ \newtheorem{example}[define]{Příklad}
+%~ 
+%~ \theoremstyle{plain}
+%~ \newtheorem{\theorem}[define]{Věta}
+%~ \newtheorem{lemma}[define]{Lemma}
+%~ \newtheorem{corollary}[define]{Důsledek}
+%~ \newtheorem{excercise}[define]{Cvičení}
+
+%~ \theoremstyle{remark}
+%~ \newtheorem{remark}[define]{Poznámka}
+
+% Tohle nevim, k čemu je :D
+%~ \renewcommand{\proofname}{Důkaz}
+
+% Zkratky pro vzorce
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\bdm}{\begin{displaymath}}
+\newcommand{\edm}{\end{displaymath}}
+
+% Užitečné příkazy
+\newcommand{\R}{{\mathbb{R}}}
+\newcommand{\Rop}{{\mathbb{R}^0_+}}
+\newcommand{\Rp}{{\mathbb{R}_+}}
+\newcommand{\Rm}{{\mathbb{R}_-}}
+\newcommand{\RR}{{\mathbb{R}^*}}
+\newcommand{\Q}{{\mathbb{Q}}}
+\newcommand{\N}{{\mathbb{N}}}
+\newcommand{\No}{{\mathbb{N}_0}}
+\newcommand{\C}{{\mathbb{C}}}
+\newcommand{\CC}{{\mathbb{C}^*}}
+\newcommand{\Z}{\mathbb{Z}}
+
+% Funkce a jiné symboly
+\newcommand{\ud}{\mathrm{d}}
+\newcommand{\udx}{\mathrm{d}x}
+\newcommand{\arctg}{\mathrm{arctg~}}
+\newcommand{\arcctg}{\mathrm{arccotg~}}
+\newcommand{\tg}{\mathrm{tg~}}
+\newcommand{\cotg}{\mathrm{cotg~}}
+\newcommand{\tgh}{\mathrm{tghh~}}
+\newcommand{\ctgh}{\mathrm{cotgh~}}
+\newcommand{\argsinh}{\mathrm{argsinh~}}
+\newcommand{\argcosh}{\mathrm{argcosh~}}
+\newcommand{\argtgh}{\mathrm{argtgh~}}
+\newcommand{\argctgh}{\mathrm{argcotgh~}}
+
+% Moje
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\abs}[1]{\left|#1\right|}
+
+% Definice makra pro české uvozovky:
+\def\bq{\mbox{\kern.1ex\protect\raisebox{-1.3ex}[0pt][0pt]{''}\kern-.1ex}}
+\def\eq{\mbox{\kern-.1ex``\kern.1ex}}
+\def\ifundefined#1{\expandafter\ifx\csname#1\endcsname\relax }%
+\ifundefined{uv}%
+        \gdef\uv#1{\bq #1\eq}
+\fi
