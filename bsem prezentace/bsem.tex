@@ -1,38 +1,156 @@
-% UML prezentace - hlavnÃ­ dokument
-
-%\include{src/preamble}
-
 \documentclass[compress,mathserif]{beamer}
 
 \usepackage[cp1250]{inputenc}
 \usepackage[czech]{babel}
+\usepackage[IL2]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amstext}
+\usepackage{graphicx}
 
+% beamer setup
 \usetheme{Warsaw}
 \beamertemplateballitem
 
+\theoremstyle{definition}
+\newtheorem{define}{Definice}
 
-\title{Název jako bakaláøka}
+\theoremstyle{plain}
+\newtheorem{thm}{Vìta}
+
+\newcommand{\beI}{\begin{itemize}}
+\newcommand{\enI}{\end{itemize}}
+\newcommand{\bL}{\mathbf{L}}
+
+
+\title{Pouití fuzzy logiky ve zpracování obrazu na GPU}
 \author{Ladislav Horkı}
 \institute{FJFI ÈVUT v Praze}
 \date{\today}
 
 \begin{document}
 
-% ÃšvodnÃ­ slidy
+% úvodní slidy
 	\begin{frame}
 		\titlepage
 	\end{frame}
 	
-	\section{Obsah}
+	\section*{Obsah}   % nebude v obsahu
 	\begin{frame}{Obsah}
 		\tableofcontents
 	\end{frame}
 
-% JednotlivÃ© kapitoly - 1 slide cca 1 min
-	%\input{src/01_Uvod}         %  5 min
-	%\input{src/02_Historie}     % 10 min
-	%\input{src/03_SoucastiUML}  % 10 min
-	%\input{src/04_Diagramy}     % 30 min
-	%\input{src/05_Zaver}        %  5 min
+\section{Motivace}%-----------------------------------------------------------------
+    \begin{frame}{Úvod, motivace, vızvy}
+        Cílem práce je ukázat monosti zrychlení obrazovıch fitrù na GPU
+        a umonit tak konstrukci a testování sloitìjších filtrù v reálném
+        èase:
+        \beI
+            \item[$\rightarrow$] GPU jsou vhodné pro filtrování obrazu jakoto 
+                pøirozenì paralelní proces
+            \item[$\rightarrow$] Díky fuzzy logice staèí vyøešit implementaci
+                pouze nìkolika základních algoritmù, ze kterıch se filtry skládají
+            %\item[$\rightarrow$]
+        \enI
+    \end{frame}
 
-\end{document}                                                                 
+\section{Fuzzy logika} %------------------------------------------------------------
+    \subsection{Úvod}
+    \begin{frame}{Proè fuzzy?}
+        Vıhody
+        \beI
+            \item Solidní teoretickı základ pro analızu filtrù
+            \item Omezená citlivost (odšumìní)
+            \item Redukce na jednoduché matematické operace
+            \item Monost návrhu a analızy sítí filtrù
+        \enI
+        Nevıhody
+        \beI
+            \item Nìkolik oblíbenıch filtrù zde nelze implementovat (Gauss)
+        \enI
+
+    \end{frame}
+    
+    \subsection{Teorie}
+    \begin{frame}{\L A$_{sqrt}$}
+        \begin{define}
+            Nech $\bL = [0,1]$ a $a,b \in \bL$. Nech $\langle\bL,\wedge,\vee,\otimes,
+            \rightarrow,0,1\rangle$, kde
+            \begin{align}
+                 a \wedge b &= \min(a,b) & a \otimes b &= \max(a+b-1,0)\notag\\
+                 a \vee b &= \max(a,b) &  a \rightarrow b &= \min(1-a+b,1)\notag
+            \end{align}
+            je \textbf{reziduální svaz} s \textbf{\L ukasiewiczovou 
+            t-normou $\otimes$}, s nejvìtším prvkem 1 a nejmenším prvkem 0, 
+            pak $\langle\bL,\wedge,\vee,\otimes,\rightarrow,sqrt,0,1\rangle$, kde
+                 $$\mathrm{sqrt}(a) = (1+a)/2$$
+            je \textbf{\L ukasiewiczova algebra s odmocninou}. Znaèíme ${\textit\L} A_{sqrt}$.
+        \end{define}
+    \end{frame}
+    
+     \begin{frame}{Citlivost}
+        \begin{define}
+            Nech $\varphi: \bL^n \rightarrow \bL$ je fuzzy-logická funkce (FLF),
+            $\bf{x},\bf{y} \in \bL^n$. Potom
+            $$
+                \lambda = \max_{\bf{x}\neq\bf{y}}\frac{\varphi(\bf{x}) \circ 
+                \varphi(\bf{y})}{\sum\limits_{i=1}^{n} |x_i - y_i|}
+            $$
+            oznaèujeme \textbf{citlivost} funkce $\varphi$.
+        \end{define}
+    \end{frame}
+
+    \begin{frame}{Fuzzy protoe...}
+        \beI
+            \item Lze dokázat, e všechny FLF jsou Lipschitzovsky spojité a tudí mají omezenou 
+                citlivost.
+            \item Jedinì odmocnina je schopna sníit citlivost, proto je širší spektrum filtrù
+                (vèetnì sítí a soustav filtrù) potøeba \L A$_{sqrt}$
+            \item fuzzy logika se svou strukturou obecnì velmi podobá poèítaèové reprezentaci 
+                obrazu (omezená škála odstínù šedi)
+        \enI
+    \end{frame}
+    
+    \subsection{Filtry a obraz} %-------------------------------------------------------------------
+    \begin{frame}{Obraz a filtry}
+        \beI
+            \item Zpracování po pixelech (Local Image Processing)
+            \item Do vısledného pixelu se promítne pouze pøesnì definované okolí zdrojového
+                pixelu
+            \item Z pouití okolí pixelu plynou problémy s okraji obrazu
+        \enI
+        Roztøídìní filtrù z implementaèního hlediska:
+        \beI
+            \item Pomocné, algebraické (sèítání, prahování)
+            \item Morfologické (eroze, dilatace, hrany)
+            \item Vyhlazovací vyuívající seøazené pole
+            \beI
+                \item Vyuívající Walshùv seznam
+            \enI
+        \enI
+    \end{frame}
+    
+\section{GPU} %-----------------------------------------------------------------------------
+    \subsection{Úvod}
+    \begin{frame}{Specifika GPU architektury}
+    \beI
+        \item A tisíce vláken souèasnì bìících na jedné kartì
+        \item GPU se celkovì postará o mnohem ménì vìcí ne CPU
+        \item Velmi hrubé škálování pamìti, velmi malá cache a sdílená pamì
+        \item Pomalé kopírování RAM $\leftrightarrow$ GPU (dá se do jisté míry obejít)
+        \item Pøepínání vláken je na rozdíl od CPU prakticky okamité
+    \enI
+    \end{frame}          
+    
+    \begin{frame}{Rozdíly}
+        \begin{figure}
+            \includegraphics[width=90mm]{img/CPUGPU.PNG}
+            \caption{Rozdíly v architektuøe}
+        \end{figure}
+    \end{frame}  
+    
+    \subsection{Implementace}
+    \begin{frame}
+    \end{frame}
+\end{document}                                              
