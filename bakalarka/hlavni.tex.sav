@@ -1,0 +1,37 @@
+\documentclass[11pt]{report}
+
+\usepackage[czech]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage[IL2]{fontenc}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amstext}
+\usepackage{graphicx}
+
+\begin{document}
+
+    \tableofcontents
+        
+    \addcontentsline{toc}{chapter}{Úvod}
+    \chapter*{Úvod}
+        \include{src/0Uvod/uvod}
+    
+    \chapter{Fuzzy logika}
+        \include{src/1Fuzzy/fuzzy}
+    
+    \chapter{Programovací prostøedí CUDA}
+        \include{src/2Cuda/cuda}
+    
+    \chapter{Tøídící algoritmy}
+        \include{src/3Trideni/trideni}
+    
+    \chapter{Implementace v CUDA}
+    
+    
+    \chapter{Výsledky}
+    
+    \addcontentsline{toc}{chapter}{Závìr}
+    \chapter*{Závìr}
+    
+\end{document}

@@ -36,8 +36,7 @@
 
 \title{Pouití fuzzy logiky ve zpracování obrazu na GPU}
 \author{Ladislav Horkı}
-\institute{FJFI ÈVUT v Praze \newline \newline Vedoucí: Ing. Tomáš Oberhuber Ph.D.
-\newline Konzultant: doc. Ing. Jaromír Kukal Ph.D.}
+\institute{FJFI ÈVUT v Praze}
 \date{\today}
 
 \begin{document}
@@ -87,7 +86,7 @@
 
     \subsection{Teorie}
     \begin{frame}{\L A$_{sqrt}$}
-        \begin{define}{[1]}
+        \begin{define}
             Nech $\bL = [0,1]$ a $a,b \in \bL$. Nech $\langle\bL,\wedge,\vee,\otimes,
             \rightarrow,0,1\rangle$, kde
             \begin{align}
@@ -112,7 +111,7 @@
             $$
             oznaèujeme \textbf{citlivost} funkce $\varphi$.
         \end{define}
-        Omezená citlivost zabraòuje vzniku artefaktù ve vısledku, filtr se chová všude \eq stejnì\eq.
+        Omezená citlivost zabraòuje vzniku artefaktù ve vısledku, filtr se chová všude \eq stejnì \eq
     \end{frame}
 
     \begin{frame}{Fuzzy protoe...}
@@ -183,7 +182,7 @@
     \begin{frame}{Rozdíly CPU a GPU}
         \begin{figure}
             \includegraphics[width=90mm]{img/CPUGPU.PNG}
-            \caption{Rozdíly v architektuøe, [2]}
+            \caption{Rozdíly v architektuøe}
         \end{figure}
     \end{frame}
 
@@ -204,64 +203,16 @@
     \end{frame}
     
     \begin{frame}{Vısledky}
-        Testovací data: 3D SPECT obraz 79x95x69 pixelù, 26-pixelovı strukturní element
-        (krychle)
-        \par
-        \begin{tabular}{lccc}
-            \toprule
-                & Core2Duo@1.86GHz & GTX8800@1.4GHz &  Relativní \\
-                & single-thread & 128 CUDA jader & zrychlení \\
-                & (ms) & (ms) & \\
-            \midrule
-            Eroze & 45.02 & 1.50 & 30.0\\ \hline
-            Hrany & 80.37 & 1.59 & 50.5\\ \hline
-            \multirow{2}{*}{Median} & 314.05 & 9.23 & \multirow{2}{*}{34.0}\\
-            & (quickselect) & (forgetful sort [3]) & \\
+      \begin{tabular}{lccc}
+        \toprule
+            & Core2Duo@1,86GHz & GTX8800@575MHz &  Relativní \\
+            & single-thread & 128 CUDA jader & zrychlení \\
+            & (ms) & (ms) & \\
+        \midrule
+        Eroze & 20,5 & 1,4 & 21\\
+        \multirow{2}{*}{Median} & 324,5 & 9,8 & \multirow{2}{*}{31}\\
+        & (quickselect) & (forgetful sort) & \\
         \bottomrule
-        \end{tabular}
+      \end{tabular}
     \end{frame}
-    
-    \begin{frame}{Ukázky}
-        \begin{figure}
-            \includegraphics[width=80mm]{img/original.png}
-            \caption{Originál}
-        \end{figure}
-    \end{frame}
-    
-    \begin{frame}{Ukázky}
-        \begin{figure}
-            \includegraphics[width=80mm]{img/edge1.png}
-            \caption{Základní hranovı detektor}
-        \end{figure}
-    \end{frame}
-    
-     \begin{frame}{Ukázky}
-        \begin{figure}
-            \includegraphics[width=80mm]{img/erode.png}
-            \caption{Eroze s kulovou maskou, polomìr 2}
-        \end{figure}
-    \end{frame}
-    
-\section{Závìr} %--------------------------------------------------------------------------
-    \begin{frame}{Závìr}
-        \beI
-            \item Z parametrù problému vyplıvá, e je nutná spíše optimalizace na danı HW, 
-                ne pouhá matematická optimalizace algoritmu
-            \item Pro vırazné urychlení je nutné sdruovat filtry do (prakticky pouívanıch)
-                celkù, ne pouze optimalizovat jejich základní stavební prvky
-        \enI
-    \end{frame}
-
-\section{Literaura} %--------------------------------------------------------------------------
-    \begin{frame}{Literatura}
-        \beI
-            \item[{[1]}] \textit{Image Processing By Means Of \L ukasiewicz Algebra With Square Root}, Dana
-                Majerová, Ph.D. thesis, 2004, Fakulta Chemického Inenırství, Praha
-            \item[{[2]}] \textit{CUDA Programming Guide v3.2}
-            \item[{[3]}] \textit{A case study in CUDA optimization}, James Malcolm, prezentace, 2010, 
-                \texttt{http://blog.accelereyes.com/blog/2010/02/20/
-                a-case-study-in-cuda-optimization/}
-        \enI
-    \end{frame}
-
 \end{document}                                              
