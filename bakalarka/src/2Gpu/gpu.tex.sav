@@ -1,0 +1,24 @@
+% -*-coding: utf-8 -*-
+
+% Vývoj GPU
+% Programovací prostředí
+    % CUDA
+% Architektura GPU (NVIDIA)
+    % Hierarchie paměti
+    % Hierarchie paralelizace
+    
+    
+Zatím to vypadá, že klasické qsorty atd. budou mít velké overheady
+Zkusit qsort po warpech a porovnat s tím O(n2), co mám teď, ten taky zjemnit na warpy
+Obecně naplnit sdílenou paměť, něco jako pár threadů na pixel
+    
+    -- je to porovnání s 350 na jeden krok VS porovnání s 32 v jednom z několika kroků + scan sumy
+
+BES na CPU (rozkrájený quickselect)
+
+\section{Vývoj GPU}
+\section{Programovací prostředí}
+    \subsection{CUDA}
+\section{Architektura GPU}
+    \subsection{Hierarchie paměti}
+    \subsection{Hierarchie paralelizace}

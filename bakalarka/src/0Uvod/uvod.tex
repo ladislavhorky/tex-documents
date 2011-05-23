@@ -1,6 +1,14 @@
+% -*-coding: utf-8 -*-
 
-C�lem pr�ce je uk�zat mo�nosti urychlen� v�po�tu obrazov�ch filtr� na GPU.
+% cíl, trend
 
-Teoretick� z�klad filtr� tvo�� fuzzy logika, konkr�tn� \L ukasiewiczova algebra s 
-odmocninou \cite{MajerovaPhD}. Mno�ina filtr� konstruovateln�ch uvnit� t�to teorie 
-je sice omezen�, ale lze je jednodu�e teoreticky analyzovat.
+Cílem této bakalářské práce je ukázat možnosti urychlení výpočtu obrazových filtrů
+prostřednictvím GPU. Přesměrovávání složitých výpočtů na grafické procesory
+(GPGPU\footnote{General Purpose Graphics Processing Unit}) je rychle se rozvíjející
+trend posledních let a
+
+Teoretický základ filtrů tvoří fuzzy logika, konkrétně \L ukasiewiczova algebra s
+odmocninou \cite{MajerovaPhD}. Uvnitř této algebry sice nelze zkonstruovat řadu
+běžně užívaných filtrů (Gaussvské rozmazání, obecná konvoluce s maskou), nabízí však
+jednoduchý teorecký popis, omezenou citlivost filtrů a redukci výpočtů pouze na
+elementární matematické operace (sčítání, násobení, aritmetický průměr, k-tý prvek) 

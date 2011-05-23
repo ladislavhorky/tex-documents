@@ -1,2 +1,14 @@
 
-Cílem práce je ukázat možnosti urychlení výpoètu orazových filtrù na GPU.
+
+% cíl, trend
+
+Cílem této bakaláøské práce je ukázat možnosti urychlení výpoètu obrazových filtrù
+prostøednictvím GPU. Pøesmìrovávání složitých výpoètù na grafické procesory 
+(GPGPU\footnote{General Purpose Graphics Processing Unit}) je rychle se rozvíjející 
+trend posledních let a
+
+Teoretický základ filtrù tvoøí fuzzy logika, konkrétnì \L ukasiewiczova algebra s
+odmocninou \cite{MajerovaPhD}. Uvnitø této algebry sice nelze zkonstruovat øadu 
+bìžnì užívaných filtrù (Gaussvské rozmazání, obecná konvoluce s maskou), nabízí však
+jednoduchý teorecký popis, omezenou citlivost filtrù a redukci výpoètù pouze na 
+elementární matematické operace (sèítání, násobení, aritmetický prùmìr, k-tý prvek)
