@@ -1,16 +1,26 @@
 % -*-coding: utf-8 -*-
 
-% Lukasiewiczova algebra s odmocniou
-     % Fuzzy-logická funkce
-     % Používané operátory
-% Citlivost
-% Reprezentace obrazových dat
-% Filtry
-    % Typologie filtrů
-        % Morfologické
-        % Statistické
-    % Citlivost filtrů
-    % (sítě?)
+    % Lukasiewiczova algebra s odmocniou
+            % Konstrukce matematického modelu
+                % Svaz
+                % Lukasiewiczova algebra
+                % Lukasiewiczova algebra s odmocninou
+            % Fuzzy-logická funkce
+            % Používané operátory
+        % Citlivost
+            % Přesnost celočíselné aritmetiky
+        % Reprezentace obrazových dat
+            % Maska
+        % Filtry
+            % Typologie filtrů
+                % Morfologické
+                % Statistické
+            % Citlivost filtrů
+            % Porovnání s lineárními filtry
+%==============================================================
+        \note{fuzzy -- dvouhodnotová logika je málo - příliš velká ztráta informace, struktura logiky je vhodná pro analýzu vlastností, umožňuje redukovat
+        magické konstanty a zároveň je dostačující pro většinu praktických úloh}
+
 
 \section{\L ukasiewiczova algebra s odmocninou}
     % bez odmocniny bude množina filtrů omezená (uzavření-otevření nic nedělá) -- vyhnout se přímo trvzení o konečnosti, nekonečnosti
@@ -18,19 +28,139 @@
                 %%%% z residua a negace
         % obohatit systém tak, aby se dala snížit citlivost a dělat průměry -- prostě co ejmenší množina operací, se kterými už uděláme, co potřebujeme
         % odmocnina jde vždy propasovat dolů, jde jí předejít vydělením vstupů mocninou 2ky (2a, 4a udělám pomocí krát)
-        
+
         % porovnání s lineárními filtry: (Gauss, atd)
             % lineární jsou lepší na gaussovský šum
             % fuzzy umožňuje ubrat předpoklady o vstupu (druh šumu, SMĚS ŠUMŮ -- KOSMICKÉ ZÁŘENÍ VE SPECT...)
     % obecně robustní filtry (dá se udělat fuzzy k-tý prvek)
     % při algoritmickém generování sítí, instantním prohlížení a filtrace
+    %=============================================================================================================================
+
+    V této části zkonstruujeme matematický model, který bude snadno aplikovatelný na obrazová data ve formě, jak s nimi pracuje počítač a zároveň nám poskytne solidní základ pro konstrukci filtrů. Budeme postupovat podobně jako v \cite{MajerovaPhD} a ukážeme, že \L ukasiewiczova algebra s odmocninou je vhodným kandidátem. Na model přitom klademe následující poždavky:
+    \begin{itemize}
+      \item maximální jednoduchost matematických operací
+      \item \note{struktura (mnohahodnotové) logiky}
+      \item omezená citlivost (zbavování šumu)
+      \item neomezená množina filtrů, které je možno zkonstruovat
+      \item přímá aplikovatelnost na obrazová data v odstínech šedi
+      \item možnost konstrukce robustních filtrů a filtrů na bázi aritmetického průměru
+      \item možnost konstrukce vysokofrekvenčních filtrů (detektory hran)
+    \end{itemize}
+    Z poždavku jednoduchosti je jasné, že budeme postupovat od základních matematických struktur a ty postupně obohacovat o další operace.
+
+    \subsection{Matematický model}
+
+    Obraz je v počítači reprezentován jako sada diskrétních hodnot omezených v nějakém intervalu (0.0 až 1.0, 0 až 255...). Struktura musí být tedy uzavřená vůči vlastním operacím, mít jako nosič omezenou množinu a neměla by jí vadit ani diskretizace této množiny.
+
+    \begin{define}\label{svaz}
+    Algebru $S = (M,\wedge,\vee)$ se dvěma binárními operacemi takovými, že platí:
+    \begin{align}
+    a \wedge b &= b \wedge a, & a \vee b &= b \vee a &&\text{\rl komutativní zákon\rr} \\
+    (a \wedge b) \wedge c &= a \wedge (b \wedge c), & (a \vee b) \vee c &= a \vee (b \vee c) &&\text{\rl asociativní zákon\rr} \\
+    a \wedge (b \vee a) &= a,& a \vee (b \wedge a) &= a &&\text{\rl zákon absorpce\rr}
+    \end{align}
+    nazýváme \textbf{svazem}. Operace $\wedge$ \rl\textbf{průsek}\rr a $\vee$ \rl\textbf{spojení}\rr dodefinujeme v souladu s teorií:
+    \begin{align}
+    a \wedge b &= \min(a,b), \\
+    a \vee b &= \max(a,b).
+    \end{align}
+    \end{define}
+
+    Svaz nám bez dalšího obohacení umožňuje konstruovat základní morfologické filtry jako eroze a dilatace\footnote{tyto a všechny další filtry budou vysvětleny v sekci~\ref{Filtry}, zde slouží pouze pro ilustraci} a je nas ním možno zkonstruovat libovolnou pořadovou statistiku (k-tý prvek) -- základ mnoha robustních filtrů ostraňujících šum:
+
+    \begin{theo}\label{k-tý prvek}
+      Nechť $x_1,x_2,...,x_n \in M$, dále buď $l = n-k+1$, $C^{l}_n$ oindexovaná množina všech l-tic z \^n a $c^i_j$, kde $c^i \in C^{l}_n$, j-tý prvek i-té l-tice. Pak
+      \[
+        a_k = \bigwedge_{i = 1}^{{l}\choose{n}}\left( \bigvee_{j = 1}^{l} x_{c_{j}^i} \right)
+      \]
+      je k-tá pořadová statistika souboru $(x_1,x_2,...,x_n)$ \rl první prvek je maximum\rr.
+    \end{theo}
+    \begin{proof}
+      Vnitřní operace vybere postupně ze všech l-tic maximum. Nejmenšího maxima se dosáhne právě tehdy, chybí-li v l-tici největších $k-1$ prvků. Tímto maximem bude tedy právě k-tý prvek. 
+    \end{proof}
+    
+    Bohužel už medián ze sudého počtu prvků je nerealizovatelný (chybí nám aritmetický průměr), stejně jako jakýkoliv vysokofrekvenční filtr\footnote{obsahují například detektory hran} (chybí nám rozdíl). Z povahy svazových operací je navíc zřejmé, že nikdy nezískáme hodnotu, která se neobjevila na vstupu.
+    
+    Abychom získali možnost odčítat, obohatíme svaz o dvě binární operace, z nichž se dá operace rozdílu odvodit\footnote{viz \ref{operátory}}:
+    
+    \begin{define}\label{residuovaný svaz}
+    Buď $(M,\wedge,\vee)$ je svaz s nejmenším prvkem 0 a největším 1, $\otimes$ \rl \textbf{součin}, nebo \textbf{t-norma}\rr je binární, asociativní a komutativní operace a $\rightarrow$ \rl \textbf{residuum}\rr je binární operace. Navíc platí:
+    \begin{align}
+    &x \otimes 1 = x  &&(\forall x \in M)\\
+    &x \otimes y \leq z \Leftrightarrow y \rightarrow z \geq x &&(\forall x,y,z \in M)\label{Galoisova koresp}
+    \end{align}
+    Pak strukturu $(M,\wedge,\vee,\otimes,\rightarrow,0,1)$ nazýváme \textbf{residuovaný svaz}. 
+    \end{define}
+    
+    Galoisova korespondence \eqref{Galoisova koresp} přiřazuje každému součinu právě jedno residuum \note{zdroj něco z Majerové?}, k plnému popisu operací tedy stačí definovat pouze součin. Za ten zvolíme \L ukasiewiczovu t-normu:
+    
+    \begin{define}\label{LA}
+    Residuovaný svaz $(\LL,\wedge,\vee,\otimes,\rightarrow,0,1)$ s operacemi $\otimes$ a $\rightarrow$ definovanými v souladu s \eqref{Galoisova koresp} jako
+    \begin{align}
+    &x \otimes y = \max(x+y-1,0) \\
+    &x \rightarrow y = \min(1,1-x+y)
+    \end{align}
+    a nosičem $\LL = [0,1]$ nazýváme \textbf{\L ukasiewiczova algebra} \textup{(\L A)}.
+    \end{define}
+    
+    \note{Proč potřebujeme MV-algebru? Gougen, Godel ani Yager nejsou --- říká,že neg neg x je x, což je slušné chování}
+    
+    Existují i jiné t-normy (\cite{MajerovaPhD},\cite{Bělíček}), ty ovšem nemají vlastnost mnohahodnotové logiky (\cite{MajerovaPhD} \note{původnější zdroj?}), nebo jsou příliš výpočetně náročné. Poslední obohacení, které provedeme nám konečně umožní dělat aritmetický průměr dvou hodnot:
+    
+    \begin{define}\label{LAsqrt}
+    \L ukasiewiczovu algebru $(\LL,\wedge,\vee,\otimes,\rightarrow,\sqr,0,1)$ obohacenou o unární operaci \textbf{odmocnina} definovanou jako
+    \[
+    \sqr(x) = \frac{1+x}{2}
+    \]
+    nazýváme \textbf{\L ukasiewiczova algebra s odmocninou} \textup{(\LAsq)}.
+    \end{define}
+
     \subsection{Fuzzy-logické funkce}
-    \subsection{Používané operátory}
+    
+    Základní operace pro tvorbu filtrů tedy máme. Vzhledem k tomu, že se pohybujeme v praktických vodách, a při výpočtech filtrů bude hrát hlavní roli čas, těžko si představit, že například k-tou pořadovou charakteristiku budeme implementovat tak, jak je popsána v definici~\ref{k-tý prvek}. Přijměme tedy úmluvu, že matematický model nám řekne, jaké operace/funkce/filtry jsou přípustné, ale při implementaci budeme chtít, aby pouze výsledek (nikoliv samotný algoritmus) byl v souladu s teorií (čímž získáme prostor pro kýžené optimalizace). Pro další postup bude tedy vhodné rozlišit, jaké funkce do modelu patří a co nikoliv.
+    
+    \begin{define}\label{FLF}
+    Buď $x \in \LL$ proměnná, $a \in \LL$ konstanta. Pak množinu fuzzy-logických funkcí \textup{(FLF)}, jakožto zobrazení $\LL^k \rightarrow \LL, k \in \mathbb{N}_0$, definujeme indukčním pravidlem:
+    \[
+    \mathrm{FLF} = x \mid a \mid f \wedge g \mid f \vee g \mid f \otimes g \mid f \rightarrow g \mid \sqr(f) 
+    \]
+    kde $f,g$ je již \textup{FLF}.
+    \end{define}
+    
+    \subsection{Používané operátory}\label{operátory}
+    
+    Následuje tabulka běžných fuzzy-logických operátorů včetně definic a výsledných hodnot v \LAsq. Všechny operátory vzniknou pouze složením základních operátorů a jsou tedy FLF.
+    
+    \begin{table}[h]
+    \begin{center}
+    \begin{tabular}{llll}
+      \toprule
+      Operace & Název & Odvození & Význam v \LAsq \\
+      \midrule
+      $x \vee y$            & spojení                   & definováno & $\max(x,y)$ \\
+      $x \wedge y$          & průsek                    & definováno & $\min(x,y)$ \\
+      $x \otimes y$         & součin (t-norma)          & definováno & $\max(x+y-1,0)$ \\
+      $x \rightarrow y$     & residuum                  & definováno & $\min(1-x+y,1)$ \\
+      $\neg x$              & negace                    & $x \rightarrow 0$ & $1-x$ \\
+      $x \leftrightarrow y$ & ekvivalence (biresiduum)  & $(x \rightarrow y) \wedge (y \rightarrow x)$ & $1-|x-y|$ \\
+      $x \circ y$           & vzdálenost                & $\neg (x \leftrightarrow y)$ & $|x-y|$ \\
+      $x \oplus y$          & součet                    & $\neg (\neg x \otimes \neg y)$ & $\min(x+y,1)$ \\
+      $x \ominus y$         & rozdíl                    & $x \otimes \neg y$ & $\max(x-y,0)$ \\
+      $x \odot n$           & celočíselný násobek       & $\underbrace{x \oplus x \oplus ... \oplus x}_n, n \in \mathbb{N}$ & $\min(nx,1)$ \\
+      $x^n$                 & celočíselná mocnina       & $\underbrace{x \otimes x \otimes ... \otimes x}_n, n \in \mathbb{N} $ & $\max(nx-n+1,0)$ \\
+      \bottomrule 
+    \end{tabular}
+    \caption{Odvozené operátory v \LAsq}
+    \end{center}
+    \end{table}
+    
+    
+    
 \section{Citlivost}
 
 % Celočíselná aproximace -- zmínka o různých typech (int, char)
 % jednoduché úvahy o přesnosti, celočíselně kvůli rychlosti
-% ztráty odmocňováním
+% ztráty odmocňováním -- odmocnina se dá propasovat nahoru -- ztratí se nejméně (pouze 1 LSB)
 
 \section{Reprezentace obrazových dat}
 
@@ -39,15 +169,15 @@
 % okraje
 % váhy mohou jít proti robustnosti, hrání s váhami
 
-\section{Filtry}
+\section{Filtry}\label{Filtry}
     % něco se dělá nad jedním nebo někalika seznamy a je realizovatelné pomocí FLF, je filtr
     \subsection{Typologie filtrů}       % (implementační hledisko)
         \subsubsection{Morfologické}
         \subsubsection{Statistické}
-    \subsection{Meze citlivosti filtrů} 
-    
+    \subsection{Meze citlivosti filtrů}
+
 
 
 % Kvalita obrázku:
 
-viziualizovat rozdíly mezi filtry, jako "standardy" brát výsledky předchozích prací
+viziualizovat rozdíly mezi filtry, jako "standardy" brát výsledky předchozích prací 

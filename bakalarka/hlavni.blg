@@ -1,9 +1,5 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: hlavni.aux
-A level-1 auxiliary file: src/0Uvod/uvod.aux
-A level-1 auxiliary file: src/1Fuzzy/fuzzy.aux
-A level-1 auxiliary file: src/2Cuda/cuda.aux
-A level-1 auxiliary file: src/3Trideni/trideni.aux
-A level-1 auxiliary file: src/bibliography.aux
+I found no \citation commands---while reading file hlavni.aux
 I found no \bibdata command---while reading file hlavni.aux
 I found no \bibstyle command---while reading file hlavni.aux
-(There were 2 error messages)
+(There were 3 error messages)
