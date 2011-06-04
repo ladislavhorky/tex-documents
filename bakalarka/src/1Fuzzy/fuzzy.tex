@@ -43,8 +43,8 @@
       \item omezená citlivost (zbavování šumu)
       \item neomezená množina filtrů, které je možno zkonstruovat
       \item přímá aplikovatelnost na obrazová data v odstínech šedi
-      \item možnost konstrukce robustních nízkofrekvenčních filtrů (zbavení šumu)
-      \item možnost konstrukce filtrů na bázi aritmetického průměru
+      \item možnost konstrukce robustních\footnote{tzn. do výstupu filtru se (příliš) nepromítnou okrajové extrémní hodnoty ze vstupu} nízkofrekvenčních filtrů (zbavení šumu)
+      \item možnost konstrukce filtrů na bázi aritmetického průměru \note{nekříží se s poždavkem robustnosti?}
       \item možnost konstrukce vysokofrekvenčních filtrů (detektory hran, segmentace)
     \end{itemize}
     Z poždavku jednoduchosti je jasné, že budeme postupovat od základních matematických struktur a ty postupně obohacovat o další operace.
@@ -69,7 +69,7 @@
 
     Svaz nám bez dalšího obohacení umožňuje konstruovat základní morfologické filtry jako eroze a dilatace\footnote{tyto a všechny další filtry budou vysvětleny v sekci~\ref{Filtry}, zde slouží pouze pro ilustraci} a je nas ním možno zkonstruovat libovolnou pořadovou statistiku (k-tý prvek) -- základ mnoha robustních filtrů ostraňujících šum:
 
-    \begin{theo}\label{k-tý prvek}
+    \begin{theo}\label{theo k-tý prvek}
       Nechť $x_1,x_2,...,x_n \in M$, dále buď $l = n-k+1$, $C^{l}_n$ oindexovaná množina všech l-tic z \^n a $c^i_j$, kde $c^i \in C^{l}_n$, j-tý prvek i-té l-tice. Pak
       \[
         a_k = \bigwedge_{i = 1}^{{l}\choose{n}}\left( \bigvee_{j = 1}^{l} x_{c_{j}^i} \right)
@@ -77,69 +77,72 @@
       je k-tá pořadová statistika souboru $(x_1,x_2,...,x_n)$ \rl první prvek je maximum\rr.
     \end{theo}
     \begin{proof}
-      Vnitřní operace vybere postupně ze všech l-tic maximum. Nejmenšího maxima se dosáhne právě tehdy, chybí-li v l-tici největších $k-1$ prvků. Tímto maximem bude tedy právě k-tý prvek. 
+      Vnitřní operace vybere postupně ze všech l-tic maximum. Nejmenšího maxima se dosáhne právě tehdy, chybí-li v l-tici největších $k-1$ prvků. Tímto maximem bude tedy právě k-tý prvek.
     \end{proof}
-    
-    Bohužel už medián ze sudého počtu prvků je nerealizovatelný (chybí nám aritmetický průměr), stejně jako jakýkoliv vysokofrekvenční filtr\footnote{obsahují například detektory hran} (chybí nám rozdíl). Z povahy svazových operací je navíc zřejmé, že nikdy nezískáme hodnotu, která se neobjevila na vstupu.
-    
-    Abychom získali možnost odčítat, obohatíme svaz o dvě binární operace, z nichž se dá operace rozdílu odvodit\footnote{viz \ref{operátory}}:
-    
-    \begin{define}\label{residuovaný svaz}
+
+    Bohužel už medián ze sudého počtu prvků je nerealizovatelný (chybí nám aritmetický průměr), stejně jako jakýkoliv vysokofrekvenční filtr\footnote{například detektor hran} (chybí nám rozdíl). Z povahy svazových operací je navíc zřejmé, že nikdy nezískáme hodnotu, která se neobjevila na vstupu.
+
+    Abychom získali možnost odčítat, obohatíme svaz o dvě binární operace, z nichž se dá operace rozdílu odvodit (viz \ref{operátory}):
+
+    \begin{define}\label{def residuovaný svaz}
     Buď $(M,\wedge,\vee)$ je svaz s nejmenším prvkem 0 a největším 1, $\otimes$ \rl \textbf{součin}, nebo \textbf{t-norma}\rr je binární, asociativní a komutativní operace a $\rightarrow$ \rl \textbf{residuum}\rr je binární operace. Navíc platí:
     \begin{align}
     &x \otimes 1 = x  &&(\forall x \in M)\\
     &x \otimes y \leq z \Leftrightarrow y \rightarrow z \geq x &&(\forall x,y,z \in M)\label{Galoisova koresp}
     \end{align}
-    Pak strukturu $(M,\wedge,\vee,\otimes,\rightarrow,0,1)$ nazýváme \textbf{residuovaný svaz}. 
+    Pak strukturu $(M,\wedge,\vee,\otimes,\rightarrow,0,1)$ nazýváme \textbf{residuovaný svaz}.
     \end{define}
-    
+
     Galoisova korespondence \eqref{Galoisova koresp} přiřazuje každému součinu právě jedno residuum \note{zdroj něco z Majerové?}, k plnému popisu operací tedy stačí definovat pouze součin. Za ten zvolíme \L ukasiewiczovu t-normu:
-    
+
     \begin{define}\label{LA}
     Residuovaný svaz $(\LL,\wedge,\vee,\otimes,\rightarrow,0,1)$ s operacemi $\otimes$ a $\rightarrow$ definovanými v souladu s \eqref{Galoisova koresp} jako
     \begin{align}
-    &x \otimes y = \max(x+y-1,0) \\
-    &x \rightarrow y = \min(1,1-x+y)
+    x \otimes y &= \max(x+y-1,0) \\
+    x \rightarrow y &= \min(1,1-x+y)
     \end{align}
     a nosičem $\LL = [0,1]$ nazýváme \textbf{\L ukasiewiczova algebra} \textup{(\L A)}.
     \end{define}
-    
+
+    \note{0,1 zde představuje jen největší a nejmenší prvek -- je nutné to zmínit?}
     \note{Proč potřebujeme MV-algebru? Gougen, Godel ani Yager nejsou --- říká,že neg neg x je x, což je slušné chování}
-    
-    Existují i jiné t-normy (\cite{MajerovaPhD},\cite{Bělíček}), ty ovšem nemají vlastnost mnohahodnotové logiky (\cite{MajerovaPhD} \note{původnější zdroj?}), nebo jsou příliš výpočetně náročné. Poslední obohacení, které provedeme nám konečně umožní dělat aritmetický průměr dvou hodnot:
-    
+
+    Existují i jiné t-normy (\cite{MajerovaPhD},\cite{Bělíček}), ty ovšem nemají vlastnosti mnohahodnotové logiky \cite{MajerovaPhD}\note{původnější zdroj?}, nebo jsou příliš výpočetně náročné. Poslední obohacení, které provedeme, nám konečně umožní průměrovat:
+
     \begin{define}\label{LAsqrt}
-    \L ukasiewiczovu algebru $(\LL,\wedge,\vee,\otimes,\rightarrow,\sqr,0,1)$ obohacenou o unární operaci \textbf{odmocnina} definovanou jako
-    \[
-    \sqr(x) = \frac{1+x}{2}
-    \]
+    \L ukasiewiczovu algebru $(\LL,\wedge,\vee,\otimes,\rightarrow,\sqr,0,1)$ obohacenou o unární operaci \textbf{odmocnina} pro kterou platí:
+    \beq
+    \sqr(x)\otimes\sqr(x) = x
+    \eeq
     nazýváme \textbf{\L ukasiewiczova algebra s odmocninou} \textup{(\LAsq)}.
     \end{define}
-    
+
+    Snadno se přesvědčíme, že
+    \beq
+    \sqr(x) = \frac{1+x}{2}
+    \eeq
     Aritmetický průměr \emph{dvou} pak můžeme realizovat jako
-    
-    \[
+    \beq
     \sqr(x)\otimes \sqr(y) = \max\left(\frac{1+x}{2}+\frac{1+y}{2}-1,0\right) = \max\left(\frac{x+y}{2},0\right) = \frac{x+y}{2}
-    \]
-    
-    Což je vlastně geometrický průměr uvnitř \LAsq. Tímto způsobem můžeme sice průměrovat pouze $2^n, (n \in \mathbb{N})$ hodnot, v praxi se však ukazuje, že pro konstrukci robustních nízkofrekvenčních filtrů je to dostačující a pro vysokofrekvenční filtry průměr příliš nepotřebujeme. \note{zmínit diadický filtr?}
+    \eeq
+    což je vlastně geometrický průměr uvnitř \LAsq. Analogicky by bylo možné definovat libovolnou celočíselnou odmocninu, která by nám umožnila průměrovat libovolný počet hodnot. Filtry založené na průměru mnoha hodnot již však nejsou robustní, a tak se schválně omezíme pouze na druhou odmocninu. I s těmito omezeními je však možné zkonstruovat celou třídu tzv. \emph{diadických filtrů} -- u nich je součet vah vstupů roven $2^n$ a výstupem je vážený průměr. \note{váhy libovolné??, průměr z $2^n$ umíme}
 
     \subsection{Fuzzy-logické funkce}
-    
+
     Základní operace pro tvorbu filtrů tedy máme. Vzhledem k tomu, že se pohybujeme v praktických vodách, a při výpočtech filtrů bude hrát hlavní roli čas, těžko si představit, že například k-tou pořadovou charakteristiku budeme implementovat tak, jak je popsána v definici~\ref{k-tý prvek}. Přijměme tedy úmluvu, že matematický model nám řekne, jaké operace/funkce/filtry jsou přípustné, ale při implementaci budeme chtít, aby pouze výsledek (nikoliv samotný algoritmus) byl v souladu s teorií (čímž získáme prostor pro kýžené optimalizace). Pro další postup bude tedy vhodné rozlišit, jaké funkce do modelu patří a co nikoliv.
-    
-    \begin{define}\label{FLF}
+
+    \begin{define}\label{def FLF}
     Buď $x \in \LL$ proměnná, $a \in \LL$ konstanta. Pak množinu fuzzy-logických funkcí \textup{(FLF)}, jakožto zobrazení $\LL^k \rightarrow \LL, k \in \mathbb{N}_0$, definujeme indukčním pravidlem:
     \[
-    \mathrm{FLF} = x \mid a \mid f \wedge g \mid f \vee g \mid f \otimes g \mid f \rightarrow g \mid \sqr(f) 
+    \mathrm{FLF} = x \mid a \mid \f \wedge \g \mid \f \vee \g \mid \f \otimes \g \mid \f \rightarrow \g \mid \sqr(f)
     \]
-    kde $f,g$ je již \textup{FLF}.
+    kde $\f,\g$ jsou již \textup{FLF}.
     \end{define}
-    
+
     \subsection{Používané operátory}\label{operátory}
-    
+
     Následuje tabulka běžných fuzzy-logických operátorů včetně definic a výsledných hodnot v \LAsq. Všechny operátory vzniknou pouze složením základních operátorů a jsou tedy FLF.
-    
+
     \begin{table}[h]
     \begin{center}
     \begin{tabular}{llll}
@@ -157,23 +160,84 @@
       $x \ominus y$         & rozdíl                    & $x \otimes \neg y$ & $\max(x-y,0)$ \\
       $x \odot n$           & celočíselný násobek       & $\underbrace{x \oplus x \oplus ... \oplus x}_n, n \in \mathbb{N}$ & $\min(nx,1)$ \\
       $x^n$                 & celočíselná mocnina       & $\underbrace{x \otimes x \otimes ... \otimes x}_n, n \in \mathbb{N} $ & $\max(nx-n+1,0)$ \\
-      \bottomrule 
+      \bottomrule
     \end{tabular}
     \caption{Odvozené operátory v \LAsq}
     \end{center}
     \end{table}
-    
-    
-    
+
 \section{Citlivost}
 
-% Celočíselná aproximace -- zmínka o různých typech (int, char)
-% jednoduché úvahy o přesnosti, celočíselně kvůli rychlosti
-% ztráty odmocňováním -- odmocnina se dá propasovat nahoru -- ztratí se nejméně (pouze 1 LSB)
+\begin{define}\label{def citlivost}
+  Buď $\varphi : \LL^n \rightarrow \LL$ \textup{FLF} a $\xx,\yy \in \LL^n$. Pak
+  \beq
+  \lambda_\varphi = \max_{\xx \neq \yy}\frac{\varphi(\xx) \circ \varphi(\yy)}{\sum_{i=1}^n |x_i - y_i|}\label{citlivost}
+  \eeq
+  nazveme \textbf{citlivostí} funkce $\varphi$.
+\end{define}
 
+Pro další úvahy je dobré znát horní meze citliosti běžných fuzzy-logických operátorů. Ty přehledně shrnuje tabulka \ref{tabulka max citlivosti} a jsou dokázány v \cite{MajerovaPhD}. Buď $\xx \in \LL^n ,n \in \mathbb{N} ,\f ,\g : \LL^n \rightarrow \LL $ FLF \note{jak to hodit k tabulce}:
+
+\begin{table}\label{tabulka max citlivosti}
+    \begin{center}
+    \begin{tabular}{llp{1cm}ll}
+      \toprule
+      Operace & $\lambda_{\max}$ && Operace & $\lambda_{\max}$\\
+      \midrule
+      $\f(\xx)$                         & $\lambda_\f$  && $\f(\xx) \vee \g(\xx)$            & $\max(\lambda_\f,\lambda_\g)$  \\
+      $\g(\xx)$                         & $\lambda_\g$  && $\f(\xx) \wedge \g(\xx)$          & $\max(\lambda_\f,\lambda_\g)$  \\
+      $\f(\xx) \otimes \g(\xx)$         & $\lambda_\f+\lambda_\g$ && $ \neg \f(\xx)$         & $\lambda_\f$    \\
+      $\f(\xx) \rightarrow \g(\xx)$     & $\lambda_\f+\lambda_\g$ && $\sqr(\f(\xx))$         & $\lambda_\f/2$ \\
+      $\f(\xx) \leftrightarrow \g(\xx)$ & $\lambda_\f+\lambda_\g$ && $\f(\xx) \oplus \g(\xx)$& $\lambda_\f+\lambda_\g$    \\
+      $\f(\xx) \circ \g(\xx)$           & $\lambda_\f+\lambda_\g$ &&$\f(\xx) \ominus \g(\xx)$& $\lambda_\f+\lambda_\g$    \\
+      $\f(\xx) \odot n$                 & $n\lambda_\f$ &&  $(\f(\xx))^n$                    & $n\lambda_\f$ \\
+      \bottomrule
+    \end{tabular}
+    \caption{Horní meze citlivosti operátorů v \LAsq}
+    \end{center}
+\end{table}
+
+Citlivost $\lambda_\varphi = 0$ znamená, že funkce $\varphi(\xx) = konst, \, \forall \xx \in \LL^n$ (v čitateli \eqref{citlivost} musí být 0 $\forall \xx$), což odpovídá ztátě veškeré informace. Nízkofrekvenční filtry mají citlivost obecně v intervalu $(0,1]$, vysokofrekvenční pak v intervalu $(1,\infty)$. Zjednodušeně řečeno nízká citlivost způsobuje vymizení detailů, zatímco vysoká může mít za následek vznik nových artefaktů v obraze, vše ale záleží na konkrétním filtru \note{(ke schválení)}. Z tabulky je dále zřejmé, proč jsme zaváděli odmocninu -- ta jako jediná dokáže citlivost snížit, nebo ji spíše při skládání operací udržet v požadovaném intervalu. \note{dokazovat horní mez citlivosti pro  k-tý prvek, nebo to nechat až na filtry}
 
 
 \section{Reprezentace obrazových dat}
+% greyscale
+% 2D, 3D
+
+Obrazová data budeme chtít zpracovat pomocí FLF, tzn. musíme přiřadit vstupům funkce hodnoty konkrétních pixelů. Předem se omezíme pouze na obraz v odstínech šedi (medicínská data) a pro přehlednost na 2 dimenze (analogie se 3D je zřejmá a podstatně to zjednoduší zápis).
+
+\begin{define}\label{def obraz}
+  \textbf{Obraz} o šířce $w$ a výšce $h$ ztotožníme s maticí $\PP \in \LL^{w,h}$, kde $\LL$ je interval zahrnující všechny přípustné intenzity v obraze. Dále pixel $(\PP)_{i,j}, \,i \in \widehat w, \,j \in \widehat h$ označíme jako $x_{i,j}$.
+\end{define}
+
+    \subsection{Lokální zpracování obrazu}
+    % předem definované pixely vs watershed
+    Všechny dále popsané filtry zpracovávají obraz lokálně \note{podle mě neplyne z FLF, prože to by omezilo nanejvýš počet vstupů}, to znamená, že do výsledné intenzity pixelu se promítnou pouze intezity několika přesně definovaných okolních pixelů. Jako opačný příklad může sloužit složitější segmentační filtr \emph{rozvodí} (Watershed, \cite{Charypar}), u kterého nemůžeme předem říci, které pixely budou mít vliv na výsledek, a dokonce ani kolik jich bude. 
+    
+    \begin{define}\label{def okolí}
+      Množinu pixelů
+      \beq
+      \NN_{R}(x_{i,j}) = \Big\{ x_{k,l} \in \PP \;\Big\vert\; |k-i| \leq R \wedge |l-j| \leq R\, \, k,l \in \mathbb{Z} \Big\} 
+      \eeq
+      kde $R\in \mathbb{N}_0, \,x_{i,j} \in \PP$ nazýváme \textbf{okolím pixelu $x_{i,j}$} o poloměru $R$ a $x_{i,j}$ nazýváme \textbf{centrální pixel}. Okolí představuje čtverec pixelů $2R+1 \times 2R+1$, který můžeme přeznačit, a po řádcích uspořádat do \textbf{vektoru okolí} \rl seznamu\rr $\mathrm{L_{i,j}} = (x_1,x_2,...,x_{(2R+1)^2})$.
+    \end{define}
+    
+    Z předchozí definice je patrné, že bude problém s okraji obrázku (protože pouze centrální pixel musí ležet uvnitř obrázku). Aby nedocházelo k degeneraci okolí, dodefinujeme intenzity pixelů vně obrázku nějakým zvoleným způsobem \cite{MajerovaPhD}\note{dát obrázky?}: buď konstatní nulou, hodnotou nejbližího krajního pixelu, periodickým opakováním obrázku, nebo jeho ozrcadlením přes okraj (v rozích se zrcadlí dvakrát). Nejvhodnější způsob závisí na mnoha okolnostech -- od volby filtrů až po charakter samotných dat.
+    
+    \subsection{Maska}
+    
+    Abychom získali větší variabilitu, ohodnotíme každý pixel z okolí vahou:
+    
+    \begin{define}\label{def maska}
+      \textbf{Maskou} s poloměrem $R$ nazveme čtvercovou matici $\MM \in (\mathbb{Z}^+)^{2R+1,2R+1}$ s prvky $m_{i,j}$. Číslo
+      \beq
+      k = \sum_{i,j=1}^r m_{i,j}
+      \eeq
+      nazýváme \textbf{kapacita} masky. Masku můžeme taktéž po řádcích přeznačit a vytvořit \textbf{vektor vah} $W = (w_1,w_2,...,w_{(2R+1)^2})$.
+    \end{define}
+    
+    Binární masku (\note{?, nebo obecně nenulovou část masky?}) označujeme jako \emph{strukturní element}.
+    
 
 % MASKA:
 % co to je, váhy (opakovaný výběr), tvoří se z ní seznam jako základní prvek k zpracování
@@ -182,13 +246,19 @@
 
 \section{Filtry}\label{Filtry}
     % něco se dělá nad jedním nebo někalika seznamy a je realizovatelné pomocí FLF, je filtr
+    % omezujeme použití konstant -- ztrácí se robustnost, de facto je to přepoklad o vstupu
+    %
     \subsection{Typologie filtrů}       % (implementační hledisko)
         \subsubsection{Morfologické}
+            % zmínit binární masku jako SE
         \subsubsection{Statistické}
     \subsection{Meze citlivosti filtrů}
+    \subsection{Porovnání s lineárními filtry}
+        % úvahy o robustnosti -- nepoužívat příliš váhy
+        \subsubsection{Sítě a kompromisní filtrování}
 
 
 
 % Kvalita obrázku:
 
-viziualizovat rozdíly mezi filtry, jako "standardy" brát výsledky předchozích prací 
+% TODO: viziualizovat rozdíly mezi filtry, jako "standardy" brát výsledky předchozích prací 

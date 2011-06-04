@@ -16,6 +16,7 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{booktabs}
+%\usepackage[justification=centering]{caption}
 \ifrelease
 	\usepackage{pdfpages}
 \fi
@@ -35,7 +36,7 @@
 \setlength\topmargin{(\paperheight-\textheight-\headheight-\headsep-\footskip)/2 - 1in}
 
 %\parindent=0pt % odsazení 1. řádku odstavce
-\parskip=4pt   % mezera mezi odstavci
+%\parskip=4pt   % mezera mezi odstavci
 
 \ifrelease
 	\hypersetup{pdfborder={0 0 0}} % no borders around links
@@ -51,14 +52,29 @@
 
 
 % Vlastní příkazy:==========================================
+\newif\ifshownotes % zobraz poznámky
+\shownotestrue
 
 \newcommand{\LAs}{\L A_{sqrt}}
 \newcommand{\rl}{\textup{(}}
 \newcommand{\rr}{\textup{)\,\,}}
-\newcommand{\note}[1]{{\color{green}{#1}}}
+\ifshownotes
+    \newcommand{\note}[1]{{\color{green}{\emph{#1}}}}
+\else
+    \newcommand{\note}[1]{}
+\fi
 \newcommand{\LL}{\mathbf{L}}
 \newcommand{\sqr}{\mathrm{sqrt}}
 \newcommand{\LAsq}{$\mathrm{\L A_{sqrt}}$}
+\newcommand{\beq}{\begin{equation}}
+\newcommand{\eeq}{\end{equation}}
+\newcommand{\xx}{\mathbf{x}}
+\newcommand{\yy}{\mathbf{y}}
+\newcommand{\f}{\mathrm{f}}
+\newcommand{\g}{\mathrm{g}}
+\newcommand{\PP}{\mathcal{P}}
+\newcommand{\NN}{\mathcal{N}}
+\newcommand{\MM}{\mathcal{M}}
 
 % Dělení slov:=============================================
 %\hyphenation{t-norma}  JAK KRUCI ABY TO NEDĚLILO?
@@ -97,8 +113,13 @@
 
         \input{src/1Fuzzy/fuzzy.tex}
 
-    %implementace na CPU
-    %sem hodit algoritmy
+    \chapter{implementace na CPU}
+        % Celočíselná aritmetika
+            % Přesnost
+        % Uložení obrazových dat v paměti (okraje)
+            % (něco k formátu .hdr?)
+        
+    % algoritmy -- co patří k CPU do CPU, co ke GPU do GPU
 
     \chapter{Výpočty na GPU}
         % Vývoj GPU
