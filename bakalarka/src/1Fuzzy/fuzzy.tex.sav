@@ -98,12 +98,13 @@
     \begin{define}\label{LA}
     Residuovaný svaz $(\LL,\wedge,\vee,\otimes,\rightarrow,0,1)$ s operacemi $\otimes$ a $\rightarrow$ definovanými v souladu s \eqref{Galoisova koresp} jako
     \begin{align}
-    &x \otimes y = \max(x+y-1,0) \\
-    &x \rightarrow y = \min(1,1-x+y)
+    x \otimes y &= \max(x+y-1,0) \\
+    x \rightarrow y &= \min(1,1-x+y)
     \end{align}
-    a nosičem $\LL = [0,1]$ nazýváme \textbf{\L ukasiewiczova algebra} \textup{(\L A)}.
+    a nosičem $\LL = [0,1]$ \rl 0,1 zde můžeme brát opět jako obecný nejmenší a největší prvek, interval později ztotožníme s rozsahem intenzit pixelů v obraze\rr \note{co \ref{def obraz}? je to takhle elegantní?} nazýváme \textbf{\L ukasiewiczova algebra} \textup{(\L A)}.
     \end{define}
 
+    \note{0,1 zde představuje jen největší a nejmenší prvek -- je nutné to zmínit?}
     \note{Proč potřebujeme MV-algebru? Gougen, Godel ani Yager nejsou --- říká,že neg neg x je x, což je slušné chování}
 
     Existují i jiné t-normy (\cite{MajerovaPhD},\cite{Bělíček}), ty ovšem nemají vlastnosti mnohahodnotové logiky \cite{MajerovaPhD}\note{původnější zdroj?}, nebo jsou příliš výpočetně náročné. Poslední obohacení, které provedeme, nám konečně umožní průměrovat:
@@ -211,30 +212,56 @@ Obrazová data budeme chtít zpracovat pomocí FLF, tzn. musíme přiřadit vstu
 
     \subsection{Lokální zpracování obrazu}
     % předem definované pixely vs watershed
-    Všechny dále popsané filtry zpracovávají obraz lokálně \note{podle mě neplyne z FLF, prože to by omezilo nanejvýš počet vstupů}, to znamená, že do výsledné intenzity pixelu se promítnou pouze intezity několika přesně definovaných okolních pixelů. Jako opačný příklad může sloužit složitější segmentační filtr \emph{rozvodí} (Watershed, \cite{Charypar}), u kterého nemůžeme předem říci, které pixely budou mít vliv na výsledek, a dokonce ani kolik jich bude. 
-    
+    Všechny dále popsané filtry zpracovávají obraz lokálně \note{podle mě neplyne z FLF, prože to by omezilo nanejvýš počet vstupů}, to znamená, že do výsledné intenzity pixelu se promítnou pouze intezity několika přesně definovaných okolních pixelů. Jako opačný příklad může sloužit složitější segmentační filtr \emph{rozvodí} (Watershed, \cite{Charypar}), u kterého nemůžeme předem říci, které pixely budou mít vliv na výsledek, a dokonce ani kolik jich bude.
+
     \begin{define}\label{def okolí}
       Množinu pixelů
       \beq
-      \NN_{R}(x_{i,j}) = \{x_{k,l} \mid |k-i| \leq R \wedge |l-j| \leq R\, \, k,l \in \mathbb{Z}\}
+      \NN_{R}(x_{i,j}) = \Big\{ x_{k,l} \in \PP \;\Big\vert\; |k-i| \leq R \wedge |l-j| \leq R\, \, k,l \in \mathbb{Z} \Big\}
       \eeq
-      kde $R\in \mathbb{N}_0, \,x_{i,j} \in \PP$ nazýváme \textbf{okolím pixelu $x_{i,j}$} o poloměru $R$ a $x_{i,j}$ nazýváme \textbf{centrální pixel}. Okolí představuje čtverec pixelů $2R+1 \times 2R+1$, který můžeme po řádcích uspořádat do vektoru \rl seznamu\rr \mathrm{L}.
+      kde $R\in \mathbb{N}_0, \,x_{i,j} \in \PP$ nazýváme \textbf{okolím pixelu $x_{i,j}$} o poloměru $R$ a $x_{i,j}$ nazýváme \textbf{centrální pixel}. Okolí představuje čtverec pixelů $2R+1 \times 2R+1$, který můžeme přeznačit, a po řádcích uspořádat do \textbf{vektoru okolí} $\Nb = (x_1,x_2,...,x_{(2R+1)^2})$.
     \end{define}
-    
+
     Z předchozí definice je patrné, že bude problém s okraji obrázku (protože pouze centrální pixel musí ležet uvnitř obrázku). Aby nedocházelo k degeneraci okolí, dodefinujeme intenzity pixelů vně obrázku nějakým zvoleným způsobem \cite{MajerovaPhD}\note{dát obrázky?}: buď konstatní nulou, hodnotou nejbližího krajního pixelu, periodickým opakováním obrázku, nebo jeho ozrcadlením přes okraj (v rozích se zrcadlí dvakrát). Nejvhodnější způsob závisí na mnoha okolnostech -- od volby filtrů až po charakter samotných dat.
-    
+
     \subsection{Maska}
-    
+
     Abychom získali větší variabilitu, ohodnotíme každý pixel z okolí vahou:
-    
+
     \begin{define}\label{def maska}
-      \textbf{Maskou} s poloměrem $R$ nazveme čtvercovou matici $\MM \in (\mathbb{Z}^+)^{2R+1,2R+1}$ s prvky $m_{i,j}$. Číslo
+      \textbf{Maskou} s poloměrem $R$ nazveme čtvercovou matici $\MM_R \in (\mathbb{Z}^+)^{2R+1,2R+1}$ s prvky $m_{i,j}$. Číslo
       \beq
-      k = \sum_{i,j} m_{i,j}
+      k = \sum_{i,j=1}^r m_{i,j}
       \eeq
-      nazýváme \textbf{kapacita} masky. Masku můžeme navíc po řádcích přeznačit pomocí $\omega_k$ a vytvořit vektor
+      nazýváme \textbf{kapacita} masky. Masku můžeme taktéž po řádcích přeznačit a vytvořit \textbf{vektor vah} $\mathrm{W} = (w_1,w_2,...,w_{(2R+1)^2})$.
     \end{define}
-    
+
+    Binární masku (\note{?, nebo obecně nenulovou část masky?}) v matematické morfologii (viz sekce \ref{Typologie}) označujeme také jako \emph{strukturní element}. Ve většině aplikací se setkáme pouze s relativně malým $R$ (řekněme $R \leq 3$, \cite{MajerovaPhD}), protože s rostoucím poloměrem masky jednak velmi rychle roste náročnost zpracování (minimálně $O(n^2)$, potažmo $O(n^3)$ ve 3D krát náročnost filtru) a druhak u nízkofrekvnčních filtrů je efektivnější zmenšit celý obraz a použít menší masku (zvláště, pokud je granularita šumu větší než 1 pixel). U vysokofrekvenčních filtrů nemá větší maska smysl vůbec, neboť tím dochází k nežádoucímu rozmazání.
+
+    \subsection{Seznam}\note{přesunout do filtrů?}
+
+    Nyní můžeme získat \emph{vážený seznam vstupních hodnot} pro zpracování filtrem jednoduchým přiložením středu masky ($m_{R+1,R+1}$) na centrální pixel okolí $\NN_{R}(x_{i,j})$:
+
+    \begin{define}\label{def vážený seznam}
+    Buď $\MM_R$ maska s kapacitou $k$ a poloměrem $R$, $\mathrm{W}$ její vektor vah a $\Nb$ vektor okolí. Pak k-prvkový seznam
+    \beq
+    \Lw = (\underbrace{x_1,...,x_1}_{w_1},\underbrace{x_2,...,x_2}_{w_2},...,\underbrace{x_{(2R+1)^2},...,x_{(2R+1)^2}}_{w_{(2R+1)^2}})
+    \eeq
+    kde $x_m \in \Nb$, $w_m \in \mathrm{W}$, nazvame \textbf{váženým seznamem} hodnot z okolí $\NN_{R}(x_{i,j})$.
+    \end{define}
+
+    Pro některé filtry se používá ještě takzvaný \emph{Walshův seznam}:
+
+    \begin{define}\label{def Walshův seznam}
+    Seznam o $k+1 \choose 2$ prvcích
+    \beq
+    \WL = \Big( \frac{x_m + x_n}{2} \Big\vert x_m,x_n \in \Lw, \,m,n \in \widehat{k} \Big)
+    \eeq
+    tedy obsahující aritmetické průměry všech dvojic z $\Lw$ a samotný seznam $\Lw$ nazveme \textbf{Walshův seznam}
+    \end{define}
+
+    Všechny prvky $\WL$ jsou triviálně FLF.
+
 
 % MASKA:
 % co to je, váhy (opakovaný výběr), tvoří se z ní seznam jako základní prvek k zpracování
@@ -244,11 +271,65 @@ Obrazová data budeme chtít zpracovat pomocí FLF, tzn. musíme přiřadit vstu
 \section{Filtry}\label{Filtry}
     % něco se dělá nad jedním nebo někalika seznamy a je realizovatelné pomocí FLF, je filtr
     % omezujeme použití konstant -- ztrácí se robustnost, de facto je to přepoklad o vstupu
-    \subsection{Typologie filtrů}       % (implementační hledisko)
+
+    Nyní už máme dostatečné prostředky k tomu, abychom popsali postup filtrace obrazu:
+    \begin{define}\label{def filtr}
+      \textbf{Filtrací} zdrojového obrazu $\PP_1$ na výsledný obraz $\PP_2$ stejné velikosti pomocí filtru $\varphi \in \mathrm{FLF}$ a $n$ masek $\MM_{R}^{(1)},\MM_{R}^{(2)},...,\MM_{R}^{(n)}$ rozumíme následující postup:
+      \begin{enumerate}
+      \item z okolí zdrojového pixelu $x_{i,j}^{(\PP_1)}$ vytvoříme pomocí masek $\MM_{R}^{(r)}$ vážené seznamy hodnot $\Lw^{(r)} \,\, \forall r \in \widehat n$
+      \item pokud to filtr vyžaduje, vytvoříme z $\Lw^{(r)}$ Walshovy listy pro požadovaná $r$
+      \item příslušné seznamy použijeme jako vstup pro $\varphi$
+      \item výsledek zapíšeme do odpovídajícího cílového pixelu $x_{i,j}^{(\PP_2)}$
+      \end{enumerate}
+      \textbf{Filtrem} tedy rozumíme libovolnou funkci $\varphi \in \mathrm{FLF}, \,\varphi : \LL^s \rightarrow \LL$, kde $s$ je součet počtu prvků všech seznamů použitých na vstupu $\varphi$.
+    \end{define}
+    
+    Ve většině případů bude $n = 1$, ale mohou se vyskytnout i fitry využívající např. více asymetrických masek.
+    
+    \subsection{Typologie filtrů}\label{Typologie}       % (implementační hledisko)
+    
+    Hledisek, podle kterých by se daly filtry roztřídit je více. Jedno, souvidející se tím, jaké frekvence se výsledném obraze zachovají, jsme již zmínili. Vzhledem k tomu, že se dále v práci chceme věnovat hlavně implementaci filtrů, zmíníme ještě jedno rozdělení, které určuje, jak filtr zachází se vstupními daty -- totiž rozdělení na \emph{morfologické} a \emph{statistické} filtry.
+    
         \subsubsection{Morfologické}
+        Jak název napovídá, do této kategorie patří filtry snažící se nějak postihnout či zvýraznit charakter tvarů v obraze. Základ tvoří dva \emph{morfologické operátory} \emph{eroze} a \emph{dilatace}:
+        
+        \begin{define}\label{de eroze dilatace}
+          Buď $\xx$ seznam délky $k$ vytvořený maskou $\MM_R$. Pak filtr
+          \beq
+          \EE(\xx) = \bigwedge_{i=1}^k x_i
+          \eeq
+          nazveme \textbf{erozí} s maskou $\MM_R$ a filtr
+          \beq
+          \DD(\xx) = \bigvee_{i=1}^k x_i
+          \eeq
+          nazveme \textbf{dilatací} s maskou $\MM_R$.
+        \end{define}
+        
+        Filtry jsou komplementární, proto popíšeme pouze erozi: původ jejího názvu je nejvíce patrný při aplikaci na binární (černo-bílý) obraz, kde způsobuje zmenšení bílých oblastí, odstranění bílých detailů (světlé části šumu typu \emph{sůl a pepř}) a rozšíření tmavých \bq trhlin\eq. Na obraze v odstínech šedi dochází obecně ke ztmavnutí, které se nejvíce projeví na ostrých hranách, jinak je efekt srovnatelný s černo-bílým protějškem.
+        
+        Z povahy operací je zřejmé, že váhy větší než 1 se neprojeví a stačí uvažovat binární masku (\emph{strukturní element}). To je obecná vlastnost i dalších morfologických filtrů, které nejsou postavené přímo na erozi a dilataci, protože jejich výsledky mají vždy charakter maxima nebo minima z několika hodnot.\note{Tvar masky zde má podle mě větší vliv, než u statisktických filtrů (?)}
+        
+        Další oblíbené morfologické operátory vzniknou právě kombinací těchto dvou:
+        
+        \begin{define}\label{de eroze dilatace}
+          Buď $\xx$ seznam délky $k$ vytvořený maskou $\MM_R$. Pak filtr
+          \beq
+          \mathrm{O}(\xx) = \DD(\EE(\xx))
+          \eeq
+          nazveme \textbf{otevřením} a filtr
+          \beq
+          \mathrm{C}(\xx) = \EE(\DD(\xx))
+          \eeq
+          nazveme \textbf{uzavřením}, přičemž u obou filtrů jsou eroze a dilatace prováděny se stejnou maskou $\MM_R$.
+        \end{define}
+        
+        
+            % zmínit binární masku jako SE
         \subsubsection{Statistické}
     \subsection{Meze citlivosti filtrů}
     \subsection{Porovnání s lineárními filtry}
+        % úvahy o robustnosti -- nepoužívat příliš váhy
+        \subsubsection{Sítě a kompromisní filtrování}
 
 
 

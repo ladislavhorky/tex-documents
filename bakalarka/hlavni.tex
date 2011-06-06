@@ -53,7 +53,7 @@
 
 % Vlastní příkazy:==========================================
 \newif\ifshownotes % zobraz poznámky
-\shownotestrue
+\shownotesfalse
 
 \newcommand{\LAs}{\L A_{sqrt}}
 \newcommand{\rl}{\textup{(}}
@@ -75,6 +75,21 @@
 \newcommand{\PP}{\mathcal{P}}
 \newcommand{\NN}{\mathcal{N}}
 \newcommand{\MM}{\mathcal{M}}
+\newcommand{\Lw}{{\mathrm{L^w}_{i,j}}}
+\newcommand{\Nb}{{\mathrm{N}_{i,j}}}
+\newcommand{\WL}{{\mathrm{WL}_{i,j}}}
+\newcommand{\EE}{\mathrm{E}}
+\newcommand{\DD}{\mathrm{D}}
+\newcommand{\OO}{\mathrm{O}}
+\newcommand{\CC}{\mathrm{C}}
+
+% Definice makra pro české uvozovky:
+\def\bq{\mbox{\kern.1ex\protect\raisebox{-1.3ex}[0pt][0pt]{''}\kern-.1ex}}
+\def\eq{\mbox{\kern-.1ex``\kern.1ex}}
+\def\ifundefined#1{\expandafter\ifx\csname#1\endcsname\relax }%
+\ifundefined{uv}%
+        \gdef\uv#1{\bq #1\eq}
+\fi
 
 % Dělení slov:=============================================
 %\hyphenation{t-norma}  JAK KRUCI ABY TO NEDĚLILO?
@@ -118,7 +133,7 @@
             % Přesnost
         % Uložení obrazových dat v paměti (okraje)
             % (něco k formátu .hdr?)
-        
+
     % algoritmy -- co patří k CPU do CPU, co ke GPU do GPU
 
     \chapter{Výpočty na GPU}
