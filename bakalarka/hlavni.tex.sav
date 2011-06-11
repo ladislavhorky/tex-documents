@@ -52,16 +52,23 @@
 
 
 % Vlastní příkazy:==========================================
-\newif\ifshownotes % zobraz poznámky
-\shownotestrue
+\newif\ifshownotes % zobraz poznámky level 1
+\shownotesfalse
+\newif\ifshownotesadd % zobraz poznámky level 2
+\shownotesaddfalse
 
 \newcommand{\LAs}{\L A_{sqrt}}
 \newcommand{\rl}{\textup{(}}
-\newcommand{\rr}{\textup{)\,\,}}
+\newcommand{\rr}{\textup{)\,}}
 \ifshownotes
     \newcommand{\note}[1]{{\color{green}{\emph{#1}}}}
 \else
     \newcommand{\note}[1]{}
+\fi
+\ifshownotesadd
+    \newcommand{\notea}[1]{{\color{green}{\emph{#1}}}}
+\else
+    \newcommand{\notea}[1]{}
 \fi
 \newcommand{\LL}{\mathbf{L}}
 \newcommand{\sqr}{\mathrm{sqrt}}
@@ -73,13 +80,20 @@
 \newcommand{\f}{\mathrm{f}}
 \newcommand{\g}{\mathrm{g}}
 \newcommand{\PP}{\mathcal{P}}
-\newcommand{\NN}{\mathcal{N}}
-\newcommand{\MM}{\mathcal{M}}
-\newcommand{\Lw}{{\mathrm{L^w}_{i,j}}}
-\newcommand{\Nb}{{\mathrm{N}_{i,j}}}
-\newcommand{\WL}{{\mathrm{WL}_{i,j}}}
+\newcommand{\QQ}{\mathcal{Q}}
+\newcommand{\NN}{\mathcal{N}_{R}(x_{i,j,k})}
+\newcommand{\MM}{\mathcal{M}_R}
+\newcommand{\Lw}{{\mathrm{L^w}_{i,j,k}}}
+\newcommand{\Nb}{{\mathrm{N}_{i,j,k}}}
+\newcommand{\WL}{{\mathrm{WL}_{i,j,k}}}
 \newcommand{\EE}{\mathrm{E}}
 \newcommand{\DD}{\mathrm{D}}
+\newcommand{\OO}{\mathrm{O}}
+\newcommand{\CC}{\mathrm{C}}
+\newcommand{\MED}{\mathrm{MED}}
+\newcommand{\BES}{\mathrm{BES}}
+\newcommand{\kk}{\textit{k}}
+\newcommand{\et}{\;\,\mathrm{et}\;\,}
 
 % Definice makra pro české uvozovky:
 \def\bq{\mbox{\kern.1ex\protect\raisebox{-1.3ex}[0pt][0pt]{''}\kern-.1ex}}
@@ -159,6 +173,7 @@
         \input{src/4Implementace/implementace.tex}
 
     \chapter{Výsledky}
+        % volba masky 
         % Testovací data
         % Testovací sestava
         % Urychlení vůči CPU
@@ -173,3 +188,6 @@
     % CITACE:
 
 \end{document} 
+
+% def k-tá statistika
+% dl, že operace LA splňují residuovaný svaz.
