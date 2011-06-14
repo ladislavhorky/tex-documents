@@ -81,25 +81,18 @@ V této kapitole popíšeme implementaci filtrů a dalších podpůrných strukt
 
     \section{Maska, strukturní element}
     
-    Správu strukturních elementů má na starosti \notea{šablonová? }třída {\tt SEManager}, samotné strukturní elementy jsou uloženy ve struktuře {\tt structEl}, kterou pro přehlednost uvádíme zde:\notea{ předělat v kódu!!!}
+    Správu strukturních elementů má na starosti \notea{šablonová? }třída {\tt SEManager}, samotné strukturní elementy jsou uloženy ve struktuře {\tt structEl}, kterou pro přehlednost uvádíme zde:
     
     \begin{Verbatim}[commandchars = \\\{\}]
 \bl{typedef struct} _structEl \{
     \bl{string} name;       // název pro pozdější vyhledání
-    \bl{unsigned} nbSize;   // kapacita masky
+    \bl{unsigned} nSize;    // počet nenulových prvků v masce
     \bl{unsigned} *nb;      // viz dále
-    \bl{unsigned} *weight;  // váhy okolních voxelů
+    \bl{float} *weight;     // váhy okolních voxelů
+    \bl{float} *origInput;  // původní neparsovaný vstup
 \} structEl;
     \end{Verbatim}
     
-    Všechny strutury se snažíme optimalizovat na rychlost. Při filtraci budeme chtít rychle a elegantně přistupovat k okolí zpracovávaného voxelu, nejlépe takto (za předpokladu, že {\tt src} ukazuje na zpracovávaný obrázek a {\tt SE} je strukturní element):
-    \begin{Verbatim}
-iTyVoxelOkoli = src[indexZpracVoxelu + SE.nb[i]];   // 0 <= i < SE.nbSize
-    \end{Verbatim}
-    
-    Atribut {\tt nb} bude tedy obsahovat rozdíly indexů centrálního voxelu a okolních voxelů -- abychom je mohli spočíst, potřebujeme znát geometrii obrázku. Po načtení prvního obrázku můžeme vytvořit instanci třídy {\tt SEManager}, která si v konstruktoru vytvoří \bq slovník\eq překládající 
-    
-    PŘEPSAT TO V KÓDU TAK, ABY nb KORESPONDOVALO S $Lw$ v teorii (je to jen malá změna), pak půjde text napsat jednodušeji.
     
 
-    \section{Implementace filtrů}
+    \section{Implementace filtrů} 

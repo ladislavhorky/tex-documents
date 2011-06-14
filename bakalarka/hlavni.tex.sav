@@ -55,7 +55,7 @@
 \newif\ifshownotes % zobraz poznámky level 1
 \shownotesfalse
 \newif\ifshownotesadd % zobraz poznámky level 2
-\shownotesaddfalse
+\shownotesaddtrue
 
 \newcommand{\LAs}{\L A_{sqrt}}
 \newcommand{\rl}{\textup{(}}
@@ -143,8 +143,14 @@
     \chapter{implementace na CPU}
         % Celočíselná aritmetika
             % Přesnost
-        % Uložení obrazových dat v paměti (okraje)
-            % (něco k formátu .hdr?)
+        % Práce s 3D obrazovými daty
+            % Načítání, ukládání (lehce k .hdr, .img)
+            % Uchování dat v paměti (řešení okrajů...)
+        % Masky, strukturní elementy
+        % Implementace filtrů
+            % Quickselect
+            
+         \input{src/7Cpu/cpu.tex}
 
     % algoritmy -- co patří k CPU do CPU, co ke GPU do GPU
 

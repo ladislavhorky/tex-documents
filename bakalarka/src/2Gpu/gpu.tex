@@ -6,12 +6,14 @@
 % Architektura GPU (NVIDIA)
     % Hierarchie paměti
     % Hierarchie paralelizace
-    
-    
+
+
+čím rychlejší chceme výpočty, tím více omezneí musíme splnit
+
 Zatím to vypadá, že klasické qsorty atd. budou mít velké overheady
 Zkusit qsort po warpech a porovnat s tím O(n2), co mám teď, ten taky zjemnit na warpy
 Obecně naplnit sdílenou paměť, něco jako pár threadů na pixel
-    
+
     -- je to porovnání s 350 na jeden krok VS porovnání s 32 v jednom z několika kroků + scan sumy
 
 BES na CPU (rozkrájený quickselect)
