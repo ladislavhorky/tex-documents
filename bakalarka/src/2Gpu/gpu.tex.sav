@@ -6,19 +6,61 @@
 % Architektura GPU (NVIDIA)
     % Hierarchie paměti
     % Hierarchie paralelizace
-    
-    
-Zatím to vypadá, že klasické qsorty atd. budou mít velké overheady
-Zkusit qsort po warpech a porovnat s tím O(n2), co mám teď, ten taky zjemnit na warpy
-Obecně naplnit sdílenou paměť, něco jako pár threadů na pixel
-    
-    -- je to porovnání s 350 na jeden krok VS porovnání s 32 v jednom z několika kroků + scan sumy
 
-BES na CPU (rozkrájený quickselect)
+
+%čím rychlejší chceme výpočty, tím více omezneí musíme splnit
+
+%Zatím to vypadá, že klasické qsorty atd. budou mít velké overheady
+%Zkusit qsort po warpech a porovnat s tím O(n2), co mám teď, ten taky zjemnit na warpy
+%Obecně naplnit sdílenou paměť, něco jako pár threadů na pixel
+
+%    -- je to porovnání s 350 na jeden krok VS porovnání s 32 v jednom z několika kroků + scan sumy
+
+%BES na CPU (rozkrájený quickselect)
+
+V této kapitole se stručně seznámíme s historií a vývojem v oboru výpočtů na GPU, rozebereme vlastnosti, přednosti a nevýhody GPU architektury v porovnání s klasickým CPU a nakonec popíšeme programovací model CUDA\footnote{Compute Unified Device Architecture} od společnosti Nvidia, který použijeme pro implementaci filtrů na GPU.
 
 \section{Vývoj GPU}
-\section{Programovací prostředí}
-    \subsection{CUDA}
+
+    kolik sem dát historie? Už to považovat za zajetý obor, nebo zmiňovat celý vývoj? -- Zhruba odstaveček na vývoj od grafického API až po CUDA
+
+    S použitím GPU pro jiné, než grafické výpočty se začalo experimentovat, jakmile přestaly být grafické karty -- hlavně díky rozvoji herního průmyslu -- pouhým jednoúčelovým zařízením a staly se z nich (alespoň částečně) programovatelné paralelní procesory. Vzhledem k tomu, že karty byly primárně ke zpracování grafiky, daly se výpočty provádět pouze pomocí grafického API například přes textury a programovatelné pixel-shadery, což značně snižovalo efektivitu zpracování díky vysoké režii API.
+
+    Zřejmě první \note{(?)} velká společnost, která se rozhodla vyjít vstříc požadavkům na konstrukci GPU jako univerzálně použitelné vysoce paralelní výpočetní jednotky byla Nvidia, když uprostřed vývoje nového čipu\note{ zjistit jakého} změnila celý jeho kocept a zavedla tzv. CUDA-jádra. V únoru 2007 pak představila první verzi vývojového nástroje CUDA (tehdy pouze pro Windows), který umožňoval efektivně využívat hardware GPU pomocí několika rozšíření jazyka C a posléze \Cpp. CUDA-jádra dokonce umí počítat nativně v dvojnásobné přesnosti; u běžných karet jsou ale tři čtvrtiny jader pro dvojitou přesnost deaktivovány (pro grafické operace nejsou třeba), a pro plný výkon ve dvojité přesnosti si musíme koupit (řádově dražší) kartu ze série TESLA, která je primárně určena pro složité výpočty. Veškerý vývojový software poskytuje Nvidia zdarma.
+
+    V současnosti existují k CUDA dvě alternativy: prostředí OpenCL\footnote{Open Compute Language}, zaštítěné sdružením Khronos Group, které se profiluje jako standard pro heterogenní paralelní programování a DirectCompute od Microsoftu stojící na balíku DirectX verze 10 a vyšší. Výhodou OpenCL je, že stejný kód lze zkompilovat jak pro CPU, tak pro GPU výrobců ATI a Nvidia\footnote{jinak se bohužel jedná o vzájemně nekompatibilní technologie}. Z principu tedy nemůže poskytovat tak pohodlný přístup, jako CUDA a výsledkem je poměrně rozsáhlý kód. Dále se tedy budeme zabývat pouze prostředím CUDA a hardwarem s ním souvisejícím.
+
+    \note{jak moc srovnávat? uvést nejnovější karty?}
+
+    \subsection{Současnost}
+
+     Hlavní trend vývoje GPU je nyní v odstraňování omezení, která musíme na kód klást, abychom dosáhli optimálního výkonu a tím pádem se i rozšiřuje množina úkolů vhodných pro zpracování na GPU. Jednotlivé výpočetní jednotky na kartách už dávno nejsou pouhými jednoduchými vektorovými procesory, ale stále více se blíží plnohodnotnému (vícejádrovému) procesoru, i když si samozřejmě svůj vektorový charakter zachovávají. Asi nejvíce je to vidět na práci s pamětí, kde u nejnovějšího čipu FERMI z dílny Nvidia přibyla vrstva chache, čímž došlo k rozvolnění přístupu do (největší) globální paměti, ale došlo i k rozdělení vektorového procesoru na dva samostatné díly.
+
 \section{Architektura GPU}
+
+    \subsection{Rozdíly CPU a GPU}
+
+        Nyní se podrobněji podíváme na specifika architektury čipů grafických karet. Hlavní otázkou je, pro jaké úlohy jsou vůbec GPU vhodné. Obrázek~\ref{cpu vs gpu} zhruba ukazuje, jak velká část čipu (DRAM ovšem není přímo na čipu) je dedikována pro určitý druh operací.
+
+        \begin{figure}[h]\label{cpu vs gpu}
+          \includegraphics[width = \textwidth]{src/2Gpu/CPUGPU.png}
+          \caption{Rozdíly využití čipu na CPU a GPU}
+        \end{figure}
+
+        Vidíme, že velkou část čipu CPU zabírá cache a kontrolní logika. Ty zajišťují několika ALU\footnote{Arithmetic Logic Unit} dostatečný přísun dat a instrukcí (např. pomocí hyper-threadingu a branch-prediction), lhostejno jak moc se program větví, nebo jak jsou data uspořádána v DRAM. Naproti tomu GPU se skládá z několika samostatně funkčních vektorových procesorů, z nichž každý má vlastní (o několik řádů) menší cache a z kontrolní logiky má naprosté minimum. Z toho plyne jednak jistá nutná disciplína při přístupu do DRAM, která je ale narozdíl od té na CPU lépe optimalizovaná na sekvenční čtení, a za druhé musíme běh programu přizpůsobit tomu, že GPU je po částech SIMD\footnote{Single Instruction Multiple Data} -- narozdíl od vícejádrového CPU, které je plnohodnotné MIMD\footnote{Multiple Instruction Multiple Data}.
+        
+        Obecně můžeme říci (protože velká část čipu GPU je dedikována pro aritmetiku), že GPU je vhodná pro aritmeticky husté výpočty, tedy výpočty mající vysoký poměr počtu aritmetických operací ku počtu přístupů do paměti.
+
     \subsection{Hierarchie paměti}
-    \subsection{Hierarchie paralelizace}
+    \subsection{Paralelizace instrukcí}
+
+\section{Programovací prostředí CUDA}
+    \subsection{Alternativy}
+        % OpenCL
+        % DirectCompute
+    \subsection{Kernel}
+    \subsection{Práce s pamětí}
+    \subsection{Instrukční tok}
+
+
+% v implementaci chceme už jen popisovat optimalizace, programming model už musí být hotový 

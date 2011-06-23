@@ -18,25 +18,6 @@
 \usepackage{booktabs}
 \usepackage[abs]{overpic}
 \setlength\unitlength{1mm}
-\usepackage{listings}
-\lstset{
-language=C++,                   % choose the language of the code
-%basicstyle=\footnotesize,       % the size of the fonts that are used for the code
-%numbers=left,                   % where to put the line-numbers
-%numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
-%stepnumber=1,                   % the step between two line-numbers. If it is 1 each line will be numbered
-%numbersep=5pt,                  % how far the line-numbers are from the code
-backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
-showspaces=false,               % show spaces adding particular underscores
-showstringspaces=false,         % underline spaces within strings
-showtabs=false,                 % show tabs within strings adding particular underscores
-%frame=false,   		        % adds a frame around the code
-tabsize=2,  		            % sets default tabsize to 2 spaces
-captionpos=b,   		        % sets the caption-position to bottom
-breaklines=true,    	        % sets automatic line breaking
-breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
-escapeinside={\%}{)}           % if you want to add a comment within your code
-}
 \usepackage{fancyvrb}
 
 %\usepackage[justification=centering]{caption}
@@ -128,6 +109,10 @@ escapeinside={\%}{)}           % if you want to add a comment within your code
 \newcommand{\image}{{\tt image}}
 \newcommand{\imageGpu}{{\tt imageGpu}}
 \newcommand{\bl}[1]{\textcolor[rgb]{0,0,1}{#1}} % prostě fancyverbatim neumí textbf
+\newcommand{\cy}[1]{\textcolor[rgb]{1,0,1}{#1}}
+\newcommand{\FERMI}{FERMI$^{\mathrm{\textsc{tm}}}$}
+\newcommand{\Vr}{\Verb[commandchars = \\\{\}]}
+
 
 % Definice makra pro české uvozovky:
 \def\bq{\mbox{\kern.1ex\protect\raisebox{-1.3ex}[0pt][0pt]{''}\kern-.1ex}}
@@ -138,7 +123,7 @@ escapeinside={\%}{)}           % if you want to add a comment within your code
 \fi
 
 % Dělení slov:=============================================
-%\hyphenation{t-norma}  JAK KRUCI ABY TO NEDĚLILO?
+\hyphenation{pře-klá-da-jí-cí}
 
 % =========================================================
 \begin{document}
@@ -172,9 +157,9 @@ escapeinside={\%}{)}           % if you want to add a comment within your code
             % Citlivost filtrů
             % Porovnání s lineárními filtry
 
-        \input{src/1Fuzzy/fuzzy.tex}
+        %\input{src/1Fuzzy/fuzzy.tex}
 
-    \chapter{implementace na CPU}
+    \chapter{Implementace na CPU}
         % Celočíselná aritmetika
             % Přesnost
         % Práce s 3D obrazovými daty
@@ -184,9 +169,7 @@ escapeinside={\%}{)}           % if you want to add a comment within your code
         % Implementace filtrů
             % Quickselect
 
-         \input{src/7Cpu/cpu.tex}
-
-    % algoritmy -- co patří k CPU do CPU, co ke GPU do GPU
+         %\input{src/7Cpu/cpu.tex}
 
     \chapter{Výpočty na GPU}\label{gpu úvod}
         % Vývoj GPU
@@ -197,12 +180,6 @@ escapeinside={\%}{)}           % if you want to add a comment within your code
             % Hierarchie paralelizace
 
         \input{src/2Gpu/gpu.tex}
-
-    \chapter{Třídící algoritmy} % možná před GPU
-        % Quickselect
-        % Zapomětlivé třídění
-
-        \input{src/3Trideni/trideni.tex}
 
     \chapter{Implementace v CUDA}
         % Kernel
@@ -232,7 +209,4 @@ escapeinside={\%}{)}           % if you want to add a comment within your code
     \input{src/8Appendix/app.tex}
 
 
-\end{document}
-
-% def k-tá statistika
-% dl, že operace LA splňují residuovaný svaz. 
+\end{document} 
