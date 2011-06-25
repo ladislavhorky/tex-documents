@@ -1,0 +1,9 @@
+% -*-coding: utf-8 -*-
+
+\section{Vliv masky na výsledek filtrace}\label{diskuse masky}
+
+    Nyní provedeme diskusi
+
+\begin{figure}[h]
+  \includegraphics[width = \textwidth]{src/5Vysledky/masky.pdf}
+\end{figure}

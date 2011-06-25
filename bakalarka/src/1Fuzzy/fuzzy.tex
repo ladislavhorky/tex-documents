@@ -352,7 +352,7 @@ Při psaní demonstračního kódu jsme se zaměřili na zpracování 3D medicí
         Jejich kombinací můžeme získat dva jednoduché vyhlazovací filtry $\OO(\CC(\PP))$ a $\CC(\OO(\PP))$. Rozdílem $\DD(\xx) \ominus \EE(\xx)$ získáme jednoduchý detektor hran (je FLF, neboť $\ominus,\DD,\EE$ jsou FLF), nazývaný také \emph{Minkovského kolása} (pro podobnost klobásy a výsledku filtrace binárního obrazu pomocí masky s velkým poloměrem). Další fuzzy hranové detektory můžeme nalézt např. v \cite{Bělíček}. U detektorů hran je dobře vidět velká citlivost morfologických filtrů na tvar strukturního elementu; jeho změnou můžem například (při zachování jeho kapacity) zařídit, že budou detekovány hrany jdoucí pouze v jednom směru, což zcela mění charakter filtru.
 
             % zmínit binární masku jako SE
-        \subsubsection{Statisticky motivované filtry}
+        \subsubsection{Statisticky motivované filtry}\label{statisticky motivované}
 
         Statistické filtry pracují nad \emph{seřazeným} seznamem $\Lw$, nebo $\WL$ a využívají různé kombinace k-té pořadové statistiky. Používají se především k odstaňování šumu. Vyšší váha pixelu v masce znamená, že se výběrem k-tého prvku do jeho hodnoty trefíme pravděpodobněji, avšak přílišné zvýhodnění pixelu ubere filtru robustnost, neboť pak hůře odfiltruje okrajové hodnoty. Asi nejznámějším filtrem této kategorie je \emph{medián}.
 
@@ -384,7 +384,7 @@ Při psaní demonstračního kódu jsme se zaměřili na zpracování 3D medicí
 
         Filtry jsou FLF, neboť \kk-tý prvek je FLF a aritmetický průměr také. Kvazi-medián průměruje vždy dva prvky, tzn. variance gaussovského šumu se snižuje na polovinu a odolnost vůči kontaminaci klesá s $q$ až k nule -- to je důvod, proč se většinou $q$ volí relativně malé. BES naproti tomu má pevnou limitní odolnost proti kontaminaci 25 \% (vše se vejde pod první, nebo nad třetí kvartil) a varianci snižuje 3krát až 4krát, opět podle toho, zda je počet prvků lichý, nebo sudý.
 
-        Dalšího snížení variance při zachování relativně vysoké odolnosti vůči kontaminaci dosáhneme použitím Walshova seznamu. Díky tomu se může počet průměrovaných vstupů až zdvojnásobit a variance tak klesne na polovinu. Toto je další důvod, proč i v této kategorii filtrů není vhodné používat jinou, než binární masku -- při vyšší váze hrozí nebezpečí, že ten samý prvek bude vybrán několikrát a průměrováním jeho samého se sebou se nesníží variance šumu. Mediánu nad Walshovým seznamem říkáme Hodges-Lehmannův medián, BES nad Walshovým seznamem značíme WBES. Diskuse snižování variance a odolnosti proti kontaminaci je provedena v sekci ???(výsledky,maska).
+        Dalšího snížení variance při zachování relativně vysoké odolnosti vůči kontaminaci dosáhneme použitím Walshova seznamu. Díky tomu se může počet průměrovaných vstupů až zdvojnásobit a variance tak klesne na polovinu. Toto je další důvod, proč i v této kategorii filtrů není vhodné používat jinou, než binární masku -- při vyšší váze hrozí nebezpečí, že ten samý prvek bude vybrán několikrát a průměrováním jeho samého se sebou se nesníží variance šumu. Mediánu nad Walshovým seznamem říkáme Hodges-Lehmannův medián, BES nad Walshovým seznamem značíme WBES. Diskuse snižování variance a odolnosti proti kontaminaci je provedena v sekci \ref{diskuse masky}.
 
     \subsection{Sítě a kompromisní filtrování}
 

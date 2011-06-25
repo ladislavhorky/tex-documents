@@ -15,6 +15,7 @@
 \usepackage{epsfig}
 \usepackage{graphicx}
 \usepackage{color}
+\usepackage{multirow}
 \usepackage{booktabs}
 \usepackage[abs]{overpic}
 \setlength\unitlength{1mm}
@@ -57,7 +58,7 @@
 
 % Vlastní příkazy:==========================================
 \newif\ifshownotes % zobraz poznámky level 1
-\shownotesfalse
+\shownotestrue
 \newif\ifshownotesadd % zobraz poznámky level 2
 \shownotesaddtrue
 
@@ -97,6 +98,7 @@
 \newcommand{\MED}{\mathrm{MED}}
 \newcommand{\BES}{\mathrm{BES}}
 \newcommand{\kk}{\textit{k}}
+\newcommand{\ccc}{\textit{c}}
 \newcommand{\et}{\;\,\mathrm{et}\;\,}
 \newcommand{\Cpp}{C\raisebox{0.15ex}[0ex][0ex]{++}}
 
@@ -157,7 +159,7 @@
             % Citlivost filtrů
             % Porovnání s lineárními filtry
 
-        %\input{src/1Fuzzy/fuzzy.tex}
+        \input{src/1Fuzzy/fuzzy.tex}
 
     \chapter{Implementace na CPU}
         % Celočíselná aritmetika
@@ -169,7 +171,7 @@
         % Implementace filtrů
             % Quickselect
 
-         %\input{src/7Cpu/cpu.tex}
+         \input{src/7Cpu/cpu.tex}
 
     \chapter{Výpočty na GPU}\label{gpu úvod}
         % Vývoj GPU
@@ -194,6 +196,8 @@
         % Testovací data
         % Testovací sestava
         % Urychlení vůči CPU
+
+        \input{src/5Vysledky/vysledky.tex}
 
     \addcontentsline{toc}{chapter}{Závěr}
     \chapter*{Závěr}
