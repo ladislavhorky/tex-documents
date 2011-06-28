@@ -1,16 +1,5 @@
 \backcite {MajerovaPhD}{{3}{(document)}{Doc-Start}}
-\backcite {MajerovaPhD}{{4}{1.1}{section.1.1}}
-\backcite {MajerovaPhD}{{6}{1.1.1}{theo.2}}
-\backcite {B\IeC {\v e}l\IeC {\'\i }\IeC {\v c}ek}{{6}{1.1.1}{theo.2}}
-\backcite {MajerovaPhD}{{6}{1.1.1}{theo.2}}
-\backcite {MajerovaPhD}{{8}{1.2}{equation.1.2.13}}
-\backcite {Charypar}{{8}{1.3.1}{subsection.1.3.1}}
-\backcite {MajerovaPhD}{{9}{1.3.1}{equation.1.3.14}}
-\backcite {MajerovaPhD}{{9}{1.3.2}{equation.1.3.15}}
-\backcite {B\IeC {\v e}l\IeC {\'\i }\IeC {\v c}ek}{{11}{1.4.1}{equation.1.4.22}}
-\backcite {Compromise denoise}{{12}{1.4.2}{subsection.1.4.2}}
-\backcite {Minmax denoise}{{12}{1.4.2}{subsection.1.4.2}}
-\backcite {Analyze 7.5}{{15}{2.2.2}{subsection.2.2.2}}
-\backcite {Numerical Recipes}{{19}{2.4.1}{section*.11}}
-\backcite {Fermi}{{23}{3.2.1}{figure.3.1}}
-\backcite {CUDA programming g.}{{24}{3.3.2}{subsection.3.3.2}}
+\backcite {Analyze 7.5}{{7}{2.2.2}{subsection.2.2.2}}
+\backcite {Numerical Recipes}{{11}{2.4.1}{section*.9}}
+\backcite {Fermi}{{15}{3.2.1}{figure.3.1}}
+\backcite {CUDA programming g.}{{16}{3.3.2}{subsection.3.3.2}}

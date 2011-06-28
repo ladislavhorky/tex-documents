@@ -163,7 +163,7 @@ ENDFOR3D
         \paragraph{Statisticky motivované filtry} jsou implementačně nejzajímavější, neboť je při nich třeba z pole hodnot vybrat obecně několikrát \kk-tý prvek. Implementovány jsou čtyři základní filtry: {\tt Median}, {\tt WMedian}, {\tt BES} a {\tt WBES}. Jejich jádrem na CPU jsou dvě funkce {\tt MedianFindOpt} a {\tt UniBESFind}, které operují buď nad polem vytvořeným z obrazových dat podle {\tt wList}, nebo nad příslušným Walshovým seznamem\footnote{seznam je zde pouze součást názvu, samozřejmě je implementován jako pole} vytvořeným z tohoto pole.
 
         Funkce {\tt MedianFindOpt(base,length)} částečně setřídí pole {\tt base} o délce {\tt length} tak, že se na indexu {\tt length/2} bude nacházet medián (případně na indexech {\tt (length/2)} a {\tt (length/2)-1} prvky potřebné ke konstrukci mediánu pro {\tt length} sudé).
-        
+
         \begin{Verbatim}[commandchars = \\\{\}]
 \bl{bool} MedianFindOptSimple(\bl{imDataType} *base, \bl{unsigned} initBaseLength)\{
     \bl{static int} first, last;
@@ -215,9 +215,9 @@ ENDFOR3D
     \}
 \}
         \end{Verbatim}
-        
+
         DÁT DO KÓDU -- TOTO JE UPRAVENÁ NOVÁ VERZE FINDMEDIANOPT
-        
+
         Funkce je volána při zpracování každého voxelu, proto jsou proměnné alokovány staticky, tudíž se nedealokují po opuštění funkce a šetří čas při správě paměti. K nalezení požadovaných prvků je použit algoritmus \emph{Quickselect} založený a \emph{Quicksort}u, který je i s optimalizacemi popsán v \cite{Numerical Recipes}. V základní verzi algoritmus pracuje následovně:
         \begin{enumerate}
           \item V poli vybereme pivota (obyčejně nejlevější prvek) {\tt p}
@@ -227,17 +227,17 @@ ENDFOR3D
           \item Pokračujeme dokud se ukazatele nepřekříží, na toto místo vložíme {\tt p}
           \item Stejný postup aplikujeme na levé, nebo pravé podpole (pivot je již na svém místě), podle toho, jesti pivot skončil pod, nebo nad mediánem (obecně \kk-tým prvkem)
         \end{enumerate}
-        
-        Časově nejnáročnější je vnitřní smyčka algoritmu, tu můžeme urychlit odebráním kontrol, zda jsem s ukazatelem nevyjeli mimo pole, což se může stát, pokud by byl pivot nejmenší, nebo největší v prohledávaném úseku. To vyřešíme tak, že pivota zvolíme jako medián tří prvků, z nichž největší umístíme nakonec prohledávaného úseku a nejmenší na začátek -- tím pádem nám indexy nikdy z pole neutečou. Cenou za toto urychlení je, že musíme měnit i prvky stejné jako pivot, protože nemůžeme zaručit, že medián budeme dělat z tří různých prvků (indexy by pak zase mohly utéct). I tak je však však zrychlení vůči verzi s kontrolou mezí více než dvojnásobné. 
-        
+
+        Časově nejnáročnější je vnitřní smyčka algoritmu, tu můžeme urychlit odebráním kontrol, zda jsme s ukazatelem nevyjeli mimo pole, což se může stát, pokud by byl pivot nejmenším, nebo největším prvkem v prohledávaném úseku. To vyřešíme tak, že pivota zvolíme jako medián tří prvků, z nichž největší umístíme nakonec prohledávaného úseku a nejmenší na začátek -- tím pádem nám indexy nikdy z pole neutečou. Cenou za toto urychlení je, že musíme měnit i prvky stejné jako pivot, protože nemůžeme zaručit, že medián budeme dělat z tří \emph{různě velkých} prvků (indexy by pak zase mohly utéct). I tak je však však zrychlení vůči verzi s kontrolou mezí více než dvojnásobné.
+
         Poslední optimalizací je použití alternativního třídícího algoritmu (v našem případě Insertion sort), když je tříděný úsek příliš krátký, protože tam je Quickselect neefektivní. Vzhledem k tomu, že potřebujeme správně umístěné pouze dva prvky, setřídíme Insertion sortem pouze nekratší možnou část pole (buď zprava, nebo zleva).
-        
+
         Funkce {\tt UniBESFind(base,length)} je prakticky stejná, jen ještě správně umístí první a třetí kvartil: Nejprve najde medián (nebo potřebné dva prvky) a přitom si zapamatuje pivoty (už jsou správně umístěné), které jsou nejblíže příslušnému kvartilu. Ten pak hledá už jen mezi nimi (nebo mezi pivotem a koncem pole). K tomu používá funkce {\tt FindKth(base,first,last,k)} ... KOUKNOUT DO KóDU
-        
-        
-        
-        
-        
+
+
+
+
+
 
 
 

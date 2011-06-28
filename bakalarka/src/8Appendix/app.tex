@@ -2,12 +2,12 @@
 
 \chapter{Struktura kódu}\label{struktura kódu}
 
+    Pro lepší pochopení souvislostí mezi třídami popisovanými v kapitole~\ref{cpu impl} uvádíme na následující straně UML diagram kompletní hierarchie tříd vytvořený aplikací Visual Paradigm. Diagram obsahuje kromě dříve popisovaných tříd (modré) i další neimplementované třídy (šedé), které dohromady tvoří kostru jednoduché aplikace pro testování filtrů optimalizované ve fázi návrhu pro rychlé spouštění těchto filtrů bez zbytečné režie. Aplikace by umožnila načítání konfiguračních dat ze souboru, případné zobrazení výsledku pomocí jednoduchého grafického API. Toto budiž odpověď na otázku, jaká byla motivace zvolit právě tuto strukturu.
+    
+    V současném stavu jsou třídy {\tt Filter}, {\tt SEManager} a {\tt ImageManager} používány rovnou přímo ve funkci {\tt main} a pro nové nastavení fitrů je třeba kód znovu zkompilovat.
+    
 \newpage
 \begin{overpic}[width = \textheight, angle = 90]
     {src/8Appendix/bla.pdf}
     \put(5,4){\includegraphics{src/8Appendix/whitestrip.png}}
 \end{overpic}
-
-    blabla
-    
-\chapter{Něco}
