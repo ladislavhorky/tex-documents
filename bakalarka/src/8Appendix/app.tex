@@ -3,11 +3,45 @@
 \chapter{Struktura kódu}\label{struktura kódu}
 
     Pro lepší pochopení souvislostí mezi třídami popisovanými v kapitole~\ref{cpu impl} uvádíme na následující straně UML diagram kompletní hierarchie tříd vytvořený aplikací Visual Paradigm. Diagram obsahuje kromě dříve popisovaných tříd (modré) i další neimplementované třídy (šedé), které dohromady tvoří kostru jednoduché aplikace pro testování filtrů optimalizované ve fázi návrhu pro rychlé spouštění těchto filtrů bez zbytečné režie. Aplikace by umožnila načítání konfiguračních dat ze souboru, případné zobrazení výsledku pomocí jednoduchého grafického API. Toto budiž odpověď na otázku, jaká byla motivace zvolit právě tuto strukturu.
-    
+
     V současném stavu jsou třídy {\tt Filter}, {\tt SEManager} a {\tt ImageManager} používány rovnou přímo ve funkci {\tt main} a pro nové nastavení fitrů je třeba kód znovu zkompilovat.
     
+    \section{Práce s 3D daty}
+    
+        \subsection{Uspořádání v operační paměti}
+
+        Kvůli rychlejší alokaci, kopírování a přesunu na (z) GPU jsou 3D data v paměti serializována do jednorozměrného pole podobně jako 3D maska do vektoru vah. Rozsah (0-255) je v paměti reprezentován klasicky jako {\tt unsigned char}, rozsah (0-65535) je však reprezentován 32-bitovým typem {\tt unsigned int}, jako pokusná optimalizace na rychlost\note{ nedat to opravdu jako 16-bit?}. Okraje obrazu (viz sekce~\ref{lokální zprac}) jsou dodefinovány nulou, šířka okrajů je neměnná a musí být známa v době alokace. Vzorová data obsahují scan mozku, který má tmavé okraje, takže nulové okraje jsou přirozené, navíc při filtraci nedochází k jejich zneplatnění a nemusí být obnovovány.
+
+        \subsection{Formát souborů}
+
+        3D data jsou načítána ze souboru ve formátu \Analyze, jehož specifikaci lze nalézt např. na webu \cite{Analyze 7.5}. Jedná se o dnes už zastaralý dvousouborový formát, vhodný pouze pro demonstrační účely\notea{ok?}. Soubor fname.hdr obsahuje hlavičku (rozměry, použitý datový typ, orientace...) a soubor fname.img obsahuje samotná obrazová data uspořádaná podle pokynů v hlavičce. Výstupním formátem klasické nekomprimované bmp v odstínech šedi, kde jsou 3D data uložena po řezech v předem definovaném směru, aby byla možná jednoduchá vizuální kontrola výsledků.
+
+        \subsection{Životní cyklus dat}
+
+        \paragraph{Načtení} dat ze souboru má na starosti metoda {\tt Load3D(fname,frameSize=-1)}, která nejprve přečte hlavičku a podle ní inicializuje (statické) členy \Imageinfo. Poté připraví příslušně velké pole datového typu \imDataType  včetně okrajů širokých {\tt frameSize} a do něj (s ohledem na okraje) uloží obrazová data přepočtená na žádaný datový typ. Je možné načíst libovolné množství vstupních souborů, inicializace geometrie však proběhne pouze podle prvního z nich, pro ostatní už se jen ověří, zda jsou rozměrově stejné a pokud ne, načítání selže. Jelikož velikost okrajů je neměnná, je nutné při načtení prvního 3D obrázku zadat {\tt frameSize} podle poleměru největší používané masky. Tato hodnota se také uloží do \Imageinfo  a není ji třeba pro další načítání zadávat. Pole s jednotlivými obrázky jsou postupně ukládána do vektoru \image  a pokud je nastavena proměnná {\tt CudaInfo::useCuda}, jsou taktéž odeslána na GPU pod příslušné složky vektoru \imageGpu.
+
+        \paragraph{Filtrace}Pokud při ní chceme data uložit do nového obrázku, musíme použít funkci {\tt PrepareBlankImage(where,idx=-1)}, která podle parametru {\tt where} alokuje na konci příslušného vektoru (\image, nebo \imageGpu) pole příslušné velikosti a do druhého vektoru uloží pouze {\tt NULL} -- kvůli šetření pamětí (hlavně na GPU), a aby měly oba vektory stejně složek, jinak by se obrázky na CPU a GPU mohly zkřížit. Pokud chceme pouze přesunout obrázek z (na) GPU a na druhém zařízení ještě není alokované místo např. v důsledku dříve popsané oprerace, zavoláme tutéž funkci s požadovaným {\tt where} a {\tt idx} podle toho, pro jaký obrázek chceme paměť doalokovat.
+
+        \paragraph{Ukládání} do bmp obstarává metoda {\tt SaveBmp(idx,fname,slicingDir,slicesPerLine)}. Ta udělá z 3D dat uložených v {\tt image[idx]} kolmé řezy podle hodnoty {\tt slicingDir} (0,1,2), které posléze uspořádá vedle sebe a pod sebe do 2D obrázku tak, že na řádku je právě {\tt slicesPerLine} řezů. Natočení řezů bylo nastaveno tak, aby řezy mozku (vzorová data) vypadaly rozumně. Data jsou poté přepočtena (nikoliv normalizována) do rozsahu 0-255 a uložena jako jednokanálové bmp s paletou v odstínech šedi. Pokud jsou data k uložení na GPU, je třeba je napřed zkopírovat do RAM.
+
+
+    \section{Maska}
+        \subsection{Načítání a práce s maskou}
+
+        Nejprve se v konstruktoru {\tt SEManager} vytvoří překladový \bq slovník\eq~-- pole o stejné velikosti a formátu jako {\tt maska[]} obsahující rozdíly indexů do pole obrazu. K tomu je třeba znát geometrii obrázku a {\tt SEManager} tak může být konkretizován až po načtení prvního z nich.
+
+        O načtení masky ze zmíněného formátu se pak stará funkce {\tt Parse2SE(name,mask)}, kde {\tt name} je ukazatel na typ {\tt string} a {\tt mask} ukazatel na pole ve stejném formátu jako {\tt maska[]}. Funkce přidá do vektoru {\tt sE} další prvek {\tt structEl*}, vyplní jméno, vstupní pole {\tt mask} zkopíruje do stejnojmeného atributu (pro případná další přeparsování) a {\tt wList} vyplní pole slovníku tak, že rozdíl indexů k \textit{i}-tému voxelu okolí se v něm objeví právě tolikrát, kolik je váha tohoto voxelu ve vstupním poli {\tt mask}. Délka {\tt wList} je tedy rovna kapacitě masky -- narozdíl od délky {\tt structEl::mask}, která je konstatně rovna velikosti masky.
+        
+        Poznamenejme ještě, že šířku okrajů, která se promítne do hodnot ve {\tt wList}, stanovujeme podle největší použité masky. Pokud chceme použít i menší masky, musíme je v zadání \emph{doplnit nulami do formátu největší použité masky}, abychom dostali správné výsledky. Na výkon to však vliv mít nebude, neboť {\tt wList} nezahrne prvky s nulovou vahou.
+        
+    \section{Filtry}
+        \subsection{Formát funkce}
+        
+        Funkce filtrů mají jednotný formát {\tt jmého(dst,seIndex,srcA,p4)}, parametry jsou po řadě ukazatel, kam má být uložen výsledek, index použité masky a ukazatel na zdroj. Čtvrtý parametr je šablonová unie všech dalších možných parametrů -- u arimetických \bq filtrů\eq, jako sčítání a odčítání je to ukazatel na druhý obrázek, u (samostatně neimplentovaného) \kk-tého prvků by to bylo \kk ~atd. Filtry pracují cele buď na CPU, nebo GPU, tzn. všechny ukazatele na data musejí být buď z vektoru \image, nebo \imageGpu. Uvnitř všech funkcí je pak výhybka podle hodnoty {\tt CudaInfo::useCuda}, a buď je spuštěn filtr na CPU, nebo na GPU. Zda-li hodnotě {\tt CudaInfo::useCuda} odpovídají i zdrojové a cílové destinace již funkce neověřuje.
+
+
 \newpage
 \begin{overpic}[width = \textheight, angle = 90]
     {src/8Appendix/bla.pdf}
     \put(5,4){\includegraphics{src/8Appendix/whitestrip.png}}
-\end{overpic}
+\end{overpic} 

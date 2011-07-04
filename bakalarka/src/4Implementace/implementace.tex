@@ -1,10 +1,42 @@
 % -*-coding: utf-8 -*-
 
+Před tím, než se podíváme na implementaci konkrétních filtrů, probereme některé optimalizace, které budeme často používat. Mnoho z nich je velmi obecných a používají se pro jakýkoliv kód spuštěný na GPU. Naopak některé optimalizace popisované v \cite{CUDA programming g.}, \cite{CUDA best practices} v našem kódu nepoužijeme, neboť pro nás nejsou vhodné. Pro jejich podrobnější popis odkažme čtenáře na zmíněnou literaturu.
 
 Zmínit Nvidia Performance Primitives
 
-\section{Optimalizace}
+\section{Použité optimalizace}
+    
+    Dvě hlavní třídy optimalizací se týkají optimalizace práce s pamětí a toku instrukcí. V našem případě (a částečně obecně) má vyšší prioritu optimalizace paměti. Přístup do paměti totiž vykazuje narozdíl od vykonávání instrukcí vysokou latenci a náš kód do ní potřebuje přistupovat, v poměru k počtu aritmetických operací, velmi často\footnote{kód je tzv. memory-bound}.
+    
+    \subsection{Optimalizace paměti}
+    
+        Následující přehled ukazuje různé běžné paměťové operace seřazené od nejpomalejších:
+    \begin{itemize}
+      \item Přesun dat z CPU na GPU a zpět
+      \item Čtení a zápis do globální paměti GPU
+      \item Čtení z texturové cache a dalších cache
+      \item Čtení a zápis do sdílené paměti
+      \item Čtení a zápis do registrů
+    \end{itemize}
+    
+        \subsubsection{Tok dat mezi CPU a GPU}
+        
+        Pro jeho slouží celá řada typů RAM optimalizovaných pro konkrétní typy operací (CPU pouze zapíše, GPU pouze čte apod.), stále se však jedná o komunikaci přes PCI Express a ta bude proti komunikaci uvnitř karty vždy řádově pomalejší. Nejefektivnější, a pro náš případ nejproveditelnější optimalizací, je redukce těchto přenosů na nezbytné minimum, což není velký problém -- zpracovávaný obraz (obrazy) stačí na začátku přesunout na GPU, všechny mezivýsledky, které nepotřebujeme, ukládat tamtéž a pouze výsledek poslat zpět.
+        
+        \subsubsection{Globální paměť}
+        
+        Gobální paměť umožňuje čtení a zápis pouze po 128-bitových blocích. Pokud nechceme, aby došlo ke zpomalení, je nutné, aby všechny thready v jednom warpu (a tudíž vykonávající stejnou instrukci) přistupovaly do co nejmenšího počtu těchto bloků, ideálně jednoho. Tím dojde k tzv. sdruženému přístupu\footnote{Coalesced access} a všechny přístupy threadů do sousedících míst v paměti mohou být obslouženy v rámci jediného požadavku na čtení, resp. zápis. Konkrétní způsob, jak mohou thredy k paměti v bloku přistupvat je závislý na výpočetní schopnosti karty a jeho popis lze nalézt v \cite{CUDA programming g.}. 
+        
+        V našem případě sice čteme souvislé bloky paměti, avšak díky závislosti na uživateli (volba masky) a rozměrech obrázku je nemožné zajistit, aby byl čtený blok \emph{zarovnán} na 128 bitů, jak to vyžaduje výpočetní schopnost 1.x, pro niž byl kód optimalizován. Filtry však pracují s pamětí velmi extenzivně a dochází k opakovanému čtení ze stejného umístění (jeden voxel se promítne do výsledku mnoha okolních), a tak je mnohem vhodnější používat ke čtení texturovou cache nebo raději celý zpracovávaný blok dat zkopírovat do sdílené paměti, což stačí provést jednou, i když budou data použita nekolikrát.
+        
+        \subsubsection{Používání texturové cache}
+        
+        Zmíněné čtení z texturové cache je velmi výhodné z několika důvodů: umožní nám využít dalších několik Kb paměti (pro každý SM), k níž se jinak nelze dostat a zároveň zrychlí náhodné přístupy do globální paměti, u nichž nelze zaručit sdružení. Hardware totiž sám zcela mimo kontrolu uživatele odhadne, jaké části globální paměti má načíst\footnote{tzv. texture fetch} a pokud se kód při četní z cache do připravených dat netrefí, jsou načtena standardní cestou z globální paměti. Z výše zmíněných důvodů je v našem kódu je čtení z textur používáno jako standardní způsob přístupu k datů v globální paměti.
+        Zjednodušenou syntaxi kódu pro používání texturové cache můžete nalézt v příloze \ref{struktura kódu}, nebo podrobně v \cite{CUDA programming g.}.
 
+        Další cache dostupnou pro výpočetní schopnost 1.x je konstantní cache, skrze kterou se čte z konstantní paměti -- tak je vhodná pro uložení všech (konstantních) hodnot, které by zbytečně zabíraly místo v registrech, nebo by byly těžko přístupné v globální paměti. Zápis do konstantní paměti je možný pouze z CPU a v našem kódu jí používáme k uložení veškerých informací o geometrii obrazu a neměnných částí strukturních elementů. 
+    
+    \subsection{Optimalizace běhu kernelu}
 return a goto
 
 překrývání latencí i v L1
@@ -12,3 +44,5 @@ překrývání latencí i v L1
 odbourávání if-ů -- jak kdy, otestovat, operátor ?,
 slabé/silné větve (třeba po větších skupinách se if vyplatí,
 viz přiřazování maxima, minima) 
+
+\section{Implementace filtrů na GPU}
