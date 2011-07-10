@@ -45,8 +45,8 @@ V této kapitole se stručně seznámíme s historií a vývojem v oboru výpoč
           \caption{Rozdíly využití čipu na CPU a GPU}
         \end{figure}
 
-        Vidíme, že velkou část čipu CPU zabírá cache a kontrolní logika. Ty zajišťují několika ALU\footnote{Arithmetic Logic Unit} dostatečný přísun dat a instrukcí (např. pomocí hyper-threadingu a branch-prediction), lhostejno jak moc se program větví, nebo jak jsou data uspořádána v DRAM. 
-        
+        Vidíme, že velkou část čipu CPU zabírá cache a kontrolní logika. Ty zajišťují několika ALU\footnote{Arithmetic Logic Unit} dostatečný přísun dat a instrukcí (např. pomocí hyper-threadingu a branch-prediction), lhostejno jak moc se program větví, nebo jak jsou data uspořádána v DRAM.
+
         GPU se naproti tomu skládá z několika samostatně funkčních vektorových procesorů -- tzv. SM\footnote{Streaming Multiprocesor} jednotek, z nichž každá má vlastní malou cache a z kontrolní logiky má naprosté minimum. Z toho plyne jednak jistá nutná disciplína při přístupu do DRAM, která je ale narozdíl od té na CPU lépe optimalizovaná na sekvenční čtení, a za druhé musíme běh programu přizpůsobit tomu, že GPU je po částech SIMD\footnote{Single Instruction Multiple Data}, respektive SIMT\footnote{Single Instruction Multiple Thread -- název pocházející od Nvidia} -- narozdíl od vícejádrového CPU, které je plnohodnotné MIMD\footnote{Multiple Instruction Multiple Data}. Podrobný popis nejnovějšího SM z čipu \FERMI lze nalézt v \cite{Fermi}.
 
         Obecně můžeme říci (protože velká část čipu GPU je dedikována pro aritmetiku), že GPU je nejvíce vhodná pro aritmeticky intenzivní výpočty, tzn. mající vysoký poměr počtu aritmetických operací ku počtu přístupů do paměti.
@@ -72,9 +72,9 @@ V této kapitole se stručně seznámíme s historií a vývojem v oboru výpoč
     Na straně uživatele poskytuje Nvidia dvě rozhraní: nízkoúrovňové CUDA Driver API a vysokoúrovňové CUDA runtime API, v současnosti ve verzi 4.0. Driver API poskytne uživateli totální kontrolu nad kartou výměnou za složitější a delší kód -- uživatel musí zajistit inicializaci zařízení, přesun dat a funkčních parametrů pro kernel na kartu a přesun a spuštění kernelu samotného\note{ kernel musí být v extra souboru?}. Rozhraní Driver API je v C a funkčně zhruba odpovídá OpenCL. Runtime API je rozšířením C, které umožňuje kernel napsat podobně jako funkci v C a při volání jí speciální syntaxí sdělit, kolik threadů a bloků chceme spustit. O inicializaci a vše ostatní se postará runtime. Nevýhodou Runtime API je, že jeden CPU proces nemůže používat více zařízení, což se ale nové verze snaží vylepšit.
 
     Mixování obou přístupů (např. právě kvůli použití více zařízení) se nedoporučuje, ale v rozumné míře možné je -- pravidla mixování stanovila až CUDA 4.0. V našem kódu používáme výhradně Runtime API, proto se dále budeme zabývat pouze jí.
-    
+
     \subsubsection{Výpočetní schopnost}
-    
+
     Tento termín bude dále v textu často používán. Výpočetní schopnost\footnote{Compute Capability} (VS) udává fyzickou verzi čipu -- všechna CUDA-enabled zařízení před před architekturou \FERMI mají VS 1.x, čipy s touto architekturou 2.x. Různé VS se liší množsvím paměti, registrů, strukturou SM atd. Největší skok je samozřejmě mezi 1.x a 2.x. Podrobný popis rozdílů mezi VS je k dispozici v \cite[přílohy]{CUDA programming g.}. Pokud budeme dále uvádět konkrétní hodnoty, budou pro VS 1.1, pro kterou je kód primárně optimalizován. Pokud to bude důležité, bude v závorce uvedena hodnota pro VS 2.0 -- na kartách s těmito VS budou totiž i počítány experimentální výsledky.
 
     \subsection{Kernel}
@@ -93,30 +93,76 @@ V této kapitole se stručně seznámíme s historií a vývojem v oboru výpoč
     \end{Verbatim}
 
     Při volání v příkladu specikujeme, že chceme jeden thread-blok a N threadů jako vektor, vektory A, B a C musí být při volání již připraveny v paměti karty. Po spuštění dostane každý thread (potažmo thread-blok) své ID, které je v kódu přístupné skrze read-only proměnnou \Vr"\cy{threadIdx}" (potažmo \Vr"\cy{blockIdx}") a umožní tak diferenciaci threadů.
-    
+
     \subsection{Hardwarová paralelizace, multithreading}
-    
-    Zde popíšeme, co se skutečně děje při spuštění kernelu na GPU. Přitom se omezíme pouze na jeden SM, protože všechny SM na kartě pracují zcela nezávisle a jakákoliv jejich synchronizace v rámci jednoho kernelu není možná. 
-    
+
+    Zde popíšeme, co se skutečně děje při spuštění kernelu na GPU. Přitom se omezíme pouze na jeden SM, protože všechny SM na kartě pracují zcela nezávisle a jakákoliv jejich synchronizace v rámci jednoho kernelu není možná.
+
     Po spuštění kernelu se bloky rozdistribuují mezi jednotlivé SM. Kolik bloků se vejde současně na jeden SM je dáno tím, kolik registrů a sdílené paměti blok spotřebuje -- tyto hodnoty jsou pevně stanoveny při spuštění kernelu. Pokud se na SM nevejde ani jeden blok, spouštění kernelu selže. V opačném případě hardware umístí na každý SM maximální možný počet bloků, zbývající bloky budou čekat na uvolnění některého SM.
-    
+
     SM má však pouze 32 výpočetních jednotek, tzn. bloky běží současně pouze virtuálně. Důvod tohoto \bq přesycení\eq~ spočívá v \emph{zakrytí latencí} způsobených například čtením a zápisem do paměti: pokud například nějaký \emph{warp} (což je oněch 32 současně běžících threadů) čeká na načtení operandů z paměti, může mezitím jiný warp (protože má např. proměnné připravené v registrech) provádět výpočty -- i když je to třeba warp z jiného bloku. Rychlé přepnutí warpů\footnote{tzv. context switch} je umožněno tím, že thread na GPU je narozdíl od toho na CPU velmi jednoduchá struktura a multithreading na GPU je dělán hardwarově. Z toho vyplývá jisté omezení na maximální počet bloků a threadů/SM (přesná čísla lze nalézt v \cite{CUDA programming g.}). Ve většině případů ovšem dříve vyčerpáme registry, nebo sdílenou paměť, než se dostaneme k tomuto stropu.
-    
-    Pro efektivní využití výpočetních jednotek je nutné, aby pokud možno všechny thready v jednom warpu prováděly stejný kód, neboť celý warp zvládá naráz vykonávat pouze jedinou instrukci (dvě instrukce pro dva 16 threadové půlwarpy pro VS 2.x), což odpovídá filozofii SIMD. Všechna větvení kódu by tedy měla být směřována na hranice warpů, tzn. mezi 32 po sobě jdoucích threadů. V opačném případě bude warp rozdělen na příslušné části a ty budou zpracovány sériově.
+
+    Pro efektivní využití výpočetních jednotek je nutné, aby pokud možno všechny thready v jednom warpu prováděly stejný kód, neboť celý warp zvládá naráz vykonávat pouze jedinou instrukci (dvě instrukce pro dva 16threadové půlwarpy pro VS 2.x), což odpovídá filozofii SIMD. Všechna větvení kódu by tedy měla být směřována na hranice warpů, tzn. mezi 32 po sobě jdoucích threadů. V opačném případě bude warp rozdělen na části se stejnou posloupností instrukcí a ty budou zpracovány sériově.
 
     \subsection{Práce s pamětí}
-    
-    Jak jsme zmínili v úvodu kapitoly, paměťové zdroje karet jsou poměrně omezené a vhodné zacházení s pamětí je tak prvním předpokladem pro to, aby paralelizovaný algoritmus dosáhl optimálních výsledků. Vývoj jde ale v této oblasti hodně dopředu a architektura FERMI má již paměti mnohem více a lépe strukturované.
-    
-    \subsubsection{Registry}
-    
-    Jsou velmi podobné klasickým registrům na CPU až na to, že GPU obsahuje pouze 32-bitové registry a nemá žádné dedikované pro dvojitou přesnost \note{?}. Jsou zdaleka nejrychlejší pamětí dostupnou pro thread a jsou do nich ukládány všechny lokální proměnné, kromě polí. Karty s VS 1.x mají 8192 a více registrů/SM, VS 2.x má 16384 registrů/SM. V kódu není třeba je nějak značit.
-    
-    \subsubsection{Sdílená paměť}
-    
-    Jedná se o paměť dostupnou na úrovni bloku a umožňující komunikaci threadů v bloku. Jako de facto manuální (a pro VS 2.x i částečně automatická) cache je stále na čipu GPU a tudíž je poměrně rychlá. Pro optimální rychlost je rozdělena do 32 banků tak, že thready (jednoho warpu) čtoucí 32 po sobě jdoucích položek z pole v této paměti přistupují každý do jednoho banku a celé čtení je možné vyřídit jako jedinou operaci. 
-    
-    
 
+    Jak jsme zmínili v úvodu kapitoly, paměťové zdroje karet jsou poměrně omezené a vhodné zacházení s pamětí je tak prvním předpokladem pro to, aby paralelizovaný algoritmus dosáhl optimálních výsledků. Vývoj jde ale v této oblasti hodně dopředu a architektura FERMI má již paměti mnohem více a lépe strukturované.
+
+    \subsubsection{Registry}
+
+    Jsou velmi podobné klasickým registrům na CPU až na to, že GPU obsahuje pouze 32-bitové registry a nemá žádné dedikované pro dvojitou přesnost \note{?}. Jsou zdaleka nejrychlejší pamětí dostupnou pro thread a jsou do nich ukládány všechny lokální proměnné, kromě polí. Karty s VS 1.x mají 8192 a více registrů/SM, VS 2.x má 32768 registrů/SM. V kódu není třeba je nějak značit, většina lokáních proměnných (viz dále) se do nich sama uloží.
+
+    \subsubsection{Sdílená paměť}
+
+    Jedná se o paměť zabudovanou v každém SM, dostupnou na úrovni bloku a umožňující komunikaci threadů v bloku. Jako de facto manuální (a pro VS 2.x i částečně automatická) cache je stále na čipu GPU a tudíž je poměrně rychlá. Pro optimální rychlost je rozdělena do 32 banků tak, že thready (jednoho warpu) čtoucí 32 po sobě jdoucích položek z pole v této paměti přistupují každý do jednoho banku a celé čtení je možné vyřídit jako jedinou operaci.
+
+    V kódu statické pole pevné délky ve sdílené paměti deklarujeme pomocí identifikátoru \Vr"\cy{__shared__}" -- takto je definováno jedno pole pro celý blok (obyčejná proměnná bez identifikátoru by byla vytvořena pro každý thread) a všechny thready bloku do něj mají přístup. Synchronizace čtení a zápisu je ponechána na uživateli.
+
+    Pole ve sdílené paměti je možné alokovat i dynamicky z CPU: v kernelu ho deklarujeme pomocí identifikátoru \Vr"\bl{extern}":
+    \begin{Verbatim}[commandchars = \\\{\}]
+\bl{extern} \cy{__shared__} \bl{datovýtyp} jménopole[];
+    \end{Verbatim}
+    Při spouštení kernelu poté pomocí třetího parametru {\tt Ns} zadáme, kolik chceme navíc (kromě režie) alokovat bytů sdílené paměti pro blok.
+    \begin{Verbatim}[commandchars = \\\{\}]
+MyKernel<<<1,N,Ns>>>(parametry);
+    \end{Verbatim}
+    Námi deklarované pole se naváže na začátek této alokované paměti. Nevýhodou je, že při deklaraci více dynamicky alokovaných polí budou všechny začínat na začátku této paměti (jako v unii) a případné rozdělení pole musíme tedy provést ručně pomocí ukazatelů a offsetů. Dynamická alokace přímo z kernelu není (principiálně) možná. Životnost dat ve sdílené paměti je stejná jako životnost bloku.
+
+    \subsubsection{Globální paměť}
+
+    Největší paměť na GPU (jednotky GB). Protože není fyzicky umístěna na čipu, přístup do ní je velmi pomalý -- řádově stovky taktů -- nicméně je optimalizová pro sekvenční čtení a zápis z GPU. Hardware totiž umožňuje přístup pouze po 128-bitových blocích. Pokud nechceme, aby došlo ke zpomalení, je nutné, aby všechny thready v jednom warpu (a tudíž vykonávající stejnou instrukci) přistupovaly do co nejmenšího počtu těchto bloků, ideálně do jednoho. Tím dojde k tzv. \emph{sdruženému přístupu}\footnote{Coalesced access} a všechny přístupy threadů do sousedících míst v paměti mohou být obslouženy v rámci jediného požadavku. Konkrétní způsob (omezení), jak mohou thredy k paměti v bloku přistupvat je závislý na výpočetní schopnosti karty a jeho popis lze nalézt v \cite{CUDA programming g.}.
+
+    Alokace, čtení a zápis do této paměti je možný i z CPU (samozřejmě na jiné bázi), data zapsaná tímto způsobem mají pak životnost stejnou, jako aplikace.
+
+    V kódu se ukazatel do globální paměti neliší od jiných ukazatelů\footnote{K dispozici je i \bq novější\eq ~obecný typ ukazatele do globální paměti {\tt DevicePtr*}, který vyžadují nekteré fukce. Spíše jde ale o snahu nějak data na CPU a GPU formálně oddělit. Kód využívající tento typ ukazatele se nám však nepodařilo zprovoznit. Se starší verzí jsou však dobré zkušenosti.}, postup zkopírování dat na GPU je následující:
+    \begin{enumerate}
+      \item Vytvoření běžného ukazatele na požadovaný typ
+      \item Přiřazení ukazatele k alokovanému poli v globální paměti pomocí {\tt CudaMalloc(...)}
+      \item Zkopírování dat z pole v RAM na GPU pomocí {\tt CudaMemcpy(...)}
+      \item Ukazatel se předá kernelu přes obyčejný parametr
+    \end{enumerate}
+    Na CPU nelze ukazatel do globální paměti dereferncovat přímo, na GPU to však lze bez jakýchkoliv omezení.
+
+    Samotnou alokaci opět není možné provádět z GPU, pokud však využívá thread větší statické pole jako lokální proměnnou, nebo tolik proměnných, že se nevejdou do registrů\footnote{tzv. Register spilling}, uloží se přebytek v \emph{lokální paměti}. Lokální zde znamená pouze omezení životnosti dat, data jsou ve skutečnosti uložena do globální paměti -- se všemi nevýhdami, které z toho plynou. Z tohoto důvodu je dobré se použití lokální paměti jakýmkoliv způsobem vyhnout.
+
+    \subsubsection{Konstantní paměť}
+
+    Konstatntní paměť je 64 KB velká část globální paměti s vlastní cache, tudíž je celkem rychlá a vhodná pro objemné konstanty. Je přístupná z CPU pro čtení i zápis, dynamická alokace není možná ani z CPU. Z GPU lze paměť pouze číst -- proto konstatní.
+
+    V kódu se pro tuto paměť používá identifikátor \Vr"\cy{__constant__}" a proměnné s tímto identifikátorem musíme chápat spíše jen jako pojmenování místa v konstantní paměti karty. Poněkud nepříjemné je, že z tohoto důvodu musí být všechny tyto proměnné v kódu definovány jako globální a na úrovni souboru. Nesmí být tedy schovány do jakéhokoliv prostoru jmen, ani do třídy (byť jako statické), jak je zvykem ve slušném \Cpp kódu. Hodnoty do proměnných (polí) v konstantní paměti přesuneme z RAM pomocí {\tt CudaMemcpyToSymbol(...)}.
+
+    \subsubsection{Texturová cache}
+
+    Texturová paměť někdy představuje rychlejší alternativu k čtení (\emph{nikoliv zápisu}) z globální paměti. Část dat můžeme totiž prohlásit za \emph{texturu}, což znamená, že data budou každým SM částečně cacheována (pokud je textura větší než cache). Velikost cache je 6-8 KB/SM, přitom hardware sám odhaduje, která data bude chtít program načíst a ty do ní přesune\footnote{tzv. Texture fetching}. Pokud jsou požadována data, která nejsou v cache k dispozici\footnote{tzv. Cache miss (v opačném případě Cache hit)}, jsou normálním způsobem načtena z globální paměti. Používání textur je tedy výhodné, pokud bloky potřebují relativně malé a dobře definované kousky dat, které se do cache vejdou celé.
+
+    Protože se jedná o činnost hodně blízkou klasické grafice, je v kódu citelně znát odkaz grafického API. Před použitím textury musíme definovat referenci na texturu (opět globální stejně jako konstantní proměnné) a ještě na CPU ji svázat s požadovanými daty pomocí {\tt cudaBindTexture(...)}. Obě operace potřebují značné množství parametrů (potřebných při používání textur pro původní účel), jejich popis lze nalézt v~\cite{CUDA programming g.}. Číst z takto připravené textury je na GPU možné pomocí funkce {\tt texXDfetch(...)} ({\tt X} je 1,2,3).
+
+    VS 2.x již umožňuje volitelné cacheování globální paměti za použití části sdílené paměti, textury ale stále představují průchozí alternativu. Nezaberou totiž sdílenou paměť a využijí několik cenných KB paměti jinak nepoužívané.
+
+    \subsection{Možnosti synchronizace}
+
+    Synchronizace threadů je nutná pro jakoukoliv jejich kooperaci mezi sebou. CUDA umožňuje synchronizaci na úrovni bloku pomocí instrukce \Vr"\cy{__syncthreads()}", která zastaví běh threadů, dokud všechny v jednom bloku tuto instrukci nezavolají. To se hodí například při práci se sdílenou pamětí, kdy chceme zajistit, aby z ní všechny thready začaly číst až poté, co do ní budou (např. menším počtem threadů) zapsána relevantní data.
+
+    CUDA navíc poskytuje i několik speciálních instrukcí čistě pro synchronizaci přístupů do paměti (viz \cite[přílohy]{CUDA programming g.}), což je jediná možnost, jak částečně synchronizovat thready v celé aplikaci -- ovšem za cenu výrazného zpomalení (poruší se přepínání bloků na SM kvůli překrývání latencí).
 
 % v implementaci chceme už jen popisovat optimalizace, programming model už musí být hotový 

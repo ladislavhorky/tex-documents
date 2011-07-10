@@ -2,8 +2,6 @@
 
 Před tím, než se podíváme na implementaci konkrétních filtrů, probereme některé optimalizace, které budeme často používat. Mnoho z nich je velmi obecných a používají se pro jakýkoliv kód spuštěný na GPU. Naopak některé optimalizace popisované v \cite{CUDA programming g.}, \cite{CUDA best practices} v našem kódu nepoužijeme, neboť pro nás nejsou vhodné. Pro jejich podrobnější popis odkažme čtenáře na zmíněnou literaturu.
 
-Zmínit Nvidia Performance Primitives
-
 \section{Použité optimalizace}
     
     Dvě hlavní třídy optimalizací se týkají optimalizace práce s pamětí a toku instrukcí. V našem případě (a částečně obecně) má vyšší prioritu optimalizace paměti. Přístup do paměti totiž vykazuje narozdíl od vykonávání instrukcí vysokou latenci a náš kód do ní potřebuje přistupovat, v poměru k počtu aritmetických operací, velmi často\footnote{kód je tzv. memory-bound}.
@@ -23,20 +21,49 @@ Zmínit Nvidia Performance Primitives
         
         Pro jeho slouží celá řada typů RAM optimalizovaných pro konkrétní typy operací (CPU pouze zapíše, GPU pouze čte apod.), stále se však jedná o komunikaci přes PCI Express a ta bude proti komunikaci uvnitř karty vždy řádově pomalejší. Nejefektivnější, a pro náš případ nejproveditelnější optimalizací, je redukce těchto přenosů na nezbytné minimum, což není velký problém -- zpracovávaný obraz (obrazy) stačí na začátku přesunout na GPU, všechny mezivýsledky, které nepotřebujeme, ukládat tamtéž a pouze výsledek poslat zpět.
         
-        \subsubsection{Globální paměť}
+        \subsubsection{Čtení z globální paměti}\label{globální pam opt}
         
-        Gobální paměť umožňuje čtení a zápis pouze po 128-bitových blocích. Pokud nechceme, aby došlo ke zpomalení, je nutné, aby všechny thready v jednom warpu (a tudíž vykonávající stejnou instrukci) přistupovaly do co nejmenšího počtu těchto bloků, ideálně jednoho. Tím dojde k tzv. sdruženému přístupu\footnote{Coalesced access} a všechny přístupy threadů do sousedících míst v paměti mohou být obslouženy v rámci jediného požadavku na čtení, resp. zápis. Konkrétní způsob, jak mohou thredy k paměti v bloku přistupvat je závislý na výpočetní schopnosti karty a jeho popis lze nalézt v \cite{CUDA programming g.}. 
+        V našem případě sice čteme souvislé bloky paměti, avšak díky závislosti na uživatelské volbě masky a rozměrech obrázku je nemožné zajistit, aby byl čtený blok \emph{zarovnán} na 128 bitů, jak to vyžaduje VS 1.x, pro niž byl kód optimalizován. Filtry však pracují s pamětí velmi extenzivně a dochází k \emph{opakovanému čtení} ze stejného umístění (jeden voxel se promítne do výsledku mnoha okolních), na což je globální paměť zcela nevhodná. Díky malému rozsahu dat zpracovávaných jedním blokem tedy používáme ke čtení výhradně texturovou cache (1D, namapovanou na celý obraz), případně kombinovanou s kopírováním celého bloku dat do sdílené paměti.
         
-        V našem případě sice čteme souvislé bloky paměti, avšak díky závislosti na uživateli (volba masky) a rozměrech obrázku je nemožné zajistit, aby byl čtený blok \emph{zarovnán} na 128 bitů, jak to vyžaduje výpočetní schopnost 1.x, pro niž byl kód optimalizován. Filtry však pracují s pamětí velmi extenzivně a dochází k opakovanému čtení ze stejného umístění (jeden voxel se promítne do výsledku mnoha okolních), a tak je mnohem vhodnější používat ke čtení texturovou cache nebo raději celý zpracovávaný blok dat zkopírovat do sdílené paměti, což stačí provést jednou, i když budou data použita nekolikrát.
-        
-        \subsubsection{Používání texturové cache}
-        
-        Zmíněné čtení z texturové cache je velmi výhodné z několika důvodů: umožní nám využít dalších několik Kb paměti (pro každý SM), k níž se jinak nelze dostat a zároveň zrychlí náhodné přístupy do globální paměti, u nichž nelze zaručit sdružení. Hardware totiž sám zcela mimo kontrolu uživatele odhadne, jaké části globální paměti má načíst\footnote{tzv. texture fetch} a pokud se kód při četní z cache do připravených dat netrefí, jsou načtena standardní cestou z globální paměti. Z výše zmíněných důvodů je v našem kódu je čtení z textur používáno jako standardní způsob přístupu k datů v globální paměti.
-        Zjednodušenou syntaxi kódu pro používání texturové cache můžete nalézt v příloze \ref{struktura kódu}, nebo podrobně v \cite{CUDA programming g.}.
+        Zápis je bezproblémový, protože se jedná vždy jen o jednu hodnotu za thread (nebo skupinu threadů) a tudíž jsou přístupy threadů s po sobě jdoucími \Vr"\cy{threadIdx}" automaticky sdružené.
 
-        Další cache dostupnou pro výpočetní schopnost 1.x je konstantní cache, skrze kterou se čte z konstantní paměti -- tak je vhodná pro uložení všech (konstantních) hodnot, které by zbytečně zabíraly místo v registrech, nebo by byly těžko přístupné v globální paměti. Zápis do konstantní paměti je možný pouze z CPU a v našem kódu jí používáme k uložení veškerých informací o geometrii obrazu a neměnných částí strukturních elementů. 
+        \subsubsection{Konstantní paměť}
+
+        Konstantní paměť používáme k uložení všech dlouhodobě neměnných dat -- všech předpočítaných geometrických veličin a část dat masek. U masek neukládáme {\tt wList}, jelikož jeho velikost je proměnná na velké škále a definováním vysoké horní hranice bychom rychle konstatní paměť vyčerpali. {\tt wList} je ovšem na začátku každého kernelu manuálně zkopírován do sdílené paměti pomocí makra {\tt SE\_TO\_SHARED}.
+        
+        \subsubsection{Optimalizace registrů}
+        
+        Vzhledem k tomu, že algoritmy pro většinu filtrů jsou poměrně jednoduché, výsledné kernely jsou poměrně malé a na jeden SM se nám vejde velký počet bloků (nebo alespoň threadů), což je ideální, protože se dobře překryjí paměťové latence. Bloky ale bohužel nejsou paměťově tak malé, aby se uplatnilo hardwarové omezení a zvyšování jejich počtu na jednom SM tak bude střídavě narážet na fyzické omezení množsví sdílené paměti (probráno u konkrétních filtrů) a hlavně registrů\footnote{pro představu naše thready spotřebují zhruba 11-23 registrů. To pro VS 1.x (8192 registrů) odpovídá 744-356 threadů/SM, což ještě nenaráží na fyzickou hranici (768)}.
+        
+        Pro snížení počtu použitých registrů můžeme udělat několik věcí:
+        \begin{itemize}
+          \item Recyklace proměnných -- proměnné, jejichž obsah není aktuálně potřeba použít pro dočasně např. jako inkrementální proměnné v cyklech.
+          \item Řízená výměna rychlosti za menší počet využitých registrů změnou algoritmu (v optimalizaci kompilátoru by ale měla být pořád zapnutá optimalizace na rychlost).
+          \item Uložení méně potřebných dat do sdílené paměti, případně uložení konstantních maker do konstantní paměti -- zde je nutné experimentovat, \emph{celková} rychlost může i při větší hustotě bloků/SM klesnout.
+        \end{itemize}
+        
+        Pro další experimentování nám pomůže sledování obsazenosti SM pomocí CUDA Occupancy Calculator\footnote{přehledný excelový program dodávaný s CUDA SKD}, kde můžeme zjistit, na jakou z výše zmíněných hranic právě narážíme. Zde můžeme například zjistit, že na SM se již další blok nevejde a tak naopak navýšit počet registrů a zvýšit tak rychlost. Mírnou nevýhodou je, že tyto jemné optimalizace už jsou zcela závislé na konkrétní VS, protože každá má jiné množství registrů a sdílené paměti.
+        
+        Další nepříjemností, co se týče uvolňování registrů jsou systémové proměnné typu \Vr"\cy{threadIdx}" a \Vr"\cy{blockIdx}", které zřejmě\footnote{podle provedených experimentů}\note{podívat se do PTX??} v registrech zůstávají, byť je občas potřebujeme jen na začátku kernelu. Navíc se ani nemohou účastnit recyklace, protože do nich není možné zapisovat. Z tohoto důvodu je při extrémní minimalizaci počtu registrů praktické volit dimenzionalitu gridu a bloku co nejmenší (s tím je ale nutné počítat od začátku).
     
     \subsection{Optimalizace běhu kernelu}
+    
+    Následující sekce obsahuje několik ... zjištěných při experientování s kernely ---- --- menší dopad na výkon - jednotky \%, asi ne úplně obecně použitelné
+    
+        \subsubsection{Synchronizace}
+        
+        Několik poznámek k instrukci \Vr"\cy{__syncthreads()}":
+        \begin{itemize}
+          \item Rozhodně s nimi šetřit, neboť nejsou časově nejlevnější -- sice zaberou jen 8 taktů \cite{CUDA programming g.}, ale jak jsme zmiňovali, přeruší cyklus překrývání latencí, což může způsobit značné zpomalení
+          \item Pokud se program větví, všechny větve musí obsahovat \emph{stejný počet} \Vr"\cy{__syncthreads()}", protože GPU k prohlášení bloku za synchronizovaný stačí, aby každý thread dorazil k \emph{nějaké} synchronizační instrukci, tzn. nemusí to být u všech threadů ta samá. Porušení tohoto vede ve většině případů k pádu programu.
+          \item Speciálním případem předchozího je, že jeden thread zavolá \Vr"\bl{return}" a ostatní na něj při synchronizaci marně čekají (až do resetu GPU)
+        \end{itemize}
+        V našich memory-bound kernelech se tedy budeme požití \Vr"\cy{__syncthreads()}" spíše vyhýbat.
+        
+        \subsubsection{Větvení programu}
+        
+        Z předchozího je jasné, že větvení je nejlépe omezit pouze na hranice warpů, pokud už nejde zcela vynechat. Pro stavové stromy platí podobně jako na procesoru, že lepší vyšší, než širší -- zde je ale nutno hodně experimentovat, rozdíly nebývají kvůli  
+    
 return a goto
 
 překrývání latencí i v L1
