@@ -92,7 +92,7 @@ V této kapitole se stručně seznámíme s historií a vývojem v oboru výpoč
     MyVecAdd<<<1,N>>>(A,B,C);
     \end{Verbatim}
 
-    Při volání v příkladu specikujeme, že chceme jeden thread-blok a N threadů jako vektor, vektory A, B a C musí být při volání již připraveny v paměti karty. Po spuštění dostane každý thread (potažmo thread-blok) své ID, které je v kódu přístupné skrze read-only proměnnou \Vr"\cy{threadIdx}" (potažmo \Vr"\cy{blockIdx}") a umožní tak diferenciaci threadů.
+    Při volání v příkladu specikujeme, že chceme jeden thread-blok a N threadů jako vektor, vektory A, B a C musí být při volání již připraveny v paměti karty. Po spuštění dostane každý thread (potažmo thread-blok) své ID, které je v kódu přístupné skrze read-only proměnnou \Vr"\cy{threadIdx}" (potažmo \Vr"\cy{blockIdx}") a umožní tak diferenciaci threadů. V kernelu tedy píšeme kód \emph{jediného threadu}, jehož konkrétní chování se po spuštění \emph{odvíjí od přiděleného ID námi definovaným způsobem}.
 
     \subsection{Hardwarová paralelizace, multithreading}
 

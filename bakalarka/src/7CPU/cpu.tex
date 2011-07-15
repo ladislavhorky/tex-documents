@@ -17,8 +17,8 @@ V této kapitole popíšeme implementaci filtrů a nejdůležitějších podpůr
     Při implementaci jsme se omezili pouze na dva celočíselné typy {\tt unsigned char} (0-255) a {\tt unsigned short} (0-65535). Jednak proto, že vstupní data jsou často právě v rozsahu 0-255 a zadruhé, lidské oko stejně není schopné objektivně rozeznat spojitější škálu -- zvláště u jednokanálových (odstíny šedi) obrazů. Neceločíselné typy jsme úplně vynechali ze stejného důvodu, počítání s nimi je navíc podstatně pomalejší. Výběr konkrétního datového typu lze v kódu jednoduše provést pomocí parametru šablony.
 
         \subsection{Přesnost}
-        
-        Jedinou operací, která vnáší do výpočtů chybu, je celočíselné dělení\footnote{ostatní operace ovšem přenášejí chyby již vzniklé} -- násobení, sčítání a odčítání jsou přesné a jiné operace nepoužíváme. Díky požadavkům na teorii (uzavřenost vůči operacím) nikdy nebude docházet k chybám z ořezání výsledku do rozsahu datového typu, nebo jeho přetečení a můžeme tak analyzovat pouze zaokrouhlovací chyby:
+
+        Jedinou operací, která vnáší do výpočtů chybu, je celočíselné dělení\footnote{ostatní operace ovšem přenášejí chyby již vzniklé} -- násobení, sčítání a odčítání jsou přesné a jiné operace nepoužíváme. Díky požadavkům na teorii (uzavřenost vůči operacím) nikdy nebude docházet k chybám z ořezání výsledku do rozsahu datového typu, nebo jeho přetečení, a můžeme tak analyzovat pouze zaokrouhlovací chyby:
 
         Hrubý odhad chyby dělení nám dává následující nerovnost:
         \beq
@@ -62,7 +62,7 @@ V této kapitole popíšeme implementaci filtrů a nejdůležitějších podpůr
     \section{Práce s 3D obrazovými daty}
 
     O uchovávání, načítání a ukládání 3D dat se v kódu stará šablonová třída \Imageman, geometrii obrazu má na starost abstaktní třída \Imageinfo. Celkový přehled struktury kódu pracujícíh s 3D obrazem lze najít s podrobnějším popisem v příloze~\ref{struktura kódu}. Nyní nám stačí vědět, že 3D obraz je opatřen nulovými okraji (viz sekce~\ref{lokální zprac}) a v paměti uložen jako lineární pole.
-    
+
     \section{Maska, strukturní element}
 
     Správu strukturních elementů má na starosti třída {\tt SEManager}, samotné strukturní elementy jsou uloženy ve struktuře {\tt structEl}, kterou pro přehlednost uvádíme zde:
@@ -95,7 +95,7 @@ iTyVoxelOkoli = src[indexZpracVoxelu + SE.wList[i]]; // 0<= i<SE.capacity
     \end{Verbatim}
 
     Na masku se při zápisu díváme shora a zapisujeme jednotlivé vrstvy, jak je vidíme: nejlevější blok je horní vrstva, nejpravější spodní. Výhodou tohoto formátu je, že pokud bychom chtěli načítat masku ze souboru (neimplementováno), můžeme ji zapsat zcela stejně, protože při klasickém načítání po řádcích se formát nepoškodí. Maska s poloměrem $R = 2$ bude mít analogicky $5$ bloků $5\times 5$.
-    
+
     Popis načítání masek a další práce s nimi je v příloze~\ref{struktura kódu}.
 
     \section{Implementace filtrů}
@@ -141,7 +141,7 @@ ENDFOR3D
         Funkce {\tt MedianFindOpt(base,length)} částečně setřídí pole {\tt base} o délce {\tt length} tak, že se na indexu {\tt length/2} bude nacházet medián (případně na indexech {\tt (length/2)} a {\tt (length/2)-1} prvky potřebné ke konstrukci mediánu pro {\tt length} sudé).
 
         \begin{Verbatim}[commandchars = \\\{\}]
-\bl{bool} MedianFindOptSimple(\bl{imDataType} *base, \bl{unsigned} initBaseLength)\{
+\bl{bool} MedianFindOpt(\bl{imDataType} *base, \bl{unsigned} initBaseLength)\{
     \bl{static int} first, last;
     \bl{static unsigned} length = 0, rising, falling, pivot, itemsToFind, upper, lower;
     \bl{static imDataType} swap;
@@ -206,8 +206,7 @@ ENDFOR3D
 
         Poslední optimalizací je použití alternativního třídícího algoritmu (v našem případě Insertion sort), když je tříděný úsek příliš krátký, protože tam je Quickselect neefektivní. Vzhledem k tomu, že potřebujeme správně umístěné pouze dva prvky, setřídíme Insertion sortem pouze nekratší možnou část pole (buď zprava, nebo zleva).
 
-        Funkce {\tt UniBESFind(base,length)} je prakticky stejná, jen ještě správně umístí první a třetí kvartil: Nejprve najde medián (nebo potřebné dva prvky) a přitom si zapamatuje pivoty (už jsou správně umístěné), které jsou nejblíže příslušnému kvartilu. Ten pak hledá už jen mezi nimi (nebo mezi pivotem a koncem pole). K tomu používá funkce {\tt FindKth(base,first,last,k)} ... KOUKNOUT DO KóDU
-
+        Funkce {\tt UniBESFind(base,length)} je prakticky stejná jako {\tt MedianFindOpt(base,length)}, jen ještě správně umístí první a třetí kvartil: Nejprve najde medián (nebo potřebné dva prvky) a přitom si zapamatuje pivoty (už jsou správně umístěné), které jsou nejblíže příslušnému kvartilu. Ten pak hledá už jen mezi nimi (nebo mezi pivotem a koncem pole). K tomu používá funkci {\tt FindKth(base,first,last,k)}, která opět pracuje nad polem {\tt base} a hledá pomocí quickselectu \kk-tý prvek mezi indexy {\tt first} a {\tt last}. Funguje podobně jako {\tt MedianFindOpt}, používá v poslední fázi insertion sort, jen je optimalizovaná pro nalezení pouze jednoho prvku.
 
 
 
