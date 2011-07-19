@@ -10,15 +10,15 @@
             % Quickselect
 %=========================================================================
 
-V této kapitole popíšeme implementaci filtrů a dalších podpůrných struktur na CPU v \Cpp. Je jasné, že pokud chceme se strukturami pracovat stejně (a rychle) na CPU i na GPU, musíme je k tomu od začátku přizpůsobit. Dopředu je také nutné zvážit, jaká data budou budou mezi RAM a GPURAM putovat a vhodně je v paměti uspořádat\footnote{tyto aspekty podrobně rozebereme v kapitole~\ref{gpu úvod}}. Před samotným popisem kódu ještě prodiskutujeme téma přesnosti výpočtů.
+V této kapitole popíšeme implementaci filtrů a nejdůležitějších podpůrných struktur na CPU v \Cpp. Před samotným popisem kódu ještě prodiskutujeme téma přesnosti výpočtů.
 
     \section{Celočíselná aritmetika}
 
-    Při implementaci jsme se omezili pouze na dva celočíselné typy {\tt unsigned char} (0-255) a {\tt unsigned short} (0-65535). Jednak proto, že vstupní data jsou často právě v rozsahu 0-255 a zadruhé, lidské oko stejně není schopné objektivně rozeznat spojitější škálu -- zvláště u jednokanálových (odstíny šedi) obrazů. Neceločíselné typy jsme úplně vynechali ze stejného důvodu, počítání s nimi je navíc podstatně pomalejší. Výběr konkrétního datového typu lze v kódu jednoduše provést pomocí parametru šablony.
+    Při implementaci jsme se omezili pouze na dva celočíselné typy {\tt unsigned char} (0-255) a {\tt unsigned short} (0-65535). Jednak proto, že vstupní data jsou často právě v rozsahu 0-255 a zadruhé, lidské oko stejně není schopné objektivně rozeznat spojitější škálu -- zvláště u jednokanálových obrazů (pouze odstíny šedi). Neceločíselné typy jsme zcela vynechali ze stejného důvodu a počítání s nimi je navíc podstatně pomalejší. Výběr konkrétního datového typu lze v kódu jednoduše provést pomocí parametru šablony.
 
         \subsection{Přesnost}
 
-        Při výpočtech na počítači (principiálně v konečné doméně) vznikají problémy s přesnotí výpočtu. Ty jsou v zásadě dvou typů: ořezání výsledku vlivem rozsahu datového typu a zaokrouhlovací chyby. Díky požadavkům na teorii (uzavřenost vůči operacím) nebude docházet k chybám prvního typu, celočíselný obor zase zjednodušuje analýzu zaokrouhlovacích chyb, protože se nemusíme zabývat chybami vzniklými renormalizací neceločíselných typů, což je proces nad kterým máme pouze malou kontrolu. Z operací způsobujích chyby nám zbyde pouze celočíselné dělení (násobení, sčítání a odčítání jsou přesné, jiné operace nepoužíváme).
+        Jedinou operací, která vnáší do výpočtů chybu, je celočíselné dělení\footnote{ostatní operace ovšem přenášejí chyby již vzniklé} -- násobení, sčítání a odčítání jsou přesné a jiné operace nepoužíváme. Díky požadavkům na teorii (uzavřenost vůči operacím) nikdy nebude docházet k chybám z ořezání výsledku do rozsahu datového typu, nebo jeho přetečení -- tyto jsou součástí definice operací a nelze je tedy považovat za chyby. Můžeme tak analyzovat pouze zaokrouhlovací chyby:
 
         Hrubý odhad chyby dělení nám dává následující nerovnost:
         \beq
@@ -41,7 +41,7 @@ V této kapitole popíšeme implementaci filtrů a dalších podpůrných strukt
       \toprule
       Operace & Popis & Chyba\\
       \midrule
-      $\frac{m\pm\delta_1}{n} \; n \neq 0 $ & Celočíselné dělení konstantou & $\pm \Big( \frac{\delta_1}{n} + \frac{n-1}{n}\Big)$ \\
+      $\frac{m\pm\delta_1}{n} \; n \neq 0 $ & Celočíselné dělení konstantou & $\pm \Big( \frac{\delta_1}{n} + \frac{n-1}{n}\Big)$\footnote{Reálná chyba se samozřejmě normálně vydělí} \\
       $(m\pm\delta_1)+(n\pm\delta_2) $      & Sčítání                       & $\pm \,(\delta_1+\delta_2)$ \\
       $(m\pm\delta_1)-(n\pm\delta_2) $      & Odčítání                      & $\pm \,(\delta_1+\delta_2)$ \\
       $n(m\pm\delta_1) $                    & Násobení konstantou           & $\pm \,n\delta_1$ \\
@@ -53,31 +53,15 @@ V této kapitole popíšeme implementaci filtrů a dalších podpůrných strukt
     \end{center}
         \end{table}
 
-        Jako příklad uveďme chybu WBES: na vstupu je použit Walshův list (dělení dvěmi, chyba $0.5$), poté sčítání a dělení čtyřmi. Nepoužíváme rozdíl, takže celočíselný výsledek bude menší nebo rovnen skutečnému:
+        Jako příklad uveďme chybu WBES: na vstupu je použit Walshův list (dělení dvěmi, chyba $0,5$), poté sčítání a dělení čtyřmi. Nepoužíváme rozdíl, takže celočíselný výsledek bude menší nebo rovnen skutečnému:
         \beq
-        \delta = +\Big( \frac{0.5+0.5+0.5+0.5}{4} + \frac{4-1}{4} \Big) = +1.25
+        \delta = +\Big( \frac{0,5+0,5+0,5+0,5}{4} + \frac{4-1}{4} \Big) = +1,25
         \eeq
-        Pokud Walshův list uložíme do většího datového typu a průměrování provedeme až na konci (jedinné dělení osmi), můžeme chybu stlačit až na $+0.875$. Dělení (pouze to vnáší chybu) se pomocí rozšíření datového typu obecně snažíme přesouvat až nakonec výpočtu, abychom počítali co nejdéle přesně a minimalizovali tak chybu. Závěrem dodejme, že chyby v příkladu jsou absolutní -- při použití {\tt unsigned char} bude relativní chyba $\frac{+1.25}{256}$, při použití {\tt unsigned short} bude ještě 256krát menší. \notea{ chyba je malá, opakovaným filtrování by došlo k degradaci dat dříve díky rozmazání filtrem, než chybou -- vyzkoušet v příkladě (př 100x WBES char, neoptimalizovaný VS 100 WBES short optimalizovaný)}
+        Pokud Walshův list uložíme do většího datového typu a průměrování provedeme až na konci (jedinné dělení osmi), můžeme chybu stlačit až na $+0,875$. Dělení (pouze to vnáší chybu) se pomocí rozšíření datového typu obecně snažíme přesouvat až nakonec výpočtu, abychom počítali co nejdéle přesně a minimalizovali tak chybu. Závěrem dodejme, že chyby v příkladu jsou absolutní -- při použití {\tt unsigned char} bude relativní chyba $\frac{+1,25}{256}$, při použití {\tt unsigned short} bude ještě 256krát menší. \notea{ chyba je malá, opakovaným filtrování by došlo k degradaci dat dříve díky rozmazání filtrem, než chybou -- vyzkoušet v příkladě (př 100x WBES char, neoptimalizovaný VS 100 WBES short optimalizovaný)}
 
     \section{Práce s 3D obrazovými daty}
 
-    O uchovávání, načítání a ukládání 3D dat se v kódu stará šablonová třída \Imageman, geometrii obrazu má na starost abstaktní třída \Imageinfo. Celkový přehled struktury kódu s komentářem lze najít v příloze \ref{struktura kódu}.
-
-        \subsection{Uspořádání v operační paměti}
-
-        Kvůli rychlejší alokaci, kopírování a přesunu na (z) GPU jsou 3D data v paměti serializována do jednorozměrného pole podobně jako 3D maska do vektoru vah. Rozsah (0-255) je v paměti reprezentován klasicky jako {\tt unsigned char}, rozsah (0-65535) je však reprezentován 32-bitovým typem {\tt unsigned int}, jako pokusná optimalizace na rychlost\note{ nedat to opravdu jako 16-bit?}. Okraje obrazu (viz sekce~\ref{lokální zprac}) jsou dodefinovány nulou, šířka okrajů je neměnná a musí být známa v době alokace. Vzorová data obsahují scan mozku, který má tmavé okraje, takže nulové okraje jsou přirozené, navíc při filtraci nedochází k jejich zneplatnění a nemusí být obnovovány.
-
-        \subsection{Formát souborů}
-
-        3D data jsou načítána ze souboru ve formátu \Analyze, jehož specifikaci lze nalézt např. na webu \cite{Analyze 7.5}. Jedná se o dnes už zastaralý dvousouborový formát, vhodný pouze pro demonstrační účely\notea{ok?}. Soubor fname.hdr obsahuje hlavičku (rozměry, použitý datový typ, orientace...) a soubor fname.img obsahuje samotná obrazová data uspořádaná podle pokynů v hlavičce. Výstupním formátem klasické nekomprimované bmp v odstínech šedi, kde jsou 3D data uložena po řezech v předem definovaném směru, aby byla možná jednoduchá vizuální kontrola výsledků.
-
-        \subsection{Životní cyklus dat}
-
-        \paragraph{Načtení} dat ze souboru má na starosti metoda {\tt Load3D(fname,frameSize=-1)}, která nejprve přečte hlavičku a podle ní inicializuje (statické) členy \Imageinfo. Poté připraví příslušně velké pole datového typu \imDataType  včetně okrajů širokých {\tt frameSize} a do něj (s ohledem na okraje) uloží obrazová data přepočtená na žádaný datový typ. Je možné načíst libovolné množství vstupních souborů, inicializace geometrie však proběhne pouze podle prvního z nich, pro ostatní už se jen ověří, zda jsou rozměrově stejné a pokud ne, načítání selže. Jelikož velikost okrajů je neměnná, je nutné při načtení prvního 3D obrázku zadat {\tt frameSize} podle poleměru největší používané masky. Tato hodnota se také uloží do \Imageinfo  a není ji třeba pro další načítání zadávat. Pole s jednotlivými obrázky jsou postupně ukládána do vektoru \image  a pokud je nastavena proměnná {\tt CudaInfo::useCuda}, jsou taktéž odeslána na GPU pod příslušné složky vektoru \imageGpu.
-
-        \paragraph{Filtrace}Pokud při ní chceme data uložit do nového obrázku, musíme použít funkci {\tt PrepareBlankImage(where,idx=-1)}, která podle parametru {\tt where} alokuje na konci příslušného vektoru (\image, nebo \imageGpu) pole příslušné velikosti a do druhého vektoru uloží pouze {\tt NULL} -- kvůli šetření pamětí (hlavně na GPU), a aby měly oba vektory stejně složek, jinak by se obrázky na CPU a GPU mohly zkřížit. Pokud chceme pouze přesunout obrázek z (na) GPU a na druhém zařízení ještě není alokované místo např. v důsledku dříve popsané oprerace, zavoláme tutéž funkci s požadovaným {\tt where} a {\tt idx} podle toho, pro jaký obrázek chceme paměť doalokovat.
-
-        \paragraph{Ukládání} do bmp obstarává metoda {\tt SaveBmp(idx,fname,slicingDir,slicesPerLine)}. Ta udělá z 3D dat uložených v {\tt image[idx]} kolmé řezy podle hodnoty {\tt slicingDir} (0,1,2), které posléze uspořádá vedle sebe a pod sebe do 2D obrázku tak, že na řádku je právě {\tt slicesPerLine} řezů. Natočení řezů bylo nastaveno tak, aby řezy mozku (vzorová data) vypadaly rozumně. Data jsou poté přepočtena (nikoliv normalizována) do rozsahu 0-255 a uložena jako jednokanálové bmp s paletou v odstínech šedi. Pokud jsou data k uložení na GPU, je třeba je napřed zkopírovat do RAM.
+    O uchovávání, načítání a ukládání 3D dat se v kódu stará šablonová třída {\tt ImageManager} {\tt <imDataType>}, geometrii obrazu má na starost abstaktní třída \Imageinfo. Celkový přehled struktury kódu pracujícíh s 3D obrazem lze najít s podrobnějším popisem v příloze~\ref{struktura kódu}. Nyní nám stačí vědět, že 3D obraz je opatřen nulovými okraji (viz sekce~\ref{lokální zprac}) a v paměti uložen jako lineární pole.
 
     \section{Maska, strukturní element}
 
@@ -88,7 +72,7 @@ V této kapitole popíšeme implementaci filtrů a dalších podpůrných strukt
     \bl{string} name;       // název pro pozdější vyhledání
     \bl{int} *wList;        // Lw z teorie, pole o délce = capacity
     \bl{unsigned} capacity; // kapacita masky
-    \bl{unsigned} *mask;    // váhy okolních voxelů, neparsovaný vstup, viz dále
+    \bl{unsigned} *mask;    // neparsovaný vstup pro pozdější použití
 \} structEl;
     \end{Verbatim}
 
@@ -97,10 +81,10 @@ V této kapitole popíšeme implementaci filtrů a dalších podpůrných strukt
     Všechny strutury se snažíme optimalizovat na rychlost. Při filtraci budeme chtít rychle a elegantně přistupovat k okolí zpracovávaného voxelu, nejlépe takto (za předpokladu, že {\tt src} ukazuje na zpracovávaný obrázek a {\tt SE} je strukturní element):
 
     \begin{Verbatim}
-iTyVoxelOkoli = src[indexZpracVoxelu + SE.wList[i]]; // 0<= i<SE.capacity
+iTyVoxelOkoli = src[indexZpracVoxelu + SE.wList[i]]; //0 <= i < SE.capacity
     \end{Verbatim}
 
-    Atribut {\tt wList} bude tedy obsahovat rozdíly indexů centrálního voxelu a okolních voxelů. Masku chceme zadávat v co možná jennednodušším formátu, jako vhodně uspořádané jednorozměrné pole (přílkad maska $3\times 3\times3$ -- poloměr $R = 1$):
+    Atribut {\tt wList} bude tedy obsahovat rozdíly indexů centrálního voxelu a okolních voxelů. Masku chceme zadávat v co možná nejjednodušším formátu, jako vhodně uspořádané jednorozměrné pole (přílkad maska $3\times 3\times3$ -- poloměr $R = 1$):
 
     \begin{Verbatim}[commandchars = \\\{\}]
 \bl{unsigned} maska[] = \{
@@ -112,25 +96,17 @@ iTyVoxelOkoli = src[indexZpracVoxelu + SE.wList[i]]; // 0<= i<SE.capacity
 
     Na masku se při zápisu díváme shora a zapisujeme jednotlivé vrstvy, jak je vidíme: nejlevější blok je horní vrstva, nejpravější spodní. Výhodou tohoto formátu je, že pokud bychom chtěli načítat masku ze souboru (neimplementováno), můžeme ji zapsat zcela stejně, protože při klasickém načítání po řádcích se formát nepoškodí. Maska s poloměrem $R = 2$ bude mít analogicky $5$ bloků $5\times 5$.
 
-    \subsection{Načítání}
-
-     Nejprve se v konstruktoru {\tt SEManager} vytvoří překladový \bq slovník\eq~-- pole o stejné velikosti a formátu jako {\tt maska[]} obsahující rozdíly indexů do pole obrazu. K tomu je třeba znát geometrii obrázku a {\tt SEManager} tak může být konkretizován až po načtení prvního z nich.
-
-     O načtení masky ze zmíněného formátu se pak stará funkce {\tt Parse2SE(name,mask)}, kde {\tt name} je ukazatel na typ {\tt string} a {\tt mask} ukazatel na pole ve stejném formátu jako {\tt maska[]}. Funkce přidá do vektoru {\tt sE} další prvek {\tt structEl*}, vyplní jméno, vstupní pole {\tt mask} zkopíruje do stejnojmeného atributu (pro případná další přeparsování) a {\tt wList} vyplní pole slovníku tak, že rozdíl indexů k \textit{i}-tému voxelu okolí se v něm objeví právě tolikrát, kolik je váha tohoto voxelu ve vstupním poli {\tt mask}. Délka {\tt wList} je tedy rovna kapacitě masky -- narozdíl od délky {\tt structEl::mask}, která je konstatně rovna velikosti masky.
-
-     Závěrem poznamenejme, že šířku okrajů, která se promítne do hodnot ve {\tt wList}, stanovujeme podle největší použité masky. Pokud chceme použít i menší masky, musíme je v zadání \emph{doplnit nulami do formátu největší použité masky}, abychom dostali správné výsledky. Na výkon to však vliv mít nebude, neboť {\tt wList} nezahrne prvky s nulovou vahou.
+    Popis načítání masek a další práce s nimi je v příloze~\ref{struktura kódu}.
 
     \section{Implementace filtrů}
 
-    Filtry jsou obsaženy v abstraktní šablonové třídě {\tt Filter}, což je vlastně pouze kontejner na funkce s několika podpůrnými statickými proměnnými. Před voláním jakékoliv funkce je nutno tyto inicializovat pomocí {\tt Init(sem)}, které se předá ukazatel na {\tt SEManager} (musí již být konkretizovaný). Inicializace dále dopočítá geometrické konstanty použité při procházení datového pole na CPU.
-
-    Funkce filtrů mají jednotný formát {\tt jmého(dst,seIndex,srcA,p4)}, parametry jsou po řadě ukazatel, kam má být uložen výsledek, index použité masky a ukazatel na zdroj. Čtvrtý parametr je šablonová unie všech dalších možných parametrů -- u arimetických \bq filtrů\eq, jako sčítání a odčítání je to ukazatel na druhý obrázek, u (samostatně neimplentovaného) \kk-tého prvků by to bylo \kk ~atd. Filtry pracují cele buď na CPU, nebo GPU, tzn. všechny ukazatele na data musejí být buď z vektoru \image, nebo \imageGpu. Uvnitř všech funkcí je pak výhybka podle hodnoty {\tt CudaInfo::useCuda}, a buď je spuštěn filtr na CPU, nebo na GPU. Zda-li hodnotě {\tt CudaInfo::useCuda} odpovídají i zdrojové a cílové destinace již funkce neověřuje.
+    Filtry jsou obsaženy v abstraktní šablonové třídě {\tt Filter<imDataType>}, což je vlastně pouze kontejner na funkce s několika podpůrnými statickými proměnnými. Před voláním jakékoliv funkce je nutno tyto inicializovat pomocí metody {\tt Init(sem)}, které se předá ukazatel na {\tt SEManager} (musí již být konkretizovaný). Inicializace dále dopočítá geometrické konstanty použité při procházení datového pole na CPU. Popis formátu filtrů je opět v příloze~\ref{struktura kódu}.
 
     \subsection{Implementace a optimalizace na CPU}
 
-        Nyní probereme postupně jednotlvé implementační a optimal
+        Nyní probereme postupně implementační a optimalizační záležitosti vztahující se na veškerý kód na CPU a posléze implementaci jednotlivých filtrů.
 
-        \paragraph{Obecně} se snažíme optimalizovat na rychlost. Vyhýbáme se častým alokacím a dealokacím proměnných v cyklech, k čemuž \Cpp možností definovat proměnnou kdekoliv celkem svádí -- překladač sice dost těchto případů optimalizuje sám, ale není od věci mu naznačit, že pamětí může plýtvat. \note{prakticky vyzkoušet?}. Taktéž se při větvení programu vyplatí tvořit stromy podmínek spíše do hloubky, než do šířky -- snížíme průměrný počet podmínek, kterými je třeba projít. Toto se samozřejmě týká časově náročných částí kódu, v těch časově nepodstatných je naopak lepší upřednostnit přehlednost. \note{není to už moc obecné?}
+        \paragraph{Obecně} se snažíme optimalizovat na rychlost. Vyhýbáme se častým alokacím a dealokacím proměnných v cyklech a opakovaně volaných funkcích, k čemuž \Cpp možností definovat proměnnou kdekoliv celkem svádí -- překladač sice dost těchto případů optimalizuje sám, ale není od věci mu naznačit, že pamětí může plýtvat. Taktéž se při větvení programu vyplatí tvořit stromy podmínek spíše do hloubky, než do šířky -- snížíme průměrný počet podmínek, kterými je třeba projít. Toto se samozřejmě týká časově náročných částí kódu, v těch časově nepodstatných je naopak lepší upřednostnit přehlednost.
 
         \paragraph{Sekvenční zpracování 3D dat} zajišťuje pro všechny filtry parametrické makro {\tt BEGINFOR3D(pos)} a {\tt ENDFOR3D}, díky kterému projde parametr {\tt pos} pouze ty správné indexy z pole dat. Z celého pole 3D dat totiž musíme zpracovat pouze obraz, nikoliv okraje. Makro obsahuje tři for-cykly a počítá index {\tt pos}, přičemž minimalizuje počet operací k tomu potřebných. Použití ({\tt src} je opět zdroj):
 
@@ -158,37 +134,41 @@ BEGINFOR3D(idx)
 ENDFOR3D
         \end{Verbatim}
 
-        Zmíněné tři filtry jsou implementačně triviální, zajímavé bude ale bude jejich urychlení na GPU, kde se vzhledem k jednoduchosti operací dostaneme hranici hardwarových možností.
+        Zmíněné tři filtry jsou implementačně triviální, zajímavé ale bude jejich urychlení na GPU, kde se vzhledem k jednoduchosti operací dostaneme na hranici hardwarových možností.
 
-        \paragraph{Statisticky motivované filtry} jsou implementačně nejzajímavější, neboť je při nich třeba z pole hodnot vybrat obecně několikrát \kk-tý prvek. Implementovány jsou čtyři základní filtry: {\tt Median}, {\tt WMedian}, {\tt BES} a {\tt WBES}. Jejich jádrem na CPU jsou dvě funkce {\tt MedianFindOpt} a {\tt UniBESFind}, které operují buď nad polem vytvořeným z obrazových dat podle {\tt wList}, nebo nad příslušným Walshovým seznamem\footnote{seznam je zde pouze součást názvu, samozřejmě je implementován jako pole} vytvořeným z tohoto pole.
+        \paragraph{Statisticky motivované filtry} jsou implementačně nejzajímavější, neboť je při nich třeba z pole hodnot vybrat obecně několikrát \kk-tý prvek. Implementovány jsou čtyři základní filtry: {\tt Median}, {\tt WMedian}, {\tt BES} a {\tt WBES}. Jejich jádrem na CPU jsou dvě funkce {\tt MedianFindOpt} a {\tt UniBESFindOpt}, které operují buď nad polem vytvořeným z obrazových dat podle {\tt wList}, nebo nad příslušným Walshovým seznamem\footnote{seznam je zde pouze součást názvu, samozřejmě je implementován jako pole} vytvořeným z tohoto pole.
 
-        Funkce {\tt MedianFindOpt(base,length)} zajistí, že v poli {\tt base} o délce {\tt length} budou na indexech {\tt (length/2)} a {\tt (length/2)-1} prvky potřebné ke konstrukci mediánu.
-        
+        Funkce {\tt MedianFindOpt(base,length)} částečně setřídí pole {\tt base} o délce {\tt length} tak, že se na indexu {\tt length/2} bude nacházet medián (případně na indexech {\tt (length/2)} a {\tt (length/2)-1} prvky potřebné ke konstrukci mediánu pro {\tt length} sudé).
+
         \begin{Verbatim}[commandchars = \\\{\}]
-\bl{bool} MedianFindOptSimple(\bl{imDataType} *base, \bl{unsigned} initBaseLength)\{
+\bl{bool} MedianFindOpt(\bl{imDataType} *base, \bl{unsigned} initBaseLength = 0)\{
     \bl{static int} first, last;
-    \bl{static unsigned} length = 0, rising, falling, pivot, progress;
+    \bl{static unsigned} length = 0, rising, falling, pivot, itemsToFind;
+    \bl{static unsigned} upper, lower;
     \bl{static imDataType} swap;
-    \bl{if}(initBaseLength != 0)\{  //inicializace
+    \bl{if}(initBaseLength != 0)\{     //pouze inicializace
         length = initBaseLength;
+        upper = length/2;
+        lower = length/2-1+length\%2;  //lichá délka bude stejný jako upper
         \bl{return true};
     \}
-    progress = 2;
+    itemsToFind = 2-initBaseLength\%2; //2 nebo 1 prvek
     first = 0;	
     last = length-1;
 
     \bl{while}(1)\{                 //vnější smyčka
         \bl{if}(!progress) \bl{return true};
         \bl{if}(last-first < EFFICIENT_MAX)\{
-            \bl{if}(last-(length/2) < (length/2 - 1 - first))
-                InsertSortMax(base,first,last,last-(length/2)+2);	
+            \bl{if}(last-upper < lower - first)
+                InsertSortMax(base,first,last,last-lower+1);	
             \bl{else}
-                InsertSortMin(base,first,last,(length/2)-first+1);	
+                InsertSortMin(base,first,last,upper-first+1);	
             \bl{return true};
         \}
         pivot = first;
         rising = first+1;
         falling = last;
+            //medián ze tří, funguje zároveň jako zarážky
         \bl{if}(base[rising] > base[falling]) SWAP(rising,falling);
         \bl{if}(base[rising] > base[pivot]) SWAP(rising,pivot);
         \bl{if}(base[falling] < base[pivot]) SWAP(falling,pivot);
@@ -203,23 +183,36 @@ ENDFOR3D
                 SWAP(rising,falling);
             \}
         \}
-        \bl{if}(falling > (length/2)) last = falling-1;	
-        \bl{else if}(falling < (length/2-1)) first = falling+1;
+        \bl{if}(falling > upper) last = falling-1;	
+        \bl{else if}(falling < lower) first = falling+1;
         \bl{else}\{
             progress--;
-            \bl{if}(falling == length/2-1) first = falling+1;
+            \bl{if}(falling == lower) first = falling+1;
             \bl{else} last = falling-1;
         \}
     \}
 \}
         \end{Verbatim}
-        
-        Funkce je volána při zpracování každého voxelu, proto jsou proměnné alokovány staticky, a tudíž zůstávají alokovány i po opuštění funkce. K nalezení požadovaných prvků je použit algoritmus Quickselect založený a Quicksortu, který je i s optimalizacemi popsán v \cite{Numerical Recipes}. V základní verzi algoritmus pracuje následovně:
+
+        Funkce je volána při zpracování každého voxelu, proto jsou proměnné alokovány staticky, tudíž se nedealokují po opuštění funkce a šetří čas při správě paměti. K nalezení požadovaných prvků je použit algoritmus \emph{Quickselect} založený a \emph{Quicksort}u, který je i s optimalizacemi popsán v \cite{Numerical Recipes}. V základní verzi algoritmus pracuje následovně:
         \begin{enumerate}
-          \item V poli vybereme pivota (obyčejně nejlevější prvek)
-          \item Zbytek pole prochá
-          \item Stejně bereme zprava, dokud není nějaký menší než pivot
+          \item V poli vybereme pivota (obyčejně nejlevější prvek) {\tt p}
+          \item Zbytek pole procházíme ukazatelem zleva, dokud nenajdeme prvek $\ge$ {\tt p}
+          \item Stejně procházíme zprava, dokud nenajdeme prvek $\le$ {\tt p}
+          \item Tyto dva prvky prohodíme
+          \item Pokračujeme dokud se ukazatele nepřekříží, na toto místo vložíme {\tt p}
+          \item Stejný postup aplikujeme na levé, nebo pravé podpole (pivot je již na svém místě), podle toho, jesti pivot skončil pod, nebo nad mediánem (obecně \kk-tým prvkem)
         \end{enumerate}
+
+        Časově nejnáročnější je vnitřní smyčka algoritmu, tu můžeme urychlit odebráním kontrol, zda jsme s ukazatelem nevyjeli mimo pole, což se může stát, pokud by byl pivot nejmenším, nebo největším prvkem v prohledávaném úseku. To vyřešíme tak, že pivota zvolíme jako medián tří prvků, z nichž největší umístíme nakonec prohledávaného úseku a nejmenší na začátek -- tím pádem nám indexy nikdy z pole neutečou. Cenou za toto urychlení je, že musíme měnit i prvky stejné jako pivot, protože nemůžeme zaručit, že medián budeme dělat z tří \emph{různě velkých} prvků (indexy by pak zase mohly utéct). I tak je však však zrychlení vůči verzi s kontrolou mezí více než dvojnásobné.
+
+        Poslední optimalizací je použití alternativního třídícího algoritmu (v našem případě Insertion sort), když je tříděný úsek příliš krátký, protože tam je Quickselect neefektivní. Vzhledem k tomu, že potřebujeme správně umístěné pouze dva prvky, setřídíme Insertion sortem pouze nekratší možnou část pole (buď zprava, nebo zleva).
+
+        Funkce {\tt UniBESFind(base,length)} je prakticky stejná jako {\tt MedianFindOpt(base,length)}, jen ještě správně umístí první a třetí kvartil: Nejprve najde medián (nebo potřebné dva prvky) a přitom si zapamatuje pivoty (už jsou správně umístěné), které jsou nejblíže příslušnému kvartilu. Ten pak hledá už jen mezi nimi (nebo mezi pivotem a koncem pole). K tomu používá funkci {\tt FindKth(base,first,last,k)}, která opět pracuje nad polem {\tt base} a hledá pomocí quickselectu \kk-tý prvek mezi indexy {\tt first} a {\tt last}. Funguje podobně jako {\tt MedianFindOpt}, používá v poslední fázi insertion sort, jen je optimalizovaná pro nalezení pouze jednoho prvku.
+
+
+
+
 
 
 

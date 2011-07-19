@@ -46,7 +46,7 @@ Před tím, než se podíváme na implementaci konkrétních filtrů, probereme 
         Pro další experimentování nám pomůže sledování obsazenosti SM pomocí CUDA Occupancy Calculator\footnote{přehledný excelový program dodávaný s CUDA SKD}, kde můžeme zjistit, na jakou z výše zmíněných hranic právě narážíme. Zde můžeme například zjistit, že na SM se již další blok nevejde a tak naopak navýšit počet registrů a zvýšit tak rychlost. Mírnou nevýhodou je, že tyto jemné optimalizace už jsou zcela závislé na konkrétní VS, protože každá má jiné množství registrů a sdílené paměti.
 
         Další nepříjemností, co se týče uvolňování registrů jsou systémové proměnné typu \Vr"\cy{threadIdx}" a \Vr"\cy{blockIdx}", které zřejmě\footnote{podle provedených experimentů}\note{podívat se do PTX??} v registrech zůstávají, byť je občas potřebujeme jen na začátku kernelu. Navíc se ani nemohou účastnit recyklace, protože do nich není možné zapisovat. Z tohoto důvodu je při extrémní minimalizaci počtu registrů praktické volit dimenzionalitu gridu a bloku co nejmenší (s tím je ale nutné počítat od začátku).
-        
+
     \subsection{Optimalizace běhu kernelu}
 
     Následující sekce obsahuje několik dalších optimalizací, které se při experimentování s kernely osvědčily. \note{nejsou už tolik univerzální?}
@@ -68,16 +68,16 @@ Před tím, než se podíváme na implementaci konkrétních filtrů, probereme 
         \item Podmínku na začátku kódu ověřující, zda má thread ještě vůbec nějaká data ke zpracování, většinou vynechat nelze, ale také nijak nezhoršuje výkon -- dotkne se pouze několika posledních waprů v posledním bloku. Toto se týká obecně podmínek rozumně závisejících pouze na ID threadu (\Vr"\cy{threadIdx}",\Vr"\cy{blockIdx}").
         \item Cyklus obsahující několik (krátkých, nejlépe jednoinstrukčních) podmínek závislých na vnitřních proměnných naproti tomu bude generovat poloprázdné warpy po dobu běhu celého kernelu a zde je na místě pokusit se větve odstranit.
         \end{itemize}
-        Jeden z případů druhé skupiny, kde se dá větvení zcela odstranit je následující: 
+        Jeden z případů druhé skupiny, kde se dá větvení zcela odstranit je následující:
         \begin{Verbatim}[commandchars = \\\{\}]
 \bl{if}(x<y) z++;
         \end{Verbatim}
-        lze ekvivalentně přepsat na 
+        lze ekvivalentně přepsat na
         \begin{Verbatim}[commandchars = \\\{\}]
 z += (x<y);
         \end{Verbatim}
         kde se spoléháme na normu\footnote{nevíme, jeslti je \emph{zaručeno}, že ji kompilátor dodržuje, nebo zda je to machine-dependent záležitost -- nutno vyzkoušet}, že podmínka má hodnotu 1, pokud platí a 0, pokud ne. Pokud se takovéto podmínky nalézají ve vytížené části kódu, může být urychlení znatelné. Zdá se totiž, že syntaxi s \Vr"\bl{if}" kompilátor nezvládne zoptimalizovat a vytvoří dvě větve (výsledek podmínky použije pro podmíněný skok), zatímco v druhém případě mu explicitně říkáme, jak má výsledek podmínky použít. Ze stejných důvodů je výhodné používat ternární operátor \Vr"?" kdekoliv je to možné.
-        
+
         Narozdíl od CPU není vhodné tvořit z několika složitých po sobě jdoucích podmínek stromy obsahující jednodušší podmínky -- thread sice musí prozkoumat v průměru méně podmínek, aby stromem prošel, vznikne tím ovšem hodně \emph{divergentních threadů} (po cestě, kterou se vydali nejdou skoro žádné další thready z warpu) a výpočty budou serializovány (způsobí vytvoření mnoha řídce obsazených warpů). Ponecháme-li složité podmínky v kódu volně za sebou, bude sice vyhodnocení samotné podmínky trvat déle, ale bude vykonáno všemi thready naráz, protože ty se mezi podmínkymi synchronizují a tudíž bude kód ve výsledku ryhlejší.
         \begin{Verbatim}[commandchars = \\\{\}]
 // rychlejší varianta
@@ -97,11 +97,10 @@ z += (x<y);
     ...
     \}
 \}
-
         \end{Verbatim}
 
 \section{Implementace filtrů na GPU}
-    
+
     Zde se konečně dostáváme ke popisu kernelů provádějících filtraci. Nyní v bodech probereme, co máme před začátkem vlastní filtrace k dispozici a co musíme při psaní kódu zohlednit:
     \begin{itemize}
       \item Každý vstupní voxel chceme zpracovávat jedním threadem, nebo skupinou threadů (opak by šel proti filozofii paralelizace).
@@ -110,23 +109,23 @@ z += (x<y);
       \item V konstantní paměti GPU máme připravenou veškerou potřebnou geometrii a konstatní data masek.
       \item Po inicializační části threadu máme k dispozici {\tt wList} použité masky ve sdílené paměti a v proměnné {\tt thread} index zpracovávaného voxelu vypočtený z ID threadu.
     \end{itemize}
-    
+
     Konkrétní kód inicializační části kernelu zde popisovat nebudeme, neboť její průběh není přiliš podstatný a navíc je kód díky optimalizacím (rychlost, recyklace proměnných) lehce nepřehledný. Nyní již k jednotlivým filtrům.
-    
+
     \subsection{Morfologické filtry}
-    
-    Jejich implementace je opět triviální: thread v cyklu načítá z textury podle {\tt wList} hodhoty okolních voxelů a z nich vybere minimum (eroze), maximum (dilatace), nebo oboje (detekce hran). Vzhledem k velkému množství přístupu do paměti ku počtu jiných operací (jedna, nebo dvě podmínky) se u těchto filtrů nedaří zcela překrýt paměťové latence. To má za následek, že v případě detekce hran je přidání druhé podmínky (jedna hledá maximum, druhá minimum) \bq zdarma\eq, neboť jinak by SM stejně nic nedělal a čekal na paměť. Množství přístupů do paměti je ovšem u detekce hran \emph{stejné}, jako u dilatace a eroze. 
-    
+
+    Jejich implementace je opět triviální: thread v cyklu načítá z textury podle {\tt wList} hodhoty okolních voxelů a z nich vybere minimum (eroze), maximum (dilatace), nebo oboje (detekce hran). Vzhledem k velkému množství přístupu do paměti ku počtu jiných operací (jedna, nebo dvě podmínky) se u těchto filtrů nedaří zcela překrýt paměťové latence. To má za následek, že v případě detekce hran je přidání druhé podmínky (jedna hledá maximum, druhá minimum) \bq zdarma\eq, neboť jinak by SM stejně nic nedělal a čekal na paměť. Množství přístupů do paměti je ovšem u detekce hran \emph{stejné}, jako u dilatace a eroze.
+
     Díky tomu ve výsledcích uvidíme, že detekce hran má takřka dvojnásobné relativní zrychlení vůči CPU (kde se podmínka navíc samozřejmě projeví), než dilatace, nebo eroze. U nich tedy má smysl uvažovat o snížení paměťových latencí. To by se dalo udělat například zkopírováním bloku zpracovávaných dat do sdílené paměti -- pro maximální efektivitu to však vyžaduje poměrně komplikovanou přestavbu kódu, včetně přepočítání masek a jiné režie, takže jsme od dalších optimalizací nakonec upustili.
-    
+
     \subsection{Medián a BES}
-    
-    Součástí těchto filtrů je částečné třídění pole. V současnosti existuje spousta literatury popisující paralelizaci známých třídících algoritmů, jako quicksort, mergesort, bitonic sort apod., které se však zaměřují na třídění obřích polí (10$^6$ až 10$^9$ prvků) a zřídka bývají efektivní pro malá pole. V našem případě však potřebujeme paralelně setřídit \emph{mnoho malých} polí, a to nejlépe při malé spotřebě sdílené paměti, což hardwaru umožní přidělit více bloků na jedno SM a lépe tak překrýt latence. 
-    
+
+    Součástí těchto filtrů je částečné třídění pole. V současnosti existuje spousta literatury popisující paralelizaci známých třídících algoritmů, jako quicksort, mergesort, bitonic sort apod., které se však zaměřují na třídění obřích polí (10$^6$ až 10$^9$ prvků) a zřídka bývají efektivní pro malá pole. V našem případě však potřebujeme paralelně setřídit \emph{mnoho malých} polí, a to nejlépe při malé spotřebě sdílené paměti, což hardwaru umožní přidělit více bloků na jedno SM a lépe tak překrýt latence.
+
     Pro malé velikosti polí (destíky prvků) jsou obecně výhodnější \bq hloupější\eq ~\OOO($n^2$) algoritmy, protože mají oproti složitějším algoritmům velmi malou režii. Při použití na GPU na ně navíc klademe požadavek, aby jejich průběh byl pokud možno nezávislý na vstupních datech (co nejméně větví, nebo alespoň stejně dlouhé) -- to zamezí přílišnému rozdrobení warpů, jejich serializaci a následnému zpomalení. Jako vítěz se při těchto požadavcích jeví algoritmus zapomětlivého třídění \cite{Forgetful}.
-    
+
         \subsubsection{Zapomětlivé třídění}
-        
+
         Buď \textbf{medián} \kk-tým prvkem v setříděném poli (\kk-tým a (\kk-1)-ním pro sudou délku pole), princip pro nalezení mediánu je následující:
         \begin{enumerate}
           \item Z nesetříděného pole vyberme libovolně \kk$+1$ prvků (nejjednodušeji od začátku pole).
@@ -134,11 +133,11 @@ z += (x<y);
           \item Do výběru přidejme jeden prvek z nesetříděného pole, který jsme ještě nevybrali.
           \item Opakujme kroky 2. a 3. dokud nezbyde pouze jeden prvek (dva pro případ sudé velikosti pole), ten je hledaným mediánem.
         \end{enumerate}
-        
+
         Při hledání se tedy pole neustále zmenšuje, až zbyde pouze medián. Navíc nepotřebujeme současně celé pole, ale pouze něco přes polovinu, což kvůli latencím umožní zvýšit rychlost až dvakrát (!) oproti algoritmům využívajícím celé pole. Algoritmus je jistě \OOO($n^2$) -- počet hledání maxim a minim je roven součtu aritmetické řady. Také je jasné, že algoritmus se větví pouze při podmínkách nutných k nalezení maxima a minima (lépe to s comparison-based algoritmem nejde). Jako nejlepší \note{VYZKOUŠET DÁT JEN IF}
-        
+
         Nyní dokažme, že algoritmus nikdy nezahodí medián -- budiž počet prvků v poli lichý, pro sudý to platí obdobně:
-        
+
         V prvním kroku zaručujeme, že maximum i minimum budou jistě nad a pod hodnotou mediánu (ať už on sám je vybrán, nebo ne), protože vybraných prvků je \bq moc\eq ~-- nejhorší možné výběry ukazuje obrázek~\ref{obr forgetful}.
         \begin{figure}[h]\label{obr forgetful}
         \begin{center}
@@ -155,8 +154,8 @@ z += (x<y);
             \end{enumerate}
           \item Medián není mezi vybranými prvky, ale je mezi ně přidán po zahození maxima a minima: ve výběru je příliš mnoho prvků, a tak všechny nemohou být (BÚNO) menší než přidávaný medián a ten tudíž nebude v dalším kroku maximem.
         \end{enumerate}
-        
-        Zapomětlivé třídění lze jednoduše modifikovat pro \textbf{BES} filtr: Na začátku stačí vzít tolik hodnot, abychom zajistili, že i první a třetí kvartil budou \emph{uvnitř} výběru (viz obrázek~\ref{obr forget BES}), poté provádíme 
+
+        Zapomětlivé třídění lze jednoduše modifikovat pro \textbf{BES} filtr: Na začátku stačí vzít tolik hodnot, abychom zajistili, že i první a třetí kvartil budou \emph{uvnitř} výběru (viz obrázek~\ref{obr forget BES}), poté provádíme
         \begin{figure}[h]\label{obr forget BES}
         \begin{center}
           \includegraphics[width = 0.75\textwidth]{src/4Implementace/forgetfulBES.pdf}
@@ -164,13 +163,13 @@ z += (x<y);
           \end{center}
         \end{figure}
         klasické zapomětlivé třídění. Po přidání poslední nesetříděné hodnoty je jasné, že nalezené maximum a minimum odpovídá třetímu a prvnímu kvartilu. Po jejich zapamatování dále již maxima a minima pouze vyhazujeme (nemáme co přidávat), dokud nezbyde medián. Argumentace správnosti je obdobná, jako v předchozím případě.
-        
+
         Úspora paměti je v tomto případě menší -- limitně čtvrtina -- i tak má však algoritum velmi slušné výsledky.
-        
+
     \subsection{Hodges-Lehmannův medián a WBES}
-    
+
     Protože jsou tyto fitry postavené na Walshově seznamu (který na začátku paralelně vytvoříme), je tříděné pole již poměrně velké (stovky prvků). Kvůli tomu nám při přístupu jeden thread/jedno pole radidně klesne vytížení SM, protože se do sdílené paměti se vejde málo polí, a navíc se projeví pomalost \OOO($n^2$) algoritmů. Pro přístup pole/blok\footnote{což je také minimální hranice pro použití sofistikovanějších algoritmů} je zase pole příliš malé -- idelální je mnohonásobek velikosti bloku, zde máme v praxi něco kolem dvojnásobku.
-    
+
     Jako kompromis jsme zvolili přístup pole/warp (nebo obecně skupina threadů) a použití velmi naivního algoritmu: pro každý prvek pole jednoduše spočítáme, kolik hodnot je ostře menší a ostře větších než tento prvek a na jejich základě určíme, zda je daný prvek mediánem (nebo libovolným jiným \kk-tým prvkem). Algoritmus má sice zcela jasně složitost \OOO($n^2$), ale dá se pro GPU výborně optimalizovat; popišme nyní jeho implementaci (popis jednoho warpu -- 32 threadů):
     \begin{enumerate}
       \item Ze vstupních dat vytvoříme ve sdílené paměti Walshův seznam (WS).
@@ -186,16 +185,16 @@ z += (x<y);
       \caption{Schéma algoritmu pro Hodges-Lehmannův medián a WBES}
     \end{center}
     \end{figure}
-    
+
     Z definice mediánu (\ref{def median}) je zřejmé, že daný prvek je medián, právě když platí následující dvě nerovnosti ($c$ je délka pole, $p$ označuje množství napočtené při porovnávání):
     \begin{align}
       p_{(<)} < \Big\lfloor\frac{c+1}{2}\Big\rfloor \notag \\
       p_{(>)} < \Big\lceil\frac{c+1}{2}\Big\rceil \notag
     \end{align}
     Obdobné nerovnosti lze stanovi i pro jakýkoliv jiný \kk-tý prvek.
-    
-    Výhodou této imlementace je, že v časově nejnáročnější části (krok 3.) se algoritmus díky použití optimalizace~\ref{větvení} vůbec nevětví a navíc minimálně přistupuje do paměti (načtení pouze jediného prvku pro celý warp). Navíc díky zapisování nalezených hodnot může algoritmus skončit ještě dříve, než porovná prvky \emph{všechny} prvky, což mírně sníží konstantu u časové náročnosti. 
-    
+
+    Výhodou této imlementace je, že v časově nejnáročnější části (krok 3.) se algoritmus díky použití optimalizace~\ref{větvení} vůbec nevětví a navíc minimálně přistupuje do paměti (načtení pouze jediného prvku pro celý warp). Navíc díky zapisování nalezených hodnot může algoritmus skončit ještě dříve, než porovná prvky \emph{všechny} prvky, což mírně sníží konstantu u časové náročnosti.
+
     Je zřejmé, že popsaný algorimus lze použít jak pro H-L mediá, tak pro WBES -- vše záleží pouze na volbě podmínek v kroku 4.
-    
-    \note{GPU je někde mezi tím, že čas výpočtu je více závislý na celkovém počtu uzlů stavového stromu, než na délce jeho cest ?!}
+
+    \note{GPU je někde mezi tím, že čas výpočtu je více závislý na celkovém počtu uzlů stavového stromu, než na délce jeho cest ?!} 

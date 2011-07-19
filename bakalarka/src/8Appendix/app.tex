@@ -10,7 +10,7 @@
 
         \subsection{Uspořádání v operační paměti}
 
-        Kvůli rychlejší alokaci, kopírování a přesunu na (z) GPU jsou 3D data v paměti serializována do jednorozměrného pole podobně jako 3D maska do vektoru vah. Rozsah (0-255) je v paměti reprezentován klasicky jako {\tt unsigned char}, rozsah (0-65535) je však reprezentován 32-bitovým typem {\tt unsigned int}, jako pokusná optimalizace na rychlost\note{ nedat to opravdu jako 16-bit?}. Okraje obrazu (viz sekce~\ref{lokální zprac}) jsou dodefinovány nulou, šířka okrajů je neměnná a musí být známa v době alokace. Vzorová data obsahují scan mozku, který má tmavé okraje, takže nulové okraje jsou přirozené, navíc při filtraci nedochází k jejich zneplatnění a nemusí být obnovovány.
+        Kvůli rychlejší alokaci, kopírování a přesunu na (z) GPU jsou 3D data v paměti serializována do jednorozměrného pole podobně jako 3D maska do vektoru vah. Rozsah (0-255) je v paměti reprezentován klasicky jako {\tt unsigned char}, rozsah (0-65535) je však reprezentován 32-bitovým typem {\tt unsigned int}, jako pokusná optimalizace na přesnost a rychlost\note{ nedat to opravdu jako 16-bit?}. Okraje obrazu (viz sekce~\ref{lokální zprac}) jsou dodefinovány nulou, šířka okrajů je neměnná a musí být známa v době alokace. Vzorová data obsahují scan mozku, který má tmavé okraje, takže nulové okraje jsou přirozené, navíc při filtraci nedochází k jejich zneplatnění a nemusí být obnovovány.
 
         \subsection{Formát souborů}
 
@@ -40,7 +40,7 @@
         Funkce filtrů mají jednotný formát {\tt jmého(dst,seIndex,srcA,p4)}, parametry jsou po řadě ukazatel, kam má být uložen výsledek, index použité masky a ukazatel na zdroj. Čtvrtý parametr je šablonová unie všech dalších možných parametrů -- u arimetických \bq filtrů\eq, jako sčítání a odčítání je to ukazatel na druhý obrázek, u (samostatně neimplentovaného) \kk-tého prvků by to bylo \kk ~atd. Filtry pracují cele buď na CPU, nebo GPU, tzn. všechny ukazatele na data musejí být buď z vektoru \image, nebo \imageGpu. Uvnitř všech funkcí je pak výhybka podle hodnoty {\tt CudaInfo::useCuda}, a buď je spuštěn filtr na CPU, nebo na GPU. Zda-li hodnotě {\tt CudaInfo::useCuda} odpovídají i zdrojové a cílové destinace již funkce neověřuje.
 
 %    \section{Struktura Kernelu}
-%    
+%
 %        Začátek každého kernelu vypadá takto:
 %        \begin{Verbatim}[commandchars = \\\{\}]
 %\cy{__global__} \bl{void} MyKernel(imDataType* dst, int seIndex, imDataType* srcA)\{
@@ -48,7 +48,7 @@
 %    unsigned thread = 0;                // proměnná "pro všechno"
 %    SE_TO_SHARED(thread);
 %    __syncthreads();
-%    
+%
 %    thread = threadIdx.x + blockIdx.x*blockDim.x;	// výpočet ID threadu
 %    if(thread >= gpuImageSize) return;				// ukončit nepoužité thready
 %    unsigned arrIdx = MAP_THREADS_ONTO_IMAGE(thread);
@@ -59,3 +59,5 @@
     {src/8Appendix/bla.pdf}
     \put(5,4){\includegraphics{src/8Appendix/whitestrip.png}}
 \end{overpic} 
+
+\chapter{Praktické příklady filtrů}\label{příloha obrázky}
