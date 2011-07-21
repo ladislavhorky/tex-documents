@@ -36,7 +36,7 @@ V této kapitole se stručně seznámíme s historií a vývojem v oboru výpoč
 
     \subsection{Rozdíly CPU a GPU}
 
-        Nyní se podrobněji podíváme na specifika architektury čipů grafických karet. Hlavní otázkou je, pro jaké úlohy jsou vůbec GPU vhodné. Obrázek~\ref{cpu vs gpu} zhruba ukazuje, jak velká část čipu (DRAM ovšem není přímo na čipu) CPU a GPU je dedikována pro určitý druh operací.
+        Nyní se podrobněji podíváme na specifika architektury čipů grafických karet. Hlavní otázkou je, pro jaké úlohy jsou vůbec GPU vhodné. Obrázek~3.1 zhruba ukazuje, jak velká část čipu (DRAM ovšem není přímo na čipu) CPU a GPU je dedikována pro určitý druh operací.
 
         \begin{figure}[h]
           \includegraphics[width = \textwidth]{src/2Gpu/CPUGPU.png}
@@ -124,34 +124,34 @@ V této kapitole se stručně seznámíme s historií a vývojem v oboru výpoč
     \begin{Verbatim}[commandchars = \\\{\}]
 MyKernel<<<1,N,Ns>>>(parametry);
     \end{Verbatim}
-    Námi deklarované pole se naváže na začátek této alokované paměti. Nevýhodou je, že při deklaraci více dynamicky alokovaných polí budou všechny začínat na začátku této paměti (jako v unii) a případné rozdělení pole musíme tedy provést ručně pomocí ukazatelů a offsetů. Dynamická alokace přímo z kernelu není (principiálně) možná. Životnost dat ve sdílené paměti je stejná jako životnost bloku.
+    Námi deklarované pole se naváže na začátek této alokované paměti. Nevýhodou je, že při deklaraci více dynamicky alokovaných polí budou všechny začínat na začátku této paměti (jako v unii) a případné rozdělení pole musíme tedy provést ručně pomocí ukazatelů a offsetů. Dynamická alokace přímo z threadu není principiálně možná. Životnost dat ve sdílené paměti je stejná jako životnost bloku.
 
     \subsubsection{Globální paměť}
 
-    Největší paměť na GPU (jednotky GB). Protože není fyzicky umístěna na čipu, přístup do ní je velmi pomalý -- řádově stovky taktů -- nicméně je optimalizová pro sekvenční čtení a zápis z GPU. Hardware totiž umožňuje přístup pouze po 128-bitových blocích. Pokud nechceme, aby došlo ke zpomalení, je nutné, aby všechny thready v jednom warpu (a tudíž vykonávající stejnou instrukci) přistupovaly do co nejmenšího počtu těchto bloků, ideálně do jednoho. Tím dojde k tzv. \emph{sdruženému přístupu}\footnote{Coalesced access} a všechny přístupy threadů do sousedících míst v paměti mohou být obslouženy v rámci jediného požadavku. Konkrétní způsob (omezení), jak mohou thredy k paměti v bloku přistupvat je závislý na výpočetní schopnosti karty a jeho popis lze nalézt v \cite{CUDA programming g.}.
+    Největší paměť na GPU (jednotky GB). Protože není fyzicky umístěna na čipu, přístup do ní je velmi pomalý -- řádově stovky taktů -- nicméně je optimalizová pro sekvenční čtení a zápis z GPU. Hardware umožňuje přístup pouze po 128-bitových blocích -- pokud nechceme, aby došlo ke zpomalení, je nutné, aby všechny thready v jednom warpu (a tudíž vykonávající stejnou instrukci) přistupovaly do co nejmenšího počtu těchto bloků, ideálně do jednoho. Tím dojde k tzv. \emph{sdruženému přístupu}\footnote{Coalesced access} a všechny přístupy threadů do sousedících míst v paměti mohou být obslouženy v rámci jediného požadavku. Konkrétní způsob (omezení), jak mohou thredy k paměti v bloku přistupvat, je závislý na výpočetní schopnosti karty a jeho popis lze nalézt v \cite{CUDA programming g.}.
 
     Alokace, čtení a zápis do této paměti je možný i z CPU (samozřejmě na jiné bázi), data zapsaná tímto způsobem mají pak životnost stejnou, jako aplikace.
 
     V kódu se ukazatel do globální paměti neliší od jiných ukazatelů\footnote{K dispozici je i \bq novější\eq ~obecný typ ukazatele do globální paměti {\tt DevicePtr*}, který vyžadují nekteré fukce. Spíše jde ale o snahu nějak data na CPU a GPU formálně oddělit. Kód využívající tento typ ukazatele se nám však nepodařilo zprovoznit. Se starší verzí jsou však dobré zkušenosti.}, postup zkopírování dat na GPU je následující:
     \begin{enumerate}
-      \item Vytvoření běžného ukazatele na požadovaný typ
+      \item Vytvoření běžného ukazatele na požadovaný typ na CPU
       \item Přiřazení ukazatele k alokovanému poli v globální paměti pomocí {\tt CudaMalloc(...)}
       \item Zkopírování dat z pole v RAM na GPU pomocí {\tt CudaMemcpy(...)}
-      \item Ukazatel se předá kernelu přes obyčejný parametr
+      \item Předání ukazatele kernelu přes obyčejný parametr
     \end{enumerate}
     Na CPU nelze ukazatel do globální paměti dereferncovat přímo, na GPU to však lze bez jakýchkoliv omezení.
 
-    Samotnou alokaci opět není možné provádět z GPU, pokud však využívá thread větší statické pole jako lokální proměnnou, nebo tolik proměnných, že se nevejdou do registrů\footnote{tzv. Register spilling}, uloží se přebytek v \emph{lokální paměti}. Lokální zde znamená pouze omezení životnosti dat, data jsou ve skutečnosti uložena do globální paměti -- se všemi nevýhdami, které z toho plynou. Z tohoto důvodu je dobré se použití lokální paměti jakýmkoliv způsobem vyhnout.
+    Samotnou alokaci opět není možné provádět z GPU, pokud však využívá thread větší statické pole jako lokální proměnnou, nebo tolik proměnných, že se nevejdou do registrů\footnote{tzv. Register spilling}, uloží se přebytek v \emph{lokální paměti}. Lokální zde znamená pouze omezení životnosti dat, data jsou ve skutečnosti uložena do globální paměti -- se všemi nevýhodami, které z toho plynou. Z tohoto důvodu je dobré se použití lokální paměti jakýmkoliv způsobem vyhnout.
 
     \subsubsection{Konstantní paměť}
 
     Konstatntní paměť je 64 KB velká část globální paměti s vlastní cache, tudíž je celkem rychlá a vhodná pro objemné konstanty. Je přístupná z CPU pro čtení i zápis, dynamická alokace není možná ani z CPU. Z GPU lze paměť pouze číst -- proto konstatní.
 
-    V kódu se pro tuto paměť používá identifikátor \Vr"\cy{__constant__}" a proměnné s tímto identifikátorem musíme chápat spíše jen jako pojmenování místa v konstantní paměti karty. Poněkud nepříjemné je, že z tohoto důvodu musí být všechny tyto proměnné v kódu definovány jako globální a na úrovni souboru. Nesmí být tedy schovány do jakéhokoliv prostoru jmen, ani do třídy (byť jako statické), jak je zvykem ve slušném \Cpp kódu. Hodnoty do proměnných (polí) v konstantní paměti přesuneme z RAM pomocí {\tt CudaMemcpyToSymbol(...)}.
+    V kódu se pro tuto paměť používá identifikátor \Vr"\cy{__constant__}" a proměnné s tímto identifikátorem musíme chápat spíše jako pevné přidělení místa v konstantní paměti karty na úrovni aplikace. Poněkud nepříjemné je, že z tohoto důvodu musí být všechny tyto proměnné v kódu definovány jako globální a na úrovni souboru. Nesmí být tedy schovány do jakéhokoliv prostoru jmen, ani do třídy (byť jako statické), jak je zvykem ve slušném \Cpp ~kódu. Hodnoty do proměnných (polí) v konstantní paměti přesuneme z RAM pomocí {\tt CudaMemcpyToSymbol(...)}.
 
     \subsubsection{Texturová cache}
 
-    Texturová paměť někdy představuje rychlejší alternativu k čtení (\emph{nikoliv zápisu}) z globální paměti. Část dat můžeme totiž prohlásit za \emph{texturu}, což znamená, že data budou každým SM částečně cacheována (pokud je textura větší než cache). Velikost cache je 6-8 KB/SM, přitom hardware sám odhaduje, která data bude chtít program načíst a ty do ní přesune\footnote{tzv. Texture fetching}. Pokud jsou požadována data, která nejsou v cache k dispozici\footnote{tzv. Cache miss (v opačném případě Cache hit)}, jsou normálním způsobem načtena z globální paměti. Používání textur je tedy výhodné, pokud bloky potřebují relativně malé a dobře definované kousky dat, které se do cache vejdou celé.
+    Texturová paměť někdy představuje rychlejší alternativu k čtení (\emph{nikoliv zápisu}) z globální paměti. Část dat můžeme totiž prohlásit za \emph{texturu}, což znamená, že data budou každým SM částečně cacheována. Velikost cache je 6-8 KB/SM, přitom hardware sám odhaduje, která data bude chtít program načíst a ty do ní přesune\footnote{tzv. Texture fetching}. Pokud jsou požadována data, která nejsou v cache k dispozici\footnote{tzv. Cache miss (v opačném případě Cache hit)}, jsou normálním způsobem načtena z globální paměti. Používání textur je tedy výhodné, pokud bloky potřebují relativně malé a dobře definované kousky dat, které se do cache vejdou celé.
 
     Protože se jedná o činnost hodně blízkou klasické grafice, je v kódu citelně znát odkaz grafického API. Před použitím textury musíme definovat referenci na texturu (opět globální stejně jako konstantní proměnné) a ještě na CPU ji svázat s požadovanými daty pomocí {\tt cudaBindTexture(...)}. Obě operace potřebují značné množství parametrů (potřebných při používání textur pro původní účel), jejich popis lze nalézt v~\cite{CUDA programming g.}. Číst z takto připravené textury je na GPU možné pomocí funkce {\tt texXDfetch(...)} ({\tt X} je 1,2,3).
 

@@ -1,5 +1,61 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: hlavni.aux
-I found no \citation commands---while reading file hlavni.aux
+White space in argument---line 89 of file hlavni.aux
+ : \citation{Compromise
+ :                      denoise}
+I'm skipping whatever remains of this command
+White space in argument---line 90 of file hlavni.aux
+ : \citation{Minmax
+ :                  denoise}
+I'm skipping whatever remains of this command
+White space in argument---line 113 of file hlavni.aux
+ : \citation{Numerical
+ :                     Recipes}
+I'm skipping whatever remains of this command
+White space in argument---line 122 of file hlavni.aux
+ : \citation{CUDA
+ :                programming g.}
+I'm skipping whatever remains of this command
+White space in argument---line 135 of file hlavni.aux
+ : \citation{CUDA
+ :                programming g.}
+I'm skipping whatever remains of this command
+White space in argument---line 136 of file hlavni.aux
+ : \citation{CUDA
+ :                programming g.}
+I'm skipping whatever remains of this command
+White space in argument---line 142 of file hlavni.aux
+ : \citation{CUDA
+ :                programming g.}
+I'm skipping whatever remains of this command
+White space in argument---line 147 of file hlavni.aux
+ : \citation{CUDA
+ :                programming g.}
+I'm skipping whatever remains of this command
+White space in argument---line 150 of file hlavni.aux
+ : \citation{CUDA
+ :                programming g.}
+I'm skipping whatever remains of this command
+White space in argument---line 151 of file hlavni.aux
+ : \citation{CUDA
+ :                programming g.}
+I'm skipping whatever remains of this command
+White space in argument---line 157 of file hlavni.aux
+ : \citation{CUDA
+ :                programming g.}
+I'm skipping whatever remains of this command
+White space in argument---line 158 of file hlavni.aux
+ : \citation{CUDA
+ :                best practices}
+I'm skipping whatever remains of this command
+White space in argument---line 171 of file hlavni.aux
+ : \citation{CUDA
+ :                programming g.}
+I'm skipping whatever remains of this command
+A level-1 auxiliary file: src/bibliography.aux
+White space in argument---line 210 of file hlavni.aux
+ : \citation{Analyze
+ :                   7.5}
+I'm skipping whatever remains of this command
 I found no \bibdata command---while reading file hlavni.aux
 I found no \bibstyle command---while reading file hlavni.aux
-(There were 3 error messages)
+(There were 16 error messages)

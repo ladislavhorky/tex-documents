@@ -1,14 +1,14 @@
+% -*-coding: utf-8 -*-
 
+% cíl, trend
 
-% c�l, trend
+% aplikace zpracovává 3D obraz
 
-C�lem t�to bakal��sk� pr�ce je uk�zat mo�nosti urychlen� v�po�tu obrazov�ch filtr�
-prost�ednictv�m GPU. P�esm�rov�v�n� slo�it�ch v�po�t� na grafick� procesory 
-(GPGPU\footnote{General Purpose Graphics Processing Unit}) je rychle se rozv�jej�c� 
-trend posledn�ch let a
+Práce je zaměřená na urychlení známých obrazových filtrů na GPU. Přesouvání výpočtů na GPU má dnes už ve vědecké komunitě své pevné místo a k řadě problémů jsou již k dispozici knihovny GPU využívající (třídění polí, konvoluce v obraze). Náš problém se však menšími rozměry vstupních dat -- je třeba třídit pole pouze o stovkách prvků -- tomuto mainstreamu poněkud vymyká. Algoritmy, které urychlí fitraci na dobu mžiku (ms až desítky ms) mohou být výhledově použity v aplikacích, které potřebují výsledky filtrů v reálném čase -- např. program umožňující laikovi sestavit si potřebný filtr pomocí jednoduchého skládání základních filtrů a manipulací s jejich parametry, kde potřebuje po každé změně okamžitou zpětnou vazbu. 
 
-Teoretick� z�klad filtr� tvo�� fuzzy logika, konkr�tn� \L ukasiewiczova algebra s
-odmocninou \cite{MajerovaPhD}. Uvnit� t�to algebry sice nelze zkonstruovat �adu 
-b�n� u��van�ch filtr� (Gaussvsk� rozmaz�n�, obecn� konvoluce s maskou), nab�z� v�ak
-jednoduch� teoreck� popis, omezenou citlivost filtr� a redukci v�po�t� pouze na 
-element�rn� matematick� operace (s��t�n�, n�soben�, aritmetick� pr�m�r, k-t� prvek)
+Jako solidní teoretický základ filtrů byla použita fuzzy logika, konkrétně \L ukasiewiczova algebra s odmocninou \cite{MajerovaPhD}, která je přímo aplikovatelná na data tak, jak jsou v počítači reprezentována a je vhodná pro konstrukci sítí filtrů, při jíž se může urychlení na GPU taktéž bohatě uplatnit.
+Popis je zaměřen na typové filtry ze tříd morfologický a statisticky motivovaných filtrů, které jsou posléze i implementovány.
+
+V práci nechceme porovnávat urychlení konkrétních algoritmů mezi CPU a GPU, ale uryhclení celých filtrů. Při implementaci jsou tak na CPU a GPU použity pro ten samý filtr vždy rozdílné algoritmy, z nichž každý je optimalizován na rychlost a konkrétní platformu -- díky hardwarovým omezením a 
+
+Implementace na CPU je provedena v jazyce \Cpp ~za použítí nejlepších dostupných algoritmů \cite{Numerical Recipes}, na GPU je použito prostředí NVIDIA CUDA C a použité algoritmy jsou veměs  

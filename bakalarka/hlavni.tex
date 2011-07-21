@@ -2,7 +2,7 @@
 \documentclass[11pt,a4paper]{report}
 
 \newif\ifrelease % new boolean variable release. True = include some fancy content
-\releasefalse % and set it
+\releasetrue % and set it
 
 \usepackage[czech]{babel}
 \usepackage[utf8]{inputenc}
@@ -22,7 +22,7 @@
 \usepackage{fancyvrb}
 \usepackage{dcolumn}
 
-%\usepackage[justification=centering]{caption}
+\usepackage[justification=centering]{caption}
 \ifrelease
 	\usepackage{pdfpages}
 \fi
@@ -59,9 +59,9 @@
 
 % Vlastní příkazy:==========================================
 \newif\ifshownotes % zobraz poznámky level 1
-\shownotestrue
+\shownotesfalse
 \newif\ifshownotesadd % zobraz poznámky level 2
-\shownotesaddtrue
+\shownotesaddfalse
 
 \newcommand{\LAs}{\L A_{sqrt}}
 \newcommand{\rl}{\textup{(}}
@@ -117,6 +117,10 @@
 \newcommand{\Vr}{\Verb[commandchars = \\\{\}]}
 \newcommand{\OOO}{$\mathcal{O}$}
 
+\newcolumntype{d}{D{,}{,}{4.2}}
+\newcolumntype{k}{D{,}{,}{2}}
+\newcolumntype{j}{D{,}{,}{1}}
+\newcolumntype{u}{D{,}{,}{0}}
 
 % Definice makra pro české uvozovky:
 \def\bq{\mbox{\kern.1ex\protect\raisebox{-1.3ex}[0pt][0pt]{''}\kern-.1ex}}
@@ -203,6 +207,8 @@
 
     \addcontentsline{toc}{chapter}{Závěr}
     \chapter*{Závěr}
+
+         \input{src/6Zaver/zaver.tex}
 
     \addcontentsline{toc}{chapter}{Literatura}
 

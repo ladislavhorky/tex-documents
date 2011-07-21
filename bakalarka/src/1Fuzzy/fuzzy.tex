@@ -131,7 +131,7 @@
     \note{0,1 zde představuje jen největší a nejmenší prvek -- je nutné to zmínit?}
     \note{Proč potřebujeme MV-algebru? Gougen, Godel ani Yager nejsou --- říká,že neg neg x je x, což je slušné chování}
 
-    Existují i jiné t-normy (\cite{MajerovaPhD},\cite{Bělíček}), ty ovšem nemají vlastnosti mnohahodnotové logiky \cite{MajerovaPhD}\note{původnější zdroj?}, nebo jsou příliš výpočetně náročné. Poslední obohacení, které provedeme, nám konečně umožní průměrovat:
+    Existují i jiné t-normy (\cite{MajerovaPhD},\cite{Bělíček}), ty ovšem nemají vlastnosti mnohahodnotové logiky \cite{MajerovaPhD}, nebo jsou příliš výpočetně náročné. Poslední obohacení, které provedeme, nám konečně umožní průměrovat:
 
     \begin{define}\label{LAsqrt}
     \L ukasiewiczovu algebru $(\LL,\wedge,\vee,\otimes,\rightarrow,\sqr,0,1)$ obohacenou o unární operaci \textbf{odmocnina} pro kterou platí:
@@ -390,7 +390,7 @@ Při psaní demonstračního kódu jsme se zaměřili na zpracování 3D medicí
 
         Dalšího snížení variance při zachování odolnosti vůči kontaminaci dosáhneme použitím Walshova seznamu. Díky tomu se může počet průměrovaných vstupů až zdvojnásobit a variance tak klesne na polovinu oproti filtrům bez Walshova seznamu. Toto je další důvod, proč i v této kategorii filtrů není vhodné používat jinou, než binární masku -- při vyšší váze hrozí nebezpečí, že ten samý prvek bude vybrán několikrát a průměrováním jeho samého se sebou se variance šumu nesníží. Mediánu nad Walshovým seznamem říkáme Hodges-Lehmannův medián, BES nad Walshovým seznamem značíme WBES. Diskuse snižování variance a odolnosti proti kontaminaci je provedena v sekci \ref{diskuse masky}.
 
-    \subsection{Sítě a kompromisní filtrování}
+    \subsection{Sítě a kompromisní filtrování}\label{sítě}
 
         Další možnost, jak zlepšit vlastnosti fitrů (zejména v oblasti odstanění šumu), je kompromisní filtrování a konstrukce sítí filtrů \cite{Compromise denoise},\cite{Minmax denoise}. Přístup spočívá v tom, že na obraz použijeme celou škálu oblíbených (třeba i průměrovacíc filtrů) filtrů a jejich výsedky zpracujeme pomocí další FLF $\phi$ na konečný výsledek (případně na několik mezivýsledků a ty pak stejným způsobem zpracujeme na konečný výsledek). Hledání $\phi$ se děje podobným způsobem, jako učení neuronové sítě, případně experimentováním. To je v obou případěch velmi výpočetně náročné, což je také jeden z důvodů vývoje paralelních algoritmů pro tyto filtry.
 
