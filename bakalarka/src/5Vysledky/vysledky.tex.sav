@@ -2,14 +2,14 @@
 
 \section{Vliv masky na výsledek filtrace}\label{diskuse masky}
 
-    Nyní provedeme diskusi zvolené masky na dvě hlavní vlastnosti filtru: odolnost vůči kontaminaci a snižování variance gaussovského šumu. Porovnávat budeme s klasickým průměrovým filtrem, který nejlépe snižuje varianci šumu, ale nemá žádnou odolnost proti kontaminaci a bude nás zajímat, jak se tyto dvě vlastnosti dají efektivně směnit. Nejprve se podíváme na jednodušší filtry medián a BES. U těch má smysl používat binární (viz teorie \ref{statisticky motivované}) masku se sudou kapacitou, neboť pak musíme medián brát jako průměr dvou prostředních prvků, čímž lépe snížíme varianci šumu. Na obrázku~\ref{obr masky} uvádíme nejpoužívanější masky (bez centrálního voxelu) pořadě o kapacitě 6, 18 a 26.
+    Nyní provedeme diskusi zvolené masky na dvě hlavní vlastnosti filtru: odolnost vůči kontaminaci a snižování variance gaussovského šumu. Porovnávat budeme s klasickým průměrovým filtrem, který nejlépe snižuje varianci šumu, ale nemá žádnou odolnost proti kontaminaci a bude nás zajímat, jak se tyto dvě vlastnosti dají efektivně směnit. Nejprve se podíváme na jednodušší filtry medián a BES. U těch má smysl používat binární (viz teorie \ref{statisticky motivované}) masku se sudou kapacitou, neboť pak musíme medián brát jako průměr dvou prostředních prvků, čímž lépe snížíme varianci šumu. Na obrázku~5.1 uvádíme tradiční masky (bez centrálního voxelu) pořadě o kapacitě 6, 18 a 26.
 
 \begin{figure}[h]\label{obr masky}
   \includegraphics[width = \textwidth]{src/5Vysledky/masky.pdf}
-  \caption{Nejpoužívanější masky}
+  \caption{Tradiční masky}
 \end{figure}
 
-    V tabulce~\ref{tab med BES} uvádíme data pro zmíněné dva filtry. Sloupec \emph{snížení variance šumu} udává, jaká bude variance šumu ve filtrovaném obrázku vůči původní. Pro srovnání uvádíme jak snižuje varianci obyčejný aritmetický průměr nad stejnou maskou.
+    V tabulce~5.1 uvádíme data pro zmíněné dva filtry. Sloupec \emph{snížení variance šumu} udává, jaká bude variance šumu ve filtrovaném obrázku vůči původní. Pro srovnání uvádíme jak snižuje varianci obyčejný aritmetický průměr nad stejnou maskou.
 
 \begin{table}[h]\label{tab med BES}
     \begin{center}
@@ -22,11 +22,11 @@
       medián$_{\mathrm{6}}$             & 2                 & 33,3 \%       & $1/2$    & $1/6$ \\
       medián$_{\mathrm{18}}$            & 8                 & 44,4 \%       & $1/2$    & $1/18$ \\
       medián$_{\mathrm{26}}$            & 12                & 46,2 \%       & $1/2$    & $1/26$  \\
-      medián$_{c}$                      & $\lfloor\frac{c+1}{2}\rfloor-1$& $\le$ 50 \%& 1 až $1/2$& $1/c$\\
+      medián$_{c}$                      & $\lfloor\frac{c+1}{2}\rfloor-1$& $<$ 50 \%& 1 až $1/2$& $1/c$\\
       BES$_{\mathrm{6}}$                & 1                 & 16,7 \%       & $1/4$   & $1/6$ \\
       BES$_{\mathrm{18}}$               & 4                 & 22,2 \%       & $1/4$   & $1/18$ \\
       BES$_{\mathrm{26}}$               & 6                 & 23,1 \%       & $1/4$   & $1/26$ \\
-      BES$_{c}$                         & $\lceil\frac{c}{4}\rceil-1$& $\le$ 25 \%& $1/3$ až $1/4$& $1/c$\\
+      BES$_{c}$                         & $\lceil\frac{c}{4}\rceil-1$& $<$ 25 \%& $1/2$ až $1/4$& $1/c$\\
       \bottomrule
     \end{tabular}
     \caption{Vlastnosti filtrů medián a BES}
@@ -43,20 +43,21 @@
     \eeq
     Pokud budeme postupovat jako u filtrů medián a BES, tzn. že může být \emph{poškozeno} \textit{n} prvků seřazeného \emph{seznamu} až do prvního vybraného (buď medián, nebo první kvartil), což odpovídá $\mathrm{f_{bad}^{-1}}(n)$ kontaminovaným prvkům v \emph{masce}, zajistíme maximálně to, že při konstatních datech, kontaminovaných v příslušném poměru\footnote{respektive tak, že v masce bude vždy maximálně $\mathrm{f_{bad}^{-1}}(n)$ kontaminovaných voxelů}, dá filtr konstatntní výstup, tzn. nezahrne žádné poškozené prvky. Nebude-li však vstup konstantní, mohou se poškozené prvky (a zejména prvky $p_{\frac{1}{2}}$) rozprostřít celkem libovolně po celém seznamu a nijak je neodstaníme. V takovém případě ale prohlašme, že poškozené prvky jsou hodně blízko nějakých \bq zdravých\eq ~prvků a tedy jejich výběr pro výpočet výsledku filtru příliš nevadí. Pro zamezení tomu, aby se prvky ze skupinky $p_{\frac{1}{2}}$ (která drží pohromadě) příliš promítly do výsledku, můžeme indexy vybíraných prvků (medián a kvartily) posunout tak, aby vzdálenost mezi nimi byla větší, než počet $p_{\frac{1}{2}}$ prvků (například pomoc zavedení kvazi-mediánu). Toto ale také zanedbáme s ohledem na předchozí úmluvu.
 
-    V tabulce~5.2 uvádíme výsledy Hodges-Lehmanova mediánu a WBES. Kvůli mediánu je opět vhodné, aby Walshův seznam měl sudý počet prvků, to nastane pokud $4|c \,\vee\, 4|(c+1)$, protože Walshův seznam má ${c+1 \choose 2} = \frac{c(c+1)}{2}$ prvků. Masky tedy použijeme stejné jako na obrázku~\ref{obr masky}, tentokrát ovšem s centrálním voxelem.
+    V tabulce~5.2 uvádíme výsledy Hodges-Lehmanova mediánu a WBES. Kvůli mediánu je opět vhodné, aby Walshův seznam měl sudý počet prvků, to nastane pokud $4|c \,\vee\, 4|(c+1)$, protože Walshův seznam má ${c+1 \choose 2} = \frac{c(c+1)}{2}$ prvků. Masky tedy použijeme stejné jako na obrázku~5.1, tentokrát ovšem s centrálním voxelem. Zde je nutné zdůraznit, že kvůli použití , že snížení variance šumu pro konkrétní filtr a voxel \emph{interval snížení variance šumu}
 
 \begin{table}[h]
-    \hspace{-0.6cm}
+    \hspace{-0.7cm}
     \begin{tabular}{lllllll}
       \toprule
-      \multirow{4}{*}{Filtr$_{\mathrm{\substack{kapacita\\ masky}}}$} &délka&max konta-& max konta- & odolnost    & snížení    & snížení varia- \\
-                                        &Walshova& minovaných & minovaných & proti       & variance   & nce šumu      \\
-                                        &seznamu& prvků       & voxelů v   & kontami-    & šumu       & čistým prů-     \\
-                                        &       & ve WL ($n$) & masce $\mathrm{f_{bad}^{-1}}(n)$ & naci &  & měrováním  \\
+      \multirow{4}{*}{Filtr$_{\mathrm{\substack{kapacita\\ masky}}}$} 
+                                        &délka   & max konta-  & max konta- & odolnost    & interval       & snížení varia- \\
+                                        &Walshova& minovaných  & minovaných & proti       & snížení        & nce šumu      \\
+                                        &seznamu & prvků       & voxelů v   & kontami-    & variance       & čistým prů-     \\
+                                        &        & ve WL ($n$) & masce $\mathrm{f_{bad}^{-1}}(n)$ & naci & šumu & měrováním  \\
       \midrule
-      H-L med$_{\mathrm{7}}$            & 28  & 13  & 2                 & 28,6 \%       & $1/2$ až $1/4$    & $1/7$ \\
-      H-L med$_{\mathrm{19}}$           & 190 & 94  & 5                 & 26,3 \%       & $1/2$ až $1/4$    & $1/19$ \\
-      H-L med$_{\mathrm{27}}$           & 378 & 188 & 8                 & 29,6 \%       & $1/2$ až $1/4$    & $1/27$  \\
+      H.-L. med$_{\mathrm{7}}$          & 28  & 13  & 2                 & 28,6 \%       & $1/2$ až $1/4$    & $1/7$ \\
+      H.-L. med$_{\mathrm{19}}$         & 190 & 94  & 5                 & 26,3 \%       & $1/2$ až $1/4$    & $1/19$ \\
+      H.-L. med$_{\mathrm{27}}$         & 378 & 188 & 8                 & 29,6 \%       & $1/2$ až $1/4$    & $1/27$  \\
       WBES$_{\mathrm{7}}$               & 28  & 6   & 0 (!)             & 0 \%          & $1/4$ až $1/7$    & $1/7$ \\
       WBES$_{\mathrm{19}}$              & 190 & 47  & 2                 & 10,5 \%       & $1/4$ až $1/8$    & $1/19$ \\
       WBES$_{\mathrm{27}}$              & 378 & 94  & 3                 & 11,1 \%       & $1/4$ až $1/8$    & $1/27$ \\
@@ -65,11 +66,11 @@
     \caption{Vlastnosti filtrů H-L medián a WBES}
 \end{table}\label{tab WBES}
 
-     Vidíme, že zvláště WBES$_{\mathrm{19,27}}$ se odolností proti kontaminaci blíží do teoretických požadovaných mezí a snížením variance už se dostává zhruba na 1/4 až 1/3 výkonu klasického průměru. Zajímavá je situace u WBES$_{\mathrm{7}}$, kde je maska tak malá, že filtr, tak jak je navržen, podle naší úmluvy odolný proti kontaminaci není. To můžeme zlepšit tak, že místo prvního a třetího kvartilu vybereme prvky o jedna blíže ke středu pole -- pokozených pak může být 7, což odpovídá jednomu kontaminovanému v masce a 14,3\% odolnosti. Navíc WBES$_{\mathrm{7}}$ může být ve snižování variance šumu stejně dobrý jako odpovídající průměrový filtr (1/8 dosáhnout nelze, protože máme jen 7 vstupů).
+     Vidíme, že zvláště WBES$_{\mathrm{19,27}}$ se odolností proti kontaminaci blíží do teoretických požadovaných mezí a snížením variance už se dostává zhruba na 1/4 až 1/3 výkonu klasického průměru. Zajímavá je situace u WBES$_{\mathrm{7}}$, kde je maska tak malá, že filtr, tak jak je navržen, podle naší úmluvy odolný proti kontaminaci není. To můžeme zlepšit tak, že místo prvního a třetího kvartilu vybereme prvky o jedna blíže ke středu pole -- pokozených pak může být 7, což odpovídá jednomu kontaminovanému v masce a 14,3\% odolnosti. Navíc WBES$_{\mathrm{7}}$ může pro některé voxely snížit varianci šumu stejně jako odpovídající průměrový filtr -- v průměru však bude samozřejmě stále horší. Snížení variance na 1/8 zde nikdy dosáhnout nelze, protože máme jen 7 vstupů.
 
      \vspace{0.5cm}
 
-     V praxi však měříme kontaminaci pro celý obraz a ne na úrovni jednostlivých voxelů. Může se tedy stát, že při 10\% kontaminaci \emph{celého obrazu} nebude výsledek filtru WBES$_{\mathrm{27}}$ příliš dobrý, protože u mnoha voxelů bude kontaminováno více než 10,5 \% okolních voxelů (kontaminované voxely mohou být libovolně rozmístěny) a výstupní voxel bude poškozený -- což ale odpovídá vlastnostem filtru. V odolnosti proti kontaminaci je tudíž dobré mít oproti teoretickým výsledkům nějakou rezervu.
+     V praxi však měříme kontaminaci pro celý obraz a ne na úrovni jednotlivých voxelů. Může se tedy stát, že při 10\% kontaminaci \emph{celého obrazu} nebude výsledek filtru WBES$_{\mathrm{27}}$ příliš dobrý, protože u mnoha voxelů bude kontaminováno více než 10,5 \% okolních voxelů (kontaminované voxely mohou být libovolně rozmístěny) a výstupní voxel bude poškozený -- což ale odpovídá vlastnostem filtru. V odolnosti proti kontaminaci je tudíž dobré mít oproti teoretickým výsledkům nějakou rezervu.
 
      U agresivnějších šumů (velká kontaminace, velký rozptyl gaussovského šumu) a nestačí malá maska s poloměrem 1, neboť průměr z tak malého okolí subjektivně nerozpoznáme. Větší maska (poloměr 2) již funguje lépe, ale filtry jsou samozřejmě časově náročnější -- zvláště pak ty na bázi Walshova seznamu. Zde by mohla být alternativou kombinace mediánu (H-L mediánu) na malé masce, který odstraní kontaminaci, a nějakého klasického filtru na bázi aritmetického průměru s větší maskou, který se postará o gaussovský šum. Příklady v příloze~\ref{příloha obrázky}, uvidíme, že volba vhodného filtru pro daný šum je celkem subjektivní záležitost.
 

@@ -1,3 +1,7 @@
-% -*-coding: utf-8 -*- 
+% -*-coding: utf-8 -*-
 
-V práci jsme provedli kritické zhodnocení možností robustních fuzzy filtrů ve věci odstraňování kontaminovaného gaussovského šumu; při dodržení rezervy v robustnosti jsou filtry schopny zcela odstranit kontaminaci 
+V práci jsem provedli zobecnění potřebných částí fuzzy logiky do 3D a kriticky jsme zhodnotili schopnosti klasických robustní filtrů a filtrů na bázi Walshova seznamu potlačovat kontaminovaný gaussovský šum. K tomuto byly provedeny i praktické experimenty.
+
+Dále jsem provedli implemantaci popsaných filtrů na CPU a GPU a porovnali urychlení. U všech morfologických filtrů je dosažené zrychlení dostatečné pro použití v aplikacích pracující s real-time filtrací. U fitrů medián a BES se nám taktéž díky použití algoritmu zapomětlivého třídění podařilo dosáhnout vynikajícího zrychlení -- takřka 60krát. Pro filtry H.-L. medián a WBES se nám nepodařilo navrhnout algroritmus, který by dovedl plně a efektivně využít výpočetní zdroje karty, neboť pole, které je nutné u těchto filtrů třídit, má hardwarově velmi nepříjemné rozměry. Urychlení je v tomto případě pouze v jednotkách a je ho dosaženou pouhou hrubou výpočetní silou.
+
+V průběhu implementace na GPU bylo taktéž zjištěno, že měnící se velikost masky ovlivňuje paměťvou náročnost některých filtrů (mediá, BES) do takové míry, že pro různé velikosti masek by bylo vhodné použít na úrovni threadu několik různých optimalizací, což by ale vedlo k přílišné -- až otrocké -- specializaci (na GPU se sice obecně kód specializuje více než na CPU, ale i to má své hranice). Pro obecnější použití bude tedy ještě nutná komplexní optimalizace paměti nikoliv na úrovni threadů, ale bloků, či celého gridu, abychom mohli při jakémkoliv nastavení parametrů efektivně využít co největší část rychlých pamětí na GPU. Totéž platí v menší míře pro volbu datového typu -- zde však není problém vybrat nějaký vhodný (např. {\tt unsigned int}) a používat pouze ten.

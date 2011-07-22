@@ -45,9 +45,9 @@ Před tím, než se podíváme na implementaci konkrétních filtrů, probereme 
 
         Pro další experimentování nám pomůže sledování obsazenosti SM pomocí CUDA Occupancy Calculator\footnote{přehledný excelový program dodávaný s CUDA SKD}, kde můžeme zjistit, na jakou z výše zmíněných hranic právě narážíme. Zde můžeme například zjistit, že na SM se již další blok nevejde, a tak naopak navýšit počet registrů a zvýšit tak rychlost. Mírnou nevýhodou je, že tyto jemné optimalizace už jsou zcela závislé na konkrétní VS, protože každá má jiné množství registrů a sdílené paměti.
 
-        Další nepříjemností, co se týče uvolňování registrů jsou systémové proměnné typu \Vr"\cy{threadIdx}" a \Vr"\cy{blockIdx}", které zřejmě\footnote{při porovnávání počtu proměnný (a maker, která kompilátor pravděpodobně kvůli rychlosti uloží do registrů) a počtu obsazených registrů opakovaně přebývalo několik registrů, které byly zřejmě použity právě pro ID threadu} v registrech zůstávají, byť je občas potřebujeme jen na začátku kernelu. Navíc se ani nemohou účastnit recyklace, protože do nich není možné zapisovat. Z tohoto důvodu je při extrémní minimalizaci počtu registrů praktické volit dimenzionalitu gridu a bloku co nejmenší, aby se jejich počet omezil (s tím je ale nutné počítat od začátku návrhu kódu).
+        Další nepříjemností, co se týče uvolňování registrů jsou systémové proměnné typu \Vr"\cy{thread-}"\linebreak\Vr"\cy{Idx}" a \Vr"\cy{blockIdx}", které zřejmě\footnote{při porovnávání počtu proměnný (a maker, která kompilátor pravděpodobně kvůli rychlosti uloží do registrů) a počtu obsazených registrů opakovaně přebývalo několik registrů, které byly zřejmě použity právě pro ID threadu} v registrech zůstávají, byť je občas potřebujeme jen na začátku kernelu. Navíc se ani nemohou účastnit recyklace, protože do nich není možné zapisovat. Z tohoto důvodu je při extrémní minimalizaci počtu registrů praktické volit dimenzionalitu gridu a bloku co nejmenší, aby se jejich počet omezil (s tím je ale nutné počítat od začátku návrhu kódu).
 
-    \subsection{Optimalizace běhu kernelu}
+    \subsection{Optimalizace běhu jádra}
 
     Následující sekce obsahuje několik dalších optimalizací, které se při experimentování s kernely osvědčily. \note{nejsou už tolik univerzální?}
 
@@ -56,7 +56,7 @@ Před tím, než se podíváme na implementaci konkrétních filtrů, probereme 
         Několik poznámek k instrukci \Vr"\cy{__syncthreads()}":
         \begin{itemize}
           \item Rozhodně s nimi šetřit, neboť nejsou časově nejlevnější -- sice zaberou jen 8 taktů \cite{CUDA programming g.}, ale jak jsme zmiňovali, přeruší cyklus překrývání latencí, což může způsobit značné zpomalení.
-          \item Pokud se program větví, každá cesta v kódu musí obsahovat \emph{stejný počet} \Vr"\cy{__syncthreads()}", protože GPU k prohlášení bloku za synchronizovaný stačí, aby každý thread dorazil k \emph{nějaké} synchronizační instrukci, tzn. nemusí to být u všech threadů ta samá. Porušení tohoto vede ve většině případů k pádu programu.
+          \item Pokud se program větví, každá cesta v kódu musí obsahovat \emph{stejný počet} \Vr"\cy{__syncthre-}"\linebreak\Vr"\cy{ads()}", protože GPU k prohlášení bloku za synchronizovaný stačí, aby každý thread dorazil k \emph{nějaké} synchronizační instrukci, tzn. nemusí to být u všech threadů ta samá. Porušení tohoto vede ve většině případů k pádu programu.
           \item Speciálním případem předchozího je, že jeden thread zavolá \Vr"\bl{return}" a ostatní na něj při synchronizaci marně čekají (až do resetu GPU).
         \end{itemize}
         V našich memory-bound kernelech se tedy budeme požití \Vr"\cy{__syncthreads()}" vyhýbat, pokud to půjde.
@@ -126,7 +126,7 @@ z += (x<y);
 
         \subsubsection{Zapomětlivé třídění}
 
-        Buď \textbf{medián} \kk-tým prvkem v setříděném poli (\kk-tým a (\kk-1)-ním pro sudou délku pole), princip pro nalezení mediánu je následující:
+        Buď \textbf{medián} \kk-tým prvkem v setříděném poli (\kk-tým a (\kk-1)-ním pro sudou délku pole), princip nalezení mediánu je následující:
         \begin{enumerate}
           \item Z nesetříděného pole vyberme libovolně \kk$+1$ prvků (nejjednodušeji od začátku pole).
           \item Mezi vybranými prvky najděme maximum a minimum a ty zahoďme.
@@ -196,5 +196,4 @@ z += (x<y);
     Výhodou této imlementace je, že v časově nejnáročnější části (krok 3.) se algoritmus díky použití optimalizace~\ref{větvení} vůbec nevětví a navíc minimálně přistupuje do paměti (načtení pouze jediného prvku pro celý warp). Navíc díky zapisování nalezených hodnot může algoritmus skončit ještě dříve, než porovná prvky \emph{všechny} prvky, což mírně sníží konstantu u časové náročnosti. Bohužel, algoritmus taktéž potřebuje hodně synchronizačních bodů a celkově se pohybuje na hraně efektivity kvůli špatným rozměrům vstupu -- to by se ale dalo částečně vyřešit použitím lepší GPU.
 
     Je zřejmé, že popsaný algorimus lze použít jak pro H-L mediá, tak pro WBES -- vše záleží pouze na volbě podmínek v kroku 4.
-
     \note{GPU je někde mezi tím, že čas výpočtu je více závislý na celkovém počtu uzlů stavového stromu, než na délce jeho cest ?!} 

@@ -17,14 +17,14 @@
 \newcommand{\pracovisteKonz}{Katedra softwarového inženýrství \\
     České Vysoké Učení Technické v~Praze}
 
-\newcommand{\klicova}{TODO, klíčová slova, max. 5}
-\newcommand{\keyword}{TODO, key, words}
+\newcommand{\klicova}{Fuzzy logika, zpracování obrazu, robustní filtry, GPGPU, CUDA}
+\newcommand{\keyword}{Fuzzy Logic, image processing, robust filters, GPGPU, CUDA}
 \newcommand{\abstrCZ}{
 
-    Cílem práce bylo zjistit možnosti urychlení filtrace 3D medicínských dat na GPU u obrazových filtrů postavených na fuzzy logice. Nejprve bylo provedeno zobecnění použité teorie \cite{MajerovaPhD} do 3D a následná implemnetace na CPU v jazyce \Cpp ~při použití nejlepších dostupných algoritmů. Implementace na GPU byla provedena v prostředí NVIDIA CUDA C a použité algoritmy a optimalizace jsou až na jeden původní. Hodnoty urychlení jsou na celé škále 60krát až 2,3krát (kde jsme naráželi na pro hardware nevhodné rozměry zpracovávaných dat) a u jednodušších filtrů tak došlo ke zkrácení doby výpočtu na testovacích datech na jednotky ms. Navíc byla provedena teoretická diskuse schopnosti filtrů medián, BES, H.-L. medián a WBES odstraňovat kontaminovaný gaussovský šum i s praktickými příklady.}
+    Cílem práce bylo zjistit možnosti urychlení filtrace 3D medicínských dat na GPU u obrazových filtrů postavených na fuzzy logice. Nejprve bylo provedeno zobecnění použité teorie do 3D a následná implemnetace na CPU v jazyce \Cpp ~při použití nejlepších dostupných algoritmů. Implementace na GPU byla provedena v prostředí NVIDIA CUDA C a použité algoritmy a optimalizace jsou až na jeden původní. Hodnoty urychlení jsou na celé škále 60krát až 2,3krát (kde jsme naráželi na pro hardware nevhodné rozměry zpracovávaných dat) a u jednodušších filtrů tak došlo ke zkrácení doby výpočtu na testovacích datech na jednotky ms. Navíc byla provedena teoretická diskuse schopnosti filtrů medián, BES, H.-L. medián a WBES odstraňovat kontaminovaný gaussovský šum i s praktickými příklady.}
 \newcommand{\abstrEN}{
 
-    The aim of the thesis was to determine the possibility of speeding up 3D medical image processing on GPU using filters based on Fuzzy logic. First, generalization of the theory \cite{MajerovaPhD} into 3D and subsequent implementation on CPU using the best possible algorithms was carried out. Implementation on GPU was made within the NVIDIA CUDA C enviroment with all but one used algoritms and optimizations being original. The gained speedup ranges from nearly 60 times down to 2,3 times (where most difficulties with input data dimensions occured) and the total duration of computation dropped for some filters below 10 ms. As a bonus, a theoretical discussion on median, BES, H.-L. median and WBES capability of suppressing contaminated gaussian noise together with practical expamples was carried out.}
+    The aim of the thesis was to determine the possibility of speeding up 3D medical image processing on GPU using filters based on Fuzzy logic. First, generalization of the theory into 3D and subsequent implementation on CPU using \Cpp ~language and the best possible algorithms was carried out. Implementation on GPU was made within the NVIDIA CUDA C enviroment with all but one used algoritms and optimizations being original. The gained speedup ranges from nearly 60 times down to 2,3 times (where most difficulties with input data dimensions occured) and the total duration of computation dropped for some filters below 10 ms. As a bonus, a theoretical discussion on median, BES, H.-L. median and WBES capability of suppressing contaminated gaussian noise together with practical expamples was carried out.}
 
 %%% zde zacina kresleni dokumentu
 
@@ -100,7 +100,7 @@ Prohlašuji, že jsem svou bakalářskou práci vypracoval samostatně a použil
 {\bf Poděkování}
 
 \vspace{5mm}
-Rád bych poděkoval panu Ing. Tomáši Oberhuberovi Ph.D. a panu doc. Ing. Jaromíru Kukalovi Ph.D. za podporu, velkou vstřícnost
+Rád bych poděkoval panu Ing. Tomáši Oberhuberovi Ph.D. a panu doc. Ing. Jaromíru Kukalovi Ph.D. za podporu, velkou vstřícnost a cené rady a zkušenosti, které mi při vedení práce a konzultacích v bohaté míře poskytovali.
 
 \begin{flushright}
 \autor

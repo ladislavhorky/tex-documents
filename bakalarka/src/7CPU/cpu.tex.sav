@@ -33,15 +33,15 @@ V této kapitole popíšeme implementaci filtrů a nejdůležitějších podpůr
         \delta \leq \frac{n-1}{n}
         \eeq
 
-        Chyba dělění je navíc vždy kladná, a násobení a sčítání jí kladnou nechá. Pokud nepoužijeme ve výpočtech rozdíl, který znaménko chyby samozřejmě nezachová, můžeme toho v odhadech využít. Aritmetiku chyby (obecně se znaménkem) shrnuje tabulka~\ref{tabulka max chyby}. Všechny operace v \LAsq můžeme redukovat na operace uvedené v tabulce (viz výše).
+        Chyba dělění je navíc vždy kladná, a násobení a sčítání jí kladnou nechá. Pokud nepoužijeme ve výpočtech rozdíl, který znaménko chyby samozřejmě nezachová, můžeme toho v odhadech využít. Aritmetiku chyby (obecně se znaménkem) shrnuje tabulka~2.1. Všechny operace v \LAsq můžeme redukovat na operace uvedené v tabulce (viz výše).
 
-        \begin{table}[h]\label{tabulka max chyby}
+        \begin{table}[h]
     \begin{center}
     \begin{tabular}{lll}
       \toprule
       Operace & Popis & Chyba\\
       \midrule
-      $\frac{m\pm\delta_1}{n} \; n \neq 0 $ & Celočíselné dělení konstantou & $\pm \Big( \frac{\delta_1}{n} + \frac{n-1}{n}\Big)$\footnote{Reálná chyba se samozřejmě normálně vydělí} \\
+      $\frac{m\pm\delta_1}{n} \; n \neq 0 $ & Celočíselné dělení konstantou & $\pm \Big( \frac{\delta_1}{n} + \frac{n-1}{n}\Big)$ \\
       $(m\pm\delta_1)+(n\pm\delta_2) $      & Sčítání                       & $\pm \,(\delta_1+\delta_2)$ \\
       $(m\pm\delta_1)-(n\pm\delta_2) $      & Odčítání                      & $\pm \,(\delta_1+\delta_2)$ \\
       $n(m\pm\delta_1) $                    & Násobení konstantou           & $\pm \,n\delta_1$ \\
@@ -51,13 +51,13 @@ V této kapitole popíšeme implementaci filtrů a nejdůležitějších podpůr
     \end{tabular}
     \caption{Chyba celočíselných aritmetických operací, $m,n \in \Nn_0, \,\delta_1,\delta_2 \in \RR^+$}
     \end{center}
-        \end{table}
+        \end{table}\label{tabulka max chyby}
 
         Jako příklad uveďme chybu WBES: na vstupu je použit Walshův list (dělení dvěmi, chyba $0,5$), poté sčítání a dělení čtyřmi. Nepoužíváme rozdíl, takže celočíselný výsledek bude menší nebo rovnen skutečnému:
         \beq
         \delta = +\Big( \frac{0,5+0,5+0,5+0,5}{4} + \frac{4-1}{4} \Big) = +1,25
         \eeq
-        Pokud Walshův list uložíme do většího datového typu a průměrování provedeme až na konci (jedinné dělení osmi), můžeme chybu stlačit až na $+0,875$. Dělení (pouze to vnáší chybu) se pomocí rozšíření datového typu obecně snažíme přesouvat až nakonec výpočtu, abychom počítali co nejdéle přesně a minimalizovali tak chybu. Závěrem dodejme, že chyby v příkladu jsou absolutní -- při použití {\tt unsigned char} bude relativní chyba $\frac{+1,25}{256}$, při použití {\tt unsigned short} bude ještě 256krát menší. \notea{ chyba je malá, opakovaným filtrování by došlo k degradaci dat dříve díky rozmazání filtrem, než chybou -- vyzkoušet v příkladě (př 100x WBES char, neoptimalizovaný VS 100 WBES short optimalizovaný)}
+        Pokud Walshův list uložíme do většího datového typu a průměrování provedeme až na konci (jedinné dělení osmi), můžeme chybu stlačit až na $+0,875$. Dělení se pomocí rozšíření datového typu obecně snažíme přesouvat až nakonec výpočtu, abychom počítali co nejdéle přesně a minimalizovali tak chybu. Závěrem dodejme, že chyby v příkladu jsou absolutní -- při použití {\tt unsigned char} bude relativní chyba $\frac{+1,25}{256}$, při použití {\tt unsigned short} bude ještě 256krát menší. \notea{ chyba je malá, opakovaným filtrování by došlo k degradaci dat dříve díky rozmazání filtrem, než chybou -- vyzkoušet v příkladě (př 100x WBES char, neoptimalizovaný VS 100 WBES short optimalizovaný)}
 
     \section{Práce s 3D obrazovými daty}
 
@@ -104,18 +104,18 @@ iTyVoxelOkoli = src[indexZpracVoxelu + SE.wList[i]]; //0 <= i < SE.capacity
 
     \subsection{Implementace a optimalizace na CPU}
 
-        Nyní probereme postupně implementační a optimalizační záležitosti vztahující se na veškerý kód na CPU a posléze implementaci jednotlivých filtrů.
+         Veškerý kód je napsán ve vývojovém prostředí Microsoft Visual Studio 2008 Express Edition s propojením s CUDA. Nyní probereme postupně implementační a optimalizační záležitosti vztahující se na veškerý kód na CPU a posléze implementaci jednotlivých filtrů.
 
         \paragraph{Obecně} se snažíme optimalizovat na rychlost. Vyhýbáme se častým alokacím a dealokacím proměnných v cyklech a opakovaně volaných funkcích, k čemuž \Cpp možností definovat proměnnou kdekoliv celkem svádí -- překladač sice dost těchto případů optimalizuje sám, ale není od věci mu naznačit, že pamětí může plýtvat. Taktéž se při větvení programu vyplatí tvořit stromy podmínek spíše do hloubky, než do šířky -- snížíme průměrný počet podmínek, kterými je třeba projít. Toto se samozřejmě týká časově náročných částí kódu, v těch časově nepodstatných je naopak lepší upřednostnit přehlednost.
 
-        \paragraph{Sekvenční zpracování 3D dat} zajišťuje pro všechny filtry parametrické makro {\tt BEGINFOR3D(pos)} a {\tt ENDFOR3D}, díky kterému projde parametr {\tt pos} pouze ty správné indexy z pole dat. Z celého pole 3D dat totiž musíme zpracovat pouze obraz, nikoliv okraje. Makro obsahuje tři for-cykly a počítá index {\tt pos}, přičemž minimalizuje počet operací k tomu potřebných. Použití ({\tt src} je opět zdroj):
+        \paragraph{Sekvenční zpracování 3D dat} zajišťuje pro všechny filtry parametrické makro {\tt BEGIN\_} {\tt FOR3D(pos)} a {\tt END\_FOR3D}, díky kterému projde parametr {\tt pos} pouze ty správné indexy z pole dat. Z celého pole 3D dat totiž musíme zpracovat pouze obraz, nikoliv okraje. Makro obsahuje tři for-cykly a počítá index {\tt pos}, přičemž minimalizuje počet operací k tomu potřebných. Konec makra obsahuje pouze příslušné uzavírací závorky. Použití ({\tt src} je opět zdroj):
 
         \begin{Verbatim}[commandchars = \\\{\}]
 \bl{unsigned long} idx;
-BEGINFOR3D(idx)
+BEGIN_FOR3D(idx)
     // tělo filtru
     // zpracovávaný voxel je src[idx]
-ENDFOR3D
+END_FOR3D
         \end{Verbatim}
 
         \paragraph{Morfologické filtry} eroze a dilatace jsou implementovány zcela v souladu s definicí v \ref{Filtry}. Pouze detektor hran je lehce optimalizován -- operaci $\DD(\PP) \ominus \EE(\PP)$ můžeme samozřejmě přesunout na úroveň voxelů:
@@ -136,12 +136,12 @@ ENDFOR3D
 
         Zmíněné tři filtry jsou implementačně triviální, zajímavé ale bude jejich urychlení na GPU, kde se vzhledem k jednoduchosti operací dostaneme na hranici hardwarových možností.
 
-        \paragraph{Statisticky motivované filtry} jsou implementačně nejzajímavější, neboť je při nich třeba z pole hodnot vybrat obecně několikrát \kk-tý prvek. Implementovány jsou čtyři základní filtry: {\tt Median}, {\tt WMedian}, {\tt BES} a {\tt WBES}. Jejich jádrem na CPU jsou dvě funkce {\tt MedianFindOpt} a {\tt UniBESFindOpt}, které operují buď nad polem vytvořeným z obrazových dat podle {\tt wList}, nebo nad příslušným Walshovým seznamem\footnote{seznam je zde pouze součást názvu, samozřejmě je implementován jako pole} vytvořeným z tohoto pole.
+        \paragraph{Statisticky motivované filtry} jsou implementačně nejzajímavější, neboť je při nich třeba z pole hodnot vybrat obecně několikrát \kk-tý prvek. Implementovány jsou čtyři základní filtry: {\tt Median}, {\tt WMedian}, {\tt BES} a {\tt WBES}. Jejich jádrem na CPU jsou dvě funkce {\tt MedianFindOptSimple} a {\tt UniBESFind}, které operují buď nad polem vytvořeným z obrazových dat podle {\tt wList}, nebo nad příslušným Walshovým seznamem\footnote{seznam je zde pouze součást názvu, samozřejmě je implementován jako pole} vytvořeným z tohoto pole.
 
-        Funkce {\tt MedianFindOpt(base,length)} částečně setřídí pole {\tt base} o délce {\tt length} tak, že se na indexu {\tt length/2} bude nacházet medián (případně na indexech {\tt (length/2)} a {\tt (length/2)-1} prvky potřebné ke konstrukci mediánu pro {\tt length} sudé).
+        Funkce {\tt MedianFindOptSimple(base,length)} částečně setřídí pole {\tt base} o délce {\tt length} tak, že se na indexu {\tt length/2} bude nacházet medián (případně na indexech {\tt (length/2)} a {\tt (length/2)-1} prvky potřebné ke konstrukci mediánu pro {\tt length} sudé).
 
         \begin{Verbatim}[commandchars = \\\{\}]
-\bl{bool} MedianFindOpt(\bl{imDataType} *base, \bl{unsigned} initBaseLength = 0)\{
+\bl{bool} MedianFindOptSimple(\bl{imDataType} *base, \bl{unsigned} initBaseLength = 0)\{
     \bl{static int} first, last;
     \bl{static unsigned} length = 0, rising, falling, pivot, itemsToFind;
     \bl{static unsigned} upper, lower;
@@ -208,7 +208,7 @@ ENDFOR3D
 
         Poslední optimalizací je použití alternativního třídícího algoritmu (v našem případě Insertion sort), když je tříděný úsek příliš krátký, protože tam je Quickselect neefektivní. Vzhledem k tomu, že potřebujeme správně umístěné pouze dva prvky, setřídíme Insertion sortem pouze nekratší možnou část pole (buď zprava, nebo zleva).
 
-        Funkce {\tt UniBESFind(base,length)} je prakticky stejná jako {\tt MedianFindOpt(base,length)}, jen ještě správně umístí první a třetí kvartil: Nejprve najde medián (nebo potřebné dva prvky) a přitom si zapamatuje pivoty (už jsou správně umístěné), které jsou nejblíže příslušnému kvartilu. Ten pak hledá už jen mezi nimi (nebo mezi pivotem a koncem pole). K tomu používá funkci {\tt FindKth(base,first,last,k)}, která opět pracuje nad polem {\tt base} a hledá pomocí quickselectu \kk-tý prvek mezi indexy {\tt first} a {\tt last}. Funguje podobně jako {\tt MedianFindOpt}, používá v poslední fázi insertion sort, jen je optimalizovaná pro nalezení pouze jednoho prvku.
+        Funkce {\tt UniBESFind(base,length)} je prakticky stejná jako {\tt MedianFindOptSimple} {\tt (base,length)}, jen ještě správně umístí první a třetí kvartil: Nejprve najde medián (nebo potřebné dva prvky) a přitom si zapamatovává pivoty, které jsou nejblíže příslušnému kvartilu. Ten pak hledá už jen mezi nimi, nebo mezi pivotem a koncem pole -- pivoty jsou na správných pozicích a prvky mezi nimi jsou také ve velikostně mezi pivoty. K tomu používá funkci {\tt FindKth(base,first,last,k)}, která opět pracuje nad polem {\tt base} a hledá pomocí quickselectu \kk-tý prvek mezi indexy {\tt first} a {\tt last}. Funguje podobně jako {\tt MedianFindOptSimple}, používá v poslední fázi insertion sort, jen je optimalizovaná pro nalezení pouze jednoho prvku.
 
 
 

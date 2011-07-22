@@ -18,8 +18,8 @@
             % Citlivost filtrů
             % Porovnání s lineárními filtry
 %==============================================================
-    
-    
+
+
         \note{fuzzy -- dvouhodnotová logika je málo - příliš velká ztráta informace, struktura logiky je vhodná pro analýzu vlastností, umožňuje redukovat
         magické konstanty a zároveň je dostačující pro většinu praktických úloh}
 
@@ -38,7 +38,7 @@
     % při algoritmickém generování sítí, instantním prohlížení a filtrace
     %=============================================================================================================================
 
-    V této části zkonstruujeme matematický model, který bude snadno aplikovatelný na obrazová data ve formě, jak s nimi pracuje počítač a zároveň nám poskytne solidní základ pro konstrukci filtrů. Budeme postupovat podobně jako v \cite{MajerovaPhD} a ukážeme, že \L ukasiewiczova algebra s odmocninou je vhodným kandidátem. Na model přitom klademe následující poždavky:
+    V této části zkonstruujeme matematický model, který bude snadno aplikovatelný na obrazová data ve formě, jak s nimi pracuje počítač a zároveň nám poskytne vhodný základ pro konstrukci filtrů. Budeme postupovat podobně jako v \cite{MajerovaPhD} a ukážeme, že \L ukasiewiczova algebra s odmocninou je vhodným kandidátem. Na model přitom klademe následující poždavky:
     \begin{itemize}
       \item maximální jednoduchost matematických operací
       \item snadná realizovatelnost v celočíselném oboru
@@ -351,8 +351,8 @@ Při psaní demonstračního kódu jsme se zaměřili na zpracování 3D medicí
         \OO(\OO(\PP)) = \OO(\PP), \quad \CC(\CC(\PP)) = \CC(\PP)
         \eeq
 
-        Jejich kombinací můžeme získat dva jednoduché vyhlazovací filtry $\OO(\CC(\PP))$ a $\CC(\OO(\PP))$. 
-        
+        Jejich kombinací můžeme získat dva jednoduché vyhlazovací filtry $\OO(\CC(\PP))$ a $\CC(\OO(\PP))$.
+
         Rozdílem $\DD(\xx) \ominus \EE(\xx)$ získáme jednoduchý detektor hran (je FLF, neboť $\ominus,\DD,\EE$ jsou FLF), nazývaný také \emph{Minkowského kolása} (pro podobnost klobásy a výsledku filtrace binárního obrazu pomocí kruhové masky s velkým poloměrem). Další fuzzy hranové detektory můžeme nalézt např. v \cite{Bělíček}. U detektorů hran je dobře vidět velká citlivost morfologických filtrů na konkréntní podobu strukturního elementu; jeho změnou můžem například (při zachování jeho kapacity) zařídit, že budou detekovány hrany jdoucí pouze v jednom směru, což zcela mění charakter filtru.
 
             % zmínit binární masku jako SE
