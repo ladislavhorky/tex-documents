@@ -1,5 +1,5 @@
 % -*-coding: utf-8 -*-
-\documentclass[11pt,a4paper]{report}
+\documentclass[oneside,11pt,a4paper]{report}
 
 \newif\ifrelease % new boolean variable release. True = include some fancy content
 \releasetrue % and set it
@@ -35,11 +35,16 @@
 
 %% Nastavení zrcadla sazby
 \usepackage{calc}
-\setlength{\textheight}{9in}
-\setlength{\textwidth}{6in}
-\setlength\oddsidemargin{(\paperwidth-\textwidth)/2 - 1in}
-\setlength\evensidemargin{(\paperwidth-\textwidth)/2 - 1in}
-\setlength\topmargin{(\paperheight-\textheight-\headheight-\headsep-\footskip)/2 - 1in}
+\setlength{\textheight}{\paperheight -3cm -3cm}  % horni a dolni okraje 3cm, do tech se musi vejit header a footer
+\setlength{\textwidth}{\paperwidth -3.5cm -2.6cm}  % levy okraj 3,5cm (na vazbu), pravy okraj 2,5cm
+\setlength{\oddsidemargin}{3.5cm -1in}
+\setlength{\topmargin}{(\paperheight-\textheight-\headheight-\headsep-\footskip)/2 - 1in}
+%\usepackage{calc}
+%\setlength{\textheight}{9in}
+%\setlength{\textwidth}{6in}
+%\setlength\oddsidemargin{(\paperwidth-\textwidth)/2 - 1in}
+%\setlength\evensidemargin{(\paperwidth-\textwidth)/2 - 1in}
+%\setlength\topmargin{(\paperheight-\textheight-\headheight-\headsep-\footskip)/2 - 1in}
 
 %\parindent=0pt % odsazení 1. řádku odstavce
 %\parskip=4pt   % mezera mezi odstavci
@@ -139,11 +144,13 @@
 \ifrelease
 	\input{startpages.tex} % úvodní strany
 \fi
-
+    \newpage
+    \pagenumbering{roman}
     \tableofcontents
 
-    \addcontentsline{toc}{chapter}{Úvod}
     \chapter*{Úvod}
+    \pagenumbering{arabic}
+        \addcontentsline{toc}{chapter}{Úvod}
         \input{src/0Uvod/uvod.tex}
 
     \chapter{Fuzzy logika}
@@ -209,14 +216,14 @@
      \addcontentsline{toc}{chapter}{Závěr}
          \input{src/6Zaver/zaver.tex}
 
-    \include{src/bibliography}
-     \addcontentsline{toc}{chapter}{Literatura}
-
     % APENDIX
 
     \appendix
 
     \input{src/8Appendix/app.tex}
+    
+    \addcontentsline{toc}{chapter}{Literatura}
+    \include{src/bibliography}
 
 
 \end{document} 

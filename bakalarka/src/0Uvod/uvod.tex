@@ -4,13 +4,13 @@
 
 % aplikace zpracovává 3D obraz
 
-Práce je zaměřená na urychlení známých obrazových filtrů na GPU. Přesouvání výpočtů na GPU má dnes už ve vědecké komunitě své pevné místo a k řadě problémů, jako např. třídění polí a konvoluce v obraze, jsou již k dispozici knihovny GPU využívající. Náš problém se však menšími rozměry vstupních dat -- je třeba třídit pole pouze o stovkách prvků -- tomuto mainstreamu poněkud vymyká. Algoritmy, které urychlí fitraci na dobu mžiku (ms až desítky ms) mohou být výhledově použity v aplikacích, které potřebují výsledky filtrů v reálném čase -- např. program umožňující laikovi sestavit si potřebný filtr pomocí jednoduchého skládání základních filtrů a manipulací s jejich parametry, kde potřebuje po každé změně okamžitou zpětnou vazbu.
+Práce je zaměřená na urychlení známých obrazových filtrů na GPU. Přesouvání výpočtů na GPU má dnes už ve vědecké komunitě své pevné místo a k řadě problémů, jako např. třídění polí a konvoluce v obraze, jsou již k dispozici knihovny GPU využívající. Náš problém se však menšími rozměry vstupních dat -- je třeba třídit pole pouze o stovkách prvků -- tomuto mainstreamu poněkud vymyká. Algoritmy, které urychlí fitraci na dobu milisekund až desítky milisekund mohou být výhledově použity v aplikacích, které potřebují výsledky filtrů v reálném čase. To může být naříklad program s okamžitou vizuální zpětnou vazbou, umožňující laikovi sestavit si potřebný filtr pomocí jednoduchého skládání filtrů a manipulací s jejich parametry.
 
 Jako teoretický základ filtrů byla použita fuzzy logika, konkrétně \L ukasiewiczova algebra s odmocninou, která je přímo aplikovatelná na data tak, jak jsou v počítači reprezentována a je vhodná pro konstrukci sítí filtrů, při jíž se může urychlení na GPU taktéž bohatě uplatnit.
 Popis je zaměřen na typové filtry ze tříd morfologický a statisticky motivovaných filtrů, které jsou posléze i implementovány.
 
-V práci nebudeme porovnávat urychlení konkrétních algoritmů mezi CPU a GPU, ale uryhclení celých filtrů. Při implementaci jsou tak na CPU a GPU použity pro ten samý filtr vždy rozdílné algoritmy, z nichž každý je optimalizován na rychlost a konkrétní platformu -- díky hardwarovým omezením na GPU klademe na kód jiné požadavky.
+V práci nebudeme porovnávat urychlení konkrétních algoritmů mezi CPU a GPU, ale urychlení celých filtrů. Při implementaci jsou tak na CPU a GPU použity pro ten samý filtr vždy rozdílné algoritmy, z nichž každý je optimalizován na rychlost a konkrétní platformu -- díky hardwarovým omezením na GPU klademe na kód jiné požadavky.
 
-Implementace na CPU je provedena v jazyce \Cpp ~za použítí nejlepších dostupných algoritmů, na GPU je použito prostředí NVIDIA CUDA C a použité algoritmy a optimaliazce jsou až na výjimky původní. 
+Implementace na CPU je provedena v jazyce \Cpp ~za použítí nejlepších dostupných algoritmů, na GPU je použito prostředí NVIDIA CUDA C a použité algoritmy a optimaliazce jsou až na výjimky původní.
 
-Za svůj autorský podíl na práci považuji sjednocení symboliky v rešeršní části práce a diskusi citlivosti filtrů na kontaminovaný gaussovský šum. Dále pak návrh a realizaci programu pro testování urychlení filtrů na GPU v prostředí CUDA C.
+Za svůj autorský podíl na práci považuji sjednocení symboliky v rešeršní části práce a diskusi citlivosti filtrů na kontaminovaný gaussovský šum. Dále pak návrh a realizaci programu pro testování urychlení filtrů na GPU v prostředí CUDA C a diskusi problematiky třídění malých polí na GPU.

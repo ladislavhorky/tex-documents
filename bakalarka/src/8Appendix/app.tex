@@ -43,7 +43,7 @@
 
     \section{Walshův seznam na GPU}
 
-        Walshův seznam na GPU napočítávámě efektivně tak, že nejprve paralelně pro celý blok vytvoříme ve sdílené paměti pole s dvojicemi indexů do váženého seznamu. Tyto dvojice říkají, z jakých prvků máme Walhův seznam napočítat. Samotný výpočet prvků pak provádí opět paralelně skupina threadů podle takto připraveného pole, když je to aktuálně třeba. Pole indexů je na začátku \emph{napočítáváno}, protože je to rychlejší, než ho načítat z globální paměti (kam bychom ho mohli jedině uložit).
+        Walshův seznam na GPU napočítávámě efektivně tak, že nejprve paralelně pro celý blok vytvoříme ve sdílené paměti pole s dvojicemi indexů do váženého seznamu. Tyto dvojice říkají, z jakých prvků máme Walhův seznam napočítat. Samotný výpočet prvků pak provádí opět paralelně skupina vláken podle takto připraveného pole, když je to aktuálně třeba. Pole indexů je na začátku \emph{napočítáváno}, protože je to rychlejší, než ho načítat z globální paměti (kam bychom ho mohli jedině uložit).
 \vfill
 \newpage
 \hspace{-1cm}
@@ -55,11 +55,11 @@
 
 \chapter{Grafická příloha -- příklady}\label{příloha obrázky}
 
-    Výsledky všech filtrů pro všechny šumy jsou k dispozici na přiložením DVD.
+    Kompletní výsledky všech filtrů pro všechny dále uvedené šumy jsou k dispozici na přiložením DVD. Pro demonstraci filtrů byla opět pouužita stejná data jako pro měření urychlení: 3D SPECT scan mozku o rozměrech $79 \times 95 \times 69$ voxelů v odstínech šedi (0-255). Pro větší zřetelnost byl z výsledku vybrán vždy jeden reprezentativní horizontální řez (konkrétně 31.).
 
     \section{Morfologické filtry}
 
-    Výsledek filtrů dilatace, eroze a detekce hran při použití masky s poloměrem 1 a kapacitou 26. Z celých 3D dat je vybrán pouze jeden reprezentativní horizontální řez. Můžeme vidět, že u detekce hran dochází kvůli nulovým okrajům na stranách obrázku k degeneraci -- zde by bylo vhodnější použít např. okraje s konstantním opakováním.
+    Následují ukázky filtrů dilatace, eroze a detekce hran při použití masky s poloměrem 1 a kapacitou 26 (poslední z masek na obrázku 5.1, bez centrálního voxelu). Můžeme vidět, že u detekce hran dochází kvůli nulovým okrajům na stranách obrázku k degeneraci, protože obrázek zasahuje až ke krajům -- zde by bylo vhodnější použít např. okraje s konstantním opakováním.
     \vfill
     \newpage
     \begin{figure}[htp]
@@ -90,13 +90,13 @@
 
     \section{Statisticky motivované filtry}
 
-    Rozdíly mezi filtry předvedeme na kontaminovaném gaussovském šumu s velkou 10\% kontaminací a $\sigma = 10$ při použití datového typu {\tt usigned char}. Poté předvedeme subjektivně nejlepší výsledky pro šum s kontaminací 5 \% a $\sigma = 20$ (agresivní šum) a šum s kontaminací 3 \% a $\sigma = 5$. Parametry šumů jsou poněkud nadsazené kvůli ilustraci schopností filtrů. U řezů vždy ukážeme výsledek filtrace a rozdíl oproti nepoškozenému originálu, pro lepší viditelnost inverzní a vynásobený 5ti. Jako subjektivně vítězný fitr jsme pokaždé vzali ten, kde rozdíl již neměl výrazný chrakter šumu, ale zároveň ještě nedošlo k přílišnému vyhazení.
-    
-    Byla použita maska s poloměrem 1 a kapacitou 27 a pro dosažení lepších výsledků maska s poloměrem 2 a kapacitou 80 (krychle $5\times 5\times 5$ bez hran a středu).Čas výpočtu WBES na CPU pro větší masku se pohyboval okolo 40s, H.-L. mediánu okolo 27s, zrychlení na GPU není známo, protože po uplynutí cca 7s bez odezvy CPU kartu resetuje. Navíc zde by byl algoritmus použitý pro tyto filtry extrémě neefektivní kvůli velikosti Walshova seznamu.
+    Rozdíly mezi filtry medián, BES, H.-L. medián a WBES předvedeme na kontaminovaném gaussovském šumu s velkou 10\% kontaminací a $\sigma = 10$ při použití datového typu {\tt usigned char}. Poté předvedeme subjektivně nejlepší výsledky (pouze jeden vítězný filtr) pro šum s kontaminací 5 \% a $\sigma = 15$ (agresivní šum) a šum s kontaminací 3 \% a $\sigma = 5$. Parametry šumů jsou poněkud nadsazené kvůli ilustraci schopností filtrů. U řezů vždy ukážeme výsledek filtrace a rozdíl oproti nepoškozenému originálu, pro lepší viditelnost inverzní a vynásobený pěti. Jako subjektivně vítězný fitr jsme pokaždé vybrali ten, kde rozdíl již neměl výrazný chrakter šumu, ale zároveň ještě nedošlo k přílišnému vyhazení (rozdíl byl stále hodně světlý).
 
-    Obraz je zašuměn pomocí funkce {\tt AddNoise(...)}: nejprve je rozhoduto zda dotyčný voxel bude kontaminovaný. Pokud ne, je pomocí Box-Mulleorvy\footnote{Umožňuje generovat dvě nezávislá N(0,1) rozdělení z dvou nezávislých U(0,1) rozdělení -- ta se dají získat pomocí fukce {\tt rand()}.} formule nagenerován šum s rozdělením N(0,1), který je posléze přetransformován a přičten k hodnotě voxelu.
+    Byla použita maska s poloměrem 1 a kapacitou 27 (poslední na obrázku 5.1) a pro dosažení lepších výsledků maska s poloměrem 2 a kapacitou 80 (krychle $5\times 5\times 5$ bez hran a středu). Čas výpočtu WBES na CPU se pro větší masku pohyboval okolo 40s, H.-L. mediánu okolo 27s, zrychlení na GPU není známo, protože po uplynutí cca 7s bez odezvy CPU kartu resetuje. Navíc zde by byl algoritmus použitý pro tyto filtry extrémě neefektivní kvůli velikosti Walshova seznamu.
 
-    U filtrů je opět v dolním indexu uváděna kapacita masky. Samotný šum bez kontaminace uvádíme jen kvůli porovnání, filtry samozřejmě pracují s kontaminovaným šumem. Nyní výsledky pro jednotlivé šumy v pořadí, jak byly popsány:
+    Pro zašumění originálu byla napsána funkce {\tt AddNoise(...)}. V ní je nejprve rozhoduto zda dotyčný voxel bude kontaminovaný -- pokud ne, je pomocí Box-Mulleorvy\footnote{Umožňuje generovat dvě nezávislá N(0,1) rozdělení z dvou nezávislých U(0,1) rozdělení -- ta se dají získat pomocí fukce {\tt rand()}.} formule nagenerován šum s rozdělením N(0,1), který je posléze přetransformován a přičten k hodnotě voxelu.
+
+    U filtrů je opět v dolním indexu uváděna kapacita masky. Samotný šum bez kontaminace uvádíme jen kvůli porovnání, filtry samozřejmě pracují s kontaminovaným šumem. Nyní výsledky pro jednotlivé šumy v pořadí, jak byly popsány (10\%/10, 5\%/15 a 3\%/5):
 
     \vfill
     \begin{figure}[htp]

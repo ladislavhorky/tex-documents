@@ -14,11 +14,11 @@ V této kapitole popíšeme implementaci filtrů a nejdůležitějších podpůr
 
     \section{Celočíselná aritmetika}
 
-    Při implementaci jsme se omezili pouze na dva celočíselné typy {\tt unsigned char} (0-255) a {\tt unsigned short} (0-65535). Jednak proto, že vstupní data jsou často právě v rozsahu 0-255 a zadruhé, lidské oko stejně není schopné objektivně rozeznat spojitější škálu -- zvláště u jednokanálových obrazů (pouze odstíny šedi). Neceločíselné typy jsme zcela vynechali ze stejného důvodu a počítání s nimi je navíc podstatně pomalejší. Výběr konkrétního datového typu lze v kódu jednoduše provést pomocí parametru šablony.
+    Při implementaci jsme se omezili pouze na dva celočíselné typy {\tt unsigned char} (0-255) a~{\tt unsigned short} (0-65535). Jednak proto, že vstupní data jsou často právě v rozsahu 0-255 a zadruhé, lidské oko stejně není schopné objektivně rozeznat spojitější škálu -- zvláště u jednokanálových obrazů (pouze odstíny šedi). Neceločíselné typy jsme zcela vynechali ze stejného důvodu a počítání s nimi je navíc podstatně pomalejší. Výběr konkrétního datového typu lze v kódu jednoduše provést pomocí parametru šablony.
 
         \subsection{Přesnost}
 
-        Jedinou operací, která vnáší do výpočtů chybu, je celočíselné dělení\footnote{ostatní operace ovšem přenášejí chyby již vzniklé} -- násobení, sčítání a odčítání jsou přesné a jiné operace nepoužíváme. Díky požadavkům na teorii (uzavřenost vůči operacím) nikdy nebude docházet k chybám z ořezání výsledku do rozsahu datového typu, nebo jeho přetečení -- tyto jsou součástí definice operací a nelze je tedy považovat za chyby. Můžeme tak analyzovat pouze zaokrouhlovací chyby:
+        Jedinou operací, která vnáší do výpočtů chybu, je celočíselné dělení\footnote{ostatní operace ovšem přenášejí chyby již vzniklé} -- násobení, sčítání a~odčítání jsou přesné a jiné operace nepoužíváme. Díky požadavkům na teorii (uzavřenost vůči operacím) nikdy nebude docházet k chybám z ořezání výsledku do rozsahu datového typu, nebo jeho přetečení -- tyto jsou součástí definice operací a nelze je tedy považovat za chyby. Můžeme tak analyzovat pouze zaokrouhlovací chyby:
 
         Hrubý odhad chyby dělení nám dává následující nerovnost:
         \beq
@@ -57,35 +57,38 @@ V této kapitole popíšeme implementaci filtrů a nejdůležitějších podpůr
         \beq
         \delta = +\Big( \frac{0,5+0,5+0,5+0,5}{4} + \frac{4-1}{4} \Big) = +1,25
         \eeq
-        Pokud Walshův list uložíme do většího datového typu a průměrování provedeme až na konci (jedinné dělení osmi), můžeme chybu stlačit až na $+0,875$. Budeme-li s tím ve výpočtu počítat, můžeme ještě přičtením čtyř k dělenci tuto chybu vystředit na nulu, čímž se zmenší její absolutní hodnota na $0,4375$ -- de facto úmyslně vnášíme další, avšak známou chybu. Dělení se pomocí rozšíření datového typu obecně snažíme přesouvat až nakonec výpočtu, abychom počítali co nejdéle přesně a chybu tak minimalizovali. Závěrem dodejme, že chyby v příkladu jsou absolutní -- při použití {\tt unsigned char} bude relativní chyba $\frac{+1,25}{256}$, při použití {\tt unsigned short} bude ještě 256krát menší. \notea{ chyba je malá, opakovaným filtrování by došlo k degradaci dat dříve díky rozmazání filtrem, než chybou -- vyzkoušet v příkladě (př 100x WBES char, neoptimalizovaný VS 100 WBES short optimalizovaný)}
+        Pokud Walshův list uložíme do většího datového typu a průměrování provedeme až na konci (jedinné dělení osmi), můžeme chybu stlačit až na $+0,875$. Budeme-li s tím ve výpočtu počítat, můžeme ještě přičtením čtyř k dělenci tuto chybu vystředit na nulu, čímž se zmenší její absolutní hodnota na $0,4375$ -- de facto úmyslně vnášíme další, avšak známou chybu. Dělení se pomocí rozšíření datového typu obecně snažíme přesouvat až nakonec výpočtu, abychom počítali co nejdéle přesně a chybu tak minimalizovali. Závěrem dodejme, že chyby v příkladu jsou absolutní -- při použití {\tt unsigned char} bude relativní chyba $\frac{+1,25}{256}$, při použití {\tt unsigned short} bude ještě 256krát menší. \notea{ chyba je malá, opakovaným filtrování by došlo k degradaci dat dříve díky rozmazání filtrem, než chybou -- vyzkoušet v příkladě (př 100x WBES char, neoptimalizovaný CC 100 WBES short optimalizovaný)}
 
     \section{Práce s 3D obrazovými daty}
 
-    O uchovávání, načítání a ukládání 3D dat se v kódu stará šablonová třída {\tt ImageManager} {\tt <imDataType>}, geometrii obrazu má na starost abstaktní třída \Imageinfo. Celkový přehled struktury kódu pracujícíh s 3D obrazem lze najít s podrobnějším popisem v příloze~\ref{struktura kódu}. Nyní nám stačí vědět, že 3D obraz je opatřen nulovými okraji (viz sekce~\ref{lokální zprac}) a v paměti uložen jako lineární pole.
+    O uchovávání, načítání a ukládání 3D dat se v kódu stará šablonová třída {\tt ImageManager} {\tt <imDataType>}, geometrii obrazu má na starost abstaktní třída \Imageinfo. Celkový přehled struktury kódu pracujících s 3D obrazem lze najít s podrobnějším popisem v příloze~\ref{struktura kódu}. Nyní nám stačí vědět, že 3D obraz je opatřen nulovými okraji (viz sekce~\ref{lokální zprac}) a v paměti uložen jako lineární pole.
 
     \section{Maska, strukturní element}
 
-    Správu strukturních elementů má na starosti třída {\tt SEManager}, samotné strukturní elementy jsou uloženy ve struktuře {\tt structEl}, kterou pro přehlednost uvádíme zde:
+    Správu strukturních elementů (viz sekce \ref{sec maska}) má na starosti třída {\tt SEManager}, samotné strukturní elementy jsou uloženy ve struktuře {\tt structEl}, kterou pro přehlednost uvádíme zde:
 
     \begin{Verbatim}[commandchars = \\\{\}]
 \bl{typedef struct} _structEl \{
-    \bl{string} name;       // název pro pozdější vyhledání
-    \bl{int} *wList;        // Lw z teorie, pole o délce = capacity
-    \bl{unsigned} capacity; // kapacita masky
-    \bl{unsigned} *mask;    // neparsovaný vstup pro pozdější použití
+    \bl{string} name; 
+    \bl{int} *wList; 
+    \bl{unsigned} capacity;
+    \bl{unsigned} *mask;
 \} structEl;
     \end{Verbatim}
 
+    V současné implementaci jsou používanými položkami pouze pole {\tt wList} o délce {\tt capacity} obsahující indexy k vytvoření váženého seznamu (viz dále). Položka {\tt name} obsahuje název masky pro pozdější vyhledání a {\tt mask} je pole obsahující nezpracovaný vstup, pokud by ho bylo kvůli optimalizacím v budoucnu nutno zpracovat i jinak, než dosud.
+    
     \subsection{Formát}
 
-    Všechny strutury se snažíme optimalizovat na rychlost. Při filtraci budeme chtít rychle a elegantně přistupovat k okolí zpracovávaného voxelu, nejlépe takto (za předpokladu, že {\tt src} ukazuje na zpracovávaný obrázek a {\tt SE} je strukturní element):
+    Všechny strutury se snažíme optimalizovat na rychlost. Při filtraci budeme chtít rychle a~elegantně přistupovat k okolí zpracovávaného voxelu, nejlépe takto (za předpokladu, že {\tt src} ukazuje na zpracovávaný obrázek a {\tt SE} je strukturní element):
 
     \begin{Verbatim}
 iTyVoxelOkoli = src[indexZpracVoxelu + SE.wList[i]]; //0 <= i < SE.capacity
     \end{Verbatim}
 
-    Atribut {\tt wList} bude tedy obsahovat rozdíly indexů centrálního voxelu a okolních voxelů. Masku chceme zadávat v co možná nejjednodušším formátu, jako vhodně uspořádané jednorozměrné pole (přílkad maska $3\times 3\times3$ -- poloměr $R = 1$):
-
+    Atribut {\tt wList} bude tedy obsahovat rozdíly indexů centrálního voxelu a okolních voxelů. Masku chceme zadávat v co možná nejjednodušším formátu, jako vhodně uspořádané jednorozměrné pole. Jako příklad uvádíme masku $3\times 3\times3$ (poloměr $R = 1$) spolu s korespondujícími prvky masky z definice \ref{def maska} ve tvaru $m_{xyz}$. Při zápisu se tedy na masku díváme shora a zapisujeme jednotlivé vrstvy, jak je vidíme: nejlevější blok je horní vrstva, nejpravější spodní.
+\begin{figure}[h]
+    \begin{minipage}[l]{0.5\textwidth-2.2cm}
     \begin{Verbatim}[commandchars = \\\{\}]
 \bl{unsigned} maska[] = \{
     0,1,0,  1,1,1,  0,1,0,
@@ -93,8 +96,29 @@ iTyVoxelOkoli = src[indexZpracVoxelu + SE.wList[i]]; //0 <= i < SE.capacity
     0,1,0,  1,1,1,  0,1,0
 \};
     \end{Verbatim}
+    \end{minipage}
+    \begin{minipage}[c]{1cm}
+    \begin{Verbatim}[commandchars = \\\{\}]
 
-    Na masku se při zápisu díváme shora a zapisujeme jednotlivé vrstvy, jak je vidíme: nejlevější blok je horní vrstva, nejpravější spodní. Výhodou tohoto formátu je, že pokud bychom chtěli načítat masku ze souboru (neimplementováno), můžeme ji zapsat zcela stejně, protože při klasickém načítání po řádcích se formát nepoškodí. Maska s poloměrem $R = 2$ bude mít analogicky $5$ bloků $5\times 5$.
+
+    \end{Verbatim}
+    \center $\sim$
+    \begin{Verbatim}[commandchars = \\\{\}]
+
+
+    \end{Verbatim}
+    \end{minipage}
+    \begin{minipage}[r]{0.5\textwidth+1.2cm}
+    \vspace{0.45cm}
+    \flushright
+    $m_{113}$,$m_{213}$,$m_{313}$, $m_{112}$,$m_{212}$,$m_{312}$, $m_{111}$,$m_{211}$,$m_{311}$\newline
+    $m_{123}$,$m_{223}$,$m_{323}$, $m_{122}$,$m_{222}$,$m_{322}$, $m_{121}$,$m_{221}$,$m_{321}$\newline
+    $m_{133}$,$m_{233}$,$m_{333}$, $m_{132}$,$m_{232}$,$m_{332}$, $m_{131}$,$m_{231}$,$m_{331}$\newline
+    \end{minipage}
+
+\end{figure}
+
+    Výhodou tohoto formátu je, že pokud bychom chtěli načítat masku ze souboru (neimplementováno), můžeme ji zapsat zcela stejně, protože při klasickém načítání po řádcích se formát nepoškodí. Maska s poloměrem $R = 2$ bude mít analogicky $5$ bloků $5\times 5$.
 
     Popis načítání masek a další práce s nimi je v příloze~\ref{struktura kódu}.
 
@@ -106,7 +130,7 @@ iTyVoxelOkoli = src[indexZpracVoxelu + SE.wList[i]]; //0 <= i < SE.capacity
 
          Veškerý kód je napsán ve vývojovém prostředí Microsoft Visual Studio 2008 Express Edition s propojením s CUDA. Nyní probereme postupně implementační a optimalizační záležitosti vztahující se na veškerý kód na CPU a posléze implementaci jednotlivých filtrů.
 
-        \paragraph{Obecně} se snažíme optimalizovat na rychlost. Vyhýbáme se častým alokacím a dealokacím proměnných v cyklech a opakovaně volaných funkcích, k čemuž \Cpp možností definovat proměnnou kdekoliv celkem svádí -- překladač sice dost těchto případů optimalizuje sám, ale není od věci mu naznačit, že pamětí může plýtvat. Taktéž se při větvení programu vyplatí tvořit stromy podmínek spíše do hloubky, než do šířky -- snížíme průměrný počet podmínek, kterými je třeba projít. Toto se samozřejmě týká časově náročných částí kódu, v těch časově nepodstatných je naopak lepší upřednostnit přehlednost.
+        \paragraph{Obecně} se snažíme optimalizovat na rychlost. Vyhýbáme se častým alokacím a dealokacím proměnných v cyklech a opakovaně volaných funkcích, k čemuž \Cpp možností definovat proměnnou kdekoliv celkem svádí -- překladač sice dost těchto případů optimalizuje sám, ale není od věci mu naznačit, že pamětí může plýtvat. Taktéž se při větvení programu vyplatí složitější složené podmínky přeformovat do stromů tvořených jednoduššími podmínkami -- snížíme tak průměrný počet podmínek, kterými je třeba projít (srv. sekce \ref{vetvení}). Toto se samozřejmě týká časově náročných částí kódu, v těch časově nepodstatných je naopak lepší upřednostnit přehlednost.
 
         \paragraph{Sekvenční zpracování 3D dat} zajišťuje pro všechny filtry parametrické makro {\tt BEGIN\_} {\tt FOR3D(pos)} a {\tt END\_FOR3D}, díky kterému projde parametr {\tt pos} pouze ty správné indexy z pole dat. Z celého pole 3D dat totiž musíme zpracovat pouze obraz, nikoliv okraje. Makro obsahuje tři for-cykly a počítá index {\tt pos}, přičemž minimalizuje počet operací k tomu potřebných. Konec makra obsahuje pouze příslušné uzavírací závorky. Použití ({\tt src} je opět zdroj):
 
@@ -194,7 +218,7 @@ ENDFOR3D
 \}
         \end{Verbatim}
 
-        Funkce je volána při zpracování každého voxelu, proto jsou proměnné alokovány staticky, tudíž se nedealokují po opuštění funkce a šetří čas při správě paměti. K nalezení požadovaných prvků je použit algoritmus \emph{Quickselect} založený a \emph{Quicksort}u, který je i s optimalizacemi popsán v \cite{Numerical Recipes}. V základní verzi algoritmus pracuje následovně:
+        Funkce je volána při zpracování každého voxelu, proto jsou proměnné alokovány staticky, tudíž se nedealokují po opuštění funkce a šetří čas při správě paměti. K nalezení požadovaných prvků je použit algoritmus \emph{Quickselect} založený a \emph{Quicksort}u, který je i s~optimalizacemi popsán v \cite{Numerical Recipes}. V základní verzi algoritmus pracuje následovně:
         \begin{enumerate}
           \item V poli vybereme pivota (obyčejně nejlevější prvek) {\tt p}
           \item Zbytek pole procházíme ukazatelem zleva, dokud nenajdeme prvek $\ge$ {\tt p}
@@ -208,7 +232,7 @@ ENDFOR3D
 
         Poslední optimalizací je použití alternativního třídícího algoritmu (v našem případě Insertion sort), když je tříděný úsek příliš krátký, protože tam je Quickselect neefektivní. Vzhledem k tomu, že potřebujeme správně umístěné pouze dva prvky, setřídíme Insertion sortem pouze nekratší možnou část pole (buď zprava, nebo zleva).
 
-        Funkce {\tt UniBESFind(base,length)} je prakticky stejná jako {\tt MedianFindOptSimple}\linebreak{\tt (base,length)}, jen ještě správně umístí první a třetí kvartil: Nejprve najde medián (nebo potřebné dva prvky) a přitom si zapamatovává pivoty, které jsou nejblíže příslušnému kvartilu. Ten pak hledá už jen mezi nimi, nebo mezi pivotem a koncem pole -- pivoty jsou na správných pozicích a prvky mezi nimi jsou také ve velikostně mezi pivoty. K tomu používá funkci {\tt FindKth(base,first,last,k)}, která opět pracuje nad polem {\tt base} a hledá pomocí quickselectu \kk-tý prvek mezi indexy {\tt first} a {\tt last}. Funguje podobně jako {\tt MedianFindOptSimple}, používá v poslední fázi insertion sort, jen je optimalizovaná pro nalezení pouze jednoho prvku.
+        Funkce {\tt UniBESFind(base,length)} je prakticky stejná jako {\tt MedianFindOptSimple}\linebreak{\tt (base,length)}, jen ještě správně umístí první a třetí kvartil: Nejprve najde medián (nebo potřebné dva prvky) a přitom si zapamatovává pivoty, které jsou nejblíže příslušnému kvartilu. Ten pak hledá už jen mezi nimi, nebo mezi pivotem a koncem pole -- pivoty jsou na správných pozicích a prvky mezi nimi jsou také ve velikostně mezi pivoty. K~tomu používá funkci {\tt FindKth(base,first,last,k)}, která opět pracuje nad polem {\tt base} a hledá pomocí quickselectu \kk-tý prvek mezi indexy {\tt first} a {\tt last}. Funguje podobně jako {\tt MedianFindOptSimple}, používá v poslední fázi insertion sort, jen je optimalizovaná pro nalezení pouze jednoho prvku.
 
 
 

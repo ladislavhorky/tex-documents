@@ -1,27 +1,27 @@
-\backcite {MajerovaPhD}{{10}{1.1}{section.1.1}}
-\backcite {MajerovaPhD}{{11}{1.1.1}{equation.1.1.7}}
-\backcite {MajerovaPhD}{{12}{1.1.1}{theo.2}}
-\backcite {B\IeC {\v e}l\IeC {\'\i }\IeC {\v c}ek}{{12}{1.1.1}{theo.2}}
-\backcite {MajerovaPhD}{{12}{1.1.1}{theo.2}}
-\backcite {MajerovaPhD}{{14}{1.2}{equation.1.2.13}}
-\backcite {Charypar}{{14}{1.3.1}{subsection.1.3.1}}
-\backcite {MajerovaPhD}{{15}{1.3.1}{equation.1.3.14}}
-\backcite {MajerovaPhD}{{15}{1.3.2}{equation.1.3.15}}
-\backcite {B\IeC {\v e}l\IeC {\'\i }\IeC {\v c}ek}{{17}{1.4.1}{equation.1.4.22}}
-\backcite {Compromise denoise}{{18}{1.4.2}{subsection.1.4.2}}
-\backcite {Minmax denoise}{{18}{1.4.2}{subsection.1.4.2}}
-\backcite {Numerical Recipes}{{24}{2.4.1}{section*.11}}
-\backcite {Heller}{{25}{3.1}{section.3.1}}
-\backcite {CUDA programming g.}{{26}{3.1}{figure.caption.12}}
-\backcite {Fermi}{{27}{3.2.1}{figure.caption.12}}
-\backcite {CUDA programming g.}{{28}{3.3.1}{section*.14}}
-\backcite {CUDA programming g.}{{28}{3.3.2}{subsection.3.3.2}}
-\backcite {CUDA programming g.}{{29}{3.3.3}{subsection.3.3.3}}
-\backcite {CUDA programming g.}{{30}{3.3.4}{section*.17}}
-\backcite {CUDA programming g.}{{31}{3.3.4}{section*.19}}
-\backcite {CUDA programming g.}{{31}{3.3.5}{subsection.3.3.5}}
-\backcite {CUDA programming g.}{{32}{4}{chapter.4}}
-\backcite {CUDA best practices}{{32}{4}{chapter.4}}
-\backcite {CUDA programming g.}{{34}{4.1.2}{section*.24}}
-\backcite {Forgetful}{{36}{4.2.2}{subsection.4.2.2}}
-\backcite {Analyze 7.5}{{49}{A.1.2}{subsection.A.1.2}}
+\backcite {MajerovaPhD,B\IeC {\v e}l\IeC {\'\i }\IeC {\v c}ek,Charypar}{{2}{1.1}{section.1.1}}
+\backcite {MajerovaPhD}{{2}{1.2}{section.1.2}}
+\backcite {MajerovaPhD}{{3}{1.2.1}{equation.1.2.7}}
+\backcite {MajerovaPhD}{{4}{1.2.1}{theo.2}}
+\backcite {B\IeC {\v e}l\IeC {\'\i }\IeC {\v c}ek}{{4}{1.2.1}{theo.2}}
+\backcite {MajerovaPhD}{{4}{1.2.1}{theo.2}}
+\backcite {MajerovaPhD}{{6}{1.3}{equation.1.3.13}}
+\backcite {Charypar}{{6}{1.4.1}{subsection.1.4.1}}
+\backcite {MajerovaPhD}{{7}{1.4.1}{equation.1.4.14}}
+\backcite {MajerovaPhD}{{7}{1.4.2}{equation.1.4.15}}
+\backcite {B\IeC {\v e}l\IeC {\'\i }\IeC {\v c}ek}{{9}{1.5.1}{equation.1.5.22}}
+\backcite {Compromise denoise,Minmax denoise}{{10}{1.5.2}{subsection.1.5.2}}
+\backcite {Numerical Recipes}{{16}{2.4.1}{section*.12}}
+\backcite {Heller}{{17}{3.1}{section.3.1}}
+\backcite {CUDA programming g.}{{18}{3.1.1}{subsection.3.1.1}}
+\backcite {CUDA programming g.}{{18}{3.1}{figure.caption.13}}
+\backcite {Fermi}{{19}{3.2.1}{figure.caption.13}}
+\backcite {CUDA programming g.}{{20}{3.3.1}{section*.15}}
+\backcite {CUDA programming g.}{{20}{3.3.2}{subsection.3.3.2}}
+\backcite {CUDA programming g.}{{21}{3.3.3}{subsection.3.3.3}}
+\backcite {CUDA programming g.}{{22}{3.3.4}{section*.18}}
+\backcite {CUDA programming g.}{{23}{3.3.4}{section*.20}}
+\backcite {CUDA programming g.}{{23}{3.3.5}{subsection.3.3.5}}
+\backcite {CUDA programming g.,CUDA best practices}{{24}{4}{chapter.4}}
+\backcite {CUDA programming g.}{{26}{4.1.2}{section*.25}}
+\backcite {Forgetful}{{28}{4.2.2}{subsection.4.2.2}}
+\backcite {Analyze 7.5}{{39}{A.1.2}{subsection.A.1.2}}

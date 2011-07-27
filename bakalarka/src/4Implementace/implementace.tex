@@ -1,6 +1,6 @@
 % -*-coding: utf-8 -*-
 
-Před tím, než se podíváme na implementaci konkrétních filtrů, probereme některé optimalizace, které budeme často používat. Mnoho z nich je velmi obecných a používají se pro jakýkoliv kód spuštěný na GPU. Naopak některé optimalizace popisované v \cite{CUDA programming g.}, \cite{CUDA best practices} v našem kódu nepoužijeme, neboť pro nás nejsou vhodné. Pro jejich podrobnější popis odkažme čtenáře na zmíněnou literaturu.
+Před tím, než se podíváme na implementaci konkrétních filtrů, probereme některé optimalizace, které budeme často používat. Mnoho z nich je velmi obecných a používají se pro jakýkoliv kód spuštěný na GPU. Naopak některé optimalizace popisované v \cite{CUDA programming g.,CUDA best practices} v našem kódu nepoužijeme, neboť pro nás nejsou vhodné. Pro jejich podrobnější popis odkazujeme čtenáře na zmíněnou literaturu.
 
 \section{Použité optimalizace}
 
@@ -23,9 +23,9 @@ Před tím, než se podíváme na implementaci konkrétních filtrů, probereme 
 
         \subsubsection{Čtení z globální paměti}\label{globální pam opt}
 
-        V našem případě sice čteme souvislé bloky paměti, avšak díky závislosti na uživatelské volbě masky a rozměrech obrázku je nemožné zajistit, aby byl čtený blok \emph{zarovnán} na 128 bitů, jak to vyžaduje VS 1.x, pro niž byl kód optimalizován. Filtry však pracují s pamětí velmi extenzivně a dochází k \emph{opakovanému čtení} ze stejného umístění (jeden voxel se promítne do výsledku mnoha okolních), na což je globální paměť zcela nevhodná. Díky malému rozsahu dat zpracovávaných jedním blokem tedy používáme ke čtení výhradně texturovou cache (1D, namapovanou na celý obraz), případně kombinovanou s kopírováním celého bloku dat do sdílené paměti.
+        V našem případě sice čteme souvislé bloky paměti, avšak díky závislosti na uživatelské volbě masky a rozměrech obrázku je nemožné zajistit, aby byl čtený blok \emph{zarovnán} na 128 bytů, jak to vyžaduje CC 1.x, pro niž byl kód optimalizován. Filtry však pracují s pamětí velmi extenzivně a dochází k \emph{opakovanému čtení} ze stejného umístění (jeden voxel se promítne do výsledku mnoha okolních), na což je globální paměť zcela nevhodná. Díky malému rozsahu dat zpracovávaných jedním blokem tedy používáme ke čtení výhradně texturovou cache (1D, namapovanou na celý obraz), případně kombinovanou s kopírováním celého bloku dat do sdílené paměti.
 
-        Zápis je bezproblémový, protože se jedná vždy jen o jednu hodnotu za thread (nebo skupinu threadů) a tudíž i když se přístupy threadů nepodaří sdružit optimálně, jde pouze o jediný zápis.
+        Zápis je bezproblémový, protože se jedná vždy jen o jednu hodnotu za vlákno (nebo skupinu vláken) a tudíž i když se přístupy vláken nepodaří sdružit optimálně, jde pouze o jediný zápis.
 
         \subsubsection{Konstantní paměť}
 
@@ -33,7 +33,7 @@ Před tím, než se podíváme na implementaci konkrétních filtrů, probereme 
 
         \subsubsection{Optimalizace registrů}
 
-        Vzhledem k tomu, že algoritmy pro většinu filtrů jsou poměrně jednoduché, výsledné kernely jsou poměrně malé a na jeden SM se nám vejde velký počet bloků (nebo alespoň threadů), což je ideální, protože se dobře překryjí paměťové latence. Bloky ale bohužel nejsou paměťově tak malé, aby se uplatnilo hardwarové omezení a zvyšování jejich počtu na jednom SM tak bude střídavě narážet na fyzické omezení množsví sdílené paměti (probráno u konkrétních filtrů) a hlavně registrů\footnote{pro představu naše thready spotřebují zhruba 11-25 registrů. To pro VS 1.x (8192 registrů/SM) odpovídá 744-327 threadů/SM, což ještě nenaráží na fyzickou hranici 768 threadů/SM (VS 1.1)}.
+        Vzhledem k tomu, že algoritmy pro většinu filtrů jednoduché, výsledné kernely jsou poměrně malé a na jeden SM se nám vejde velký počet bloků (nebo alespoň vláken), což je ideální, protože se dobře překryjí paměťové latence. Bloky ale bohužel nejsou paměťově tak malé, aby se uplatnilo hardwarové omezení a zvyšování jejich počtu na jednom SM tak bude střídavě narážet na fyzické omezení množsví sdílené paměti (probráno u konkrétních filtrů) a hlavně registrů\footnote{pro představu naše vlákna spotřebují zhruba 11-25 registrů. To pro CC 1.x (8192 registrů/SM) odpovídá 744-327 vláken/SM, což ještě nenaráží na fyzickou hranici 768 vláken/SM (CC 1.0)}.
 
         Pro snížení počtu použitých registrů můžeme udělat několik věcí:
         \begin{itemize}
@@ -43,9 +43,9 @@ Před tím, než se podíváme na implementaci konkrétních filtrů, probereme 
           \item Opatrné používání C příkazu \Vr"\bl{goto}" při vyskakování z mnoha cyklů naráz nám také může ušetřit jednu kontrolní proměnnou.
         \end{itemize}
 
-        Pro další experimentování nám pomůže sledování obsazenosti SM pomocí CUDA Occupancy Calculator\footnote{přehledný excelový program dodávaný s CUDA SKD}, kde můžeme zjistit, na jakou z výše zmíněných hranic právě narážíme. Zde můžeme například zjistit, že na SM se již další blok nevejde, a tak naopak navýšit počet registrů a zvýšit tak rychlost. Mírnou nevýhodou je, že tyto jemné optimalizace už jsou zcela závislé na konkrétní VS, protože každá má jiné množství registrů a sdílené paměti.
+        Pro další experimentování nám pomůže sledování obsazenosti SM pomocí CUDA Occupancy Calculator\footnote{přehledné excelové makro dodávané s CUDA SKD}, kde můžeme zjistit, na jakou z výše zmíněných hranic právě narážíme. Zde můžeme například zjistit, že na SM se již další blok nevejde, a tak naopak navýšit počet registrů a zvýšit tak rychlost. Mírnou nevýhodou je, že tyto jemné optimalizace už jsou zcela závislé na konkrétní CC, protože každá má jiné množství registrů a sdílené paměti.
 
-        Další nepříjemností, co se týče uvolňování registrů jsou systémové proměnné typu \Vr"\cy{thread-}"\linebreak\Vr"\cy{Idx}" a \Vr"\cy{blockIdx}", které zřejmě\footnote{při porovnávání počtu proměnný (a maker, která kompilátor pravděpodobně kvůli rychlosti uloží do registrů) a počtu obsazených registrů opakovaně přebývalo několik registrů, které byly zřejmě použity právě pro ID threadu} v registrech zůstávají, byť je občas potřebujeme jen na začátku kernelu. Navíc se ani nemohou účastnit recyklace, protože do nich není možné zapisovat. Z tohoto důvodu je při extrémní minimalizaci počtu registrů praktické volit dimenzionalitu gridu a bloku co nejmenší, aby se jejich počet omezil (s tím je ale nutné počítat od začátku návrhu kódu).
+        Další nepříjemností, co se týče uvolňování registrů jsou systémové proměnné typu \Vr"\cy{thread-}"\linebreak\Vr"\cy{Idx}" a \Vr"\cy{blockIdx}", které zřejmě\footnote{při porovnávání počtu proměnný (a maker, která kompilátor pravděpodobně kvůli rychlosti uloží do registrů) a počtu obsazených registrů opakovaně přebývalo několik registrů, které byly zřejmě použity právě pro ID vlákna} v registrech zůstávají, byť je u jednodušších kernelů potřebujeme jen na začátku kernelu. Navíc se ani nemohou účastnit recyklace, protože do nich není možné zapisovat. Z tohoto důvodu je při extrémní minimalizaci počtu registrů praktické volit dimenzionalitu gridu a bloku co nejmenší, aby se jejich počet omezil (s tím je ale nutné počítat od začátku návrhu kódu).
 
     \subsection{Optimalizace běhu jádra}
 
@@ -56,16 +56,16 @@ Před tím, než se podíváme na implementaci konkrétních filtrů, probereme 
         Několik poznámek k instrukci \Vr"\cy{__syncthreads()}":
         \begin{itemize}
           \item Rozhodně s nimi šetřit, neboť nejsou časově nejlevnější -- sice zaberou jen 8 taktů \cite{CUDA programming g.}, ale jak jsme zmiňovali, přeruší cyklus překrývání latencí, což může způsobit značné zpomalení.
-          \item Pokud se program větví, každá cesta v kódu musí obsahovat \emph{stejný počet} \Vr"\cy{__syncthre-}"\linebreak\Vr"\cy{ads()}", protože GPU k prohlášení bloku za synchronizovaný stačí, aby každý thread dorazil k \emph{nějaké} synchronizační instrukci, tzn. nemusí to být u všech threadů ta samá. Porušení tohoto vede ve většině případů k pádu programu.
-          \item Speciálním případem předchozího je, že jeden thread zavolá \Vr"\bl{return}" a ostatní na něj při synchronizaci marně čekají (až do resetu GPU).
+          \item Pokud se program větví, každá cesta v kódu musí obsahovat \emph{stejný počet} \Vr"\cy{__syncthre-}"\linebreak\Vr"\cy{ads()}", protože GPU k prohlášení bloku za synchronizovaný stačí, aby každé vlákno dorazilo k \emph{nějaké} synchronizační instrukci, tzn. nemusí to být u všech vláken ta samá. Porušení tohoto vede ve většině případů k pádu programu.
+          \item Speciálním případem předchozího je, že jedno vlákno zavolá \Vr"\bl{return}" a ostatní na něj při synchronizaci marně čekají (až do resetu GPU).
         \end{itemize}
-        V našich memory-bound kernelech se tedy budeme požití \Vr"\cy{__syncthreads()}" vyhýbat, pokud to půjde.
+        V našich memory-bound kernelech se tedy budeme použití \Vr"\cy{__syncthreads()}" vyhýbat, pokud to půjde.
 
-        \subsubsection{Větvení programu}\label{větvení}
+        \subsubsection{Větvení programu}\label{vetvení}
 
         Z předchozího je jasné, že větvení je nejlépe omezit pouze na hranice warpů, pokud už nejde zcela vynechat. Je logické, že nejvíce musíme větvení optimalizovat v nejvytíženějších částech kódu. Příklad:
         \begin{itemize}
-        \item Podmínku na začátku kódu ověřující, zda má thread ještě vůbec nějaká data ke zpracování, většinou vynechat nelze, ale také nijak nezhoršuje výkon -- dotkne se pouze několika posledních waprů v posledním bloku. Toto se týká obecně podmínek rozumně závisejících pouze na ID threadu (\Vr"\cy{threadIdx}",\Vr"\cy{blockIdx}").
+        \item Podmínku na začátku kódu ověřující, zda má vlákno ještě vůbec nějaká data ke zpracování, většinou vynechat nelze, ale také nijak nezhoršuje výkon -- dotkne se pouze několika posledních waprů v posledním bloku. Toto se týká obecně podmínek rozumně závisejících pouze na ID vlákna (\Vr"\cy{threadIdx}",\Vr"\cy{blockIdx}").
         \item Cyklus obsahující několik (krátkých, nejlépe jednoinstrukčních) podmínek závislých na vnitřních proměnných naproti tomu bude generovat poloprázdné warpy po dobu běhu celého kernelu a zde je na místě pokusit se větve odstranit.
         \end{itemize}
         Jeden z případů druhé skupiny, kde se dá větvení zcela odstranit je následující:
@@ -78,13 +78,13 @@ z += (x<y);
         \end{Verbatim}
         kde se spoléháme na normu\footnote{nevíme, jeslti je \emph{zaručeno}, že ji kompilátor dodržuje, nebo zda je to machine-dependent záležitost -- nutno vyzkoušet}, že podmínka má hodnotu 1, pokud platí a 0, pokud ne. Pokud se takovéto podmínky nalézají ve vytížené části kódu, může být urychlení velmi znatelné. Zdá se totiž, že syntaxi s \Vr"\bl{if}" kompilátor nezvládne zoptimalizovat a vytvoří dvě větve -- výsledek podmínky použije pro podmíněný skok -- zatímco v druhém případě mu explicitně říkáme, jak má výsledek podmínky použít. Ze stejných důvodů je výhodné používat ternární operátor \Vr"?" kdekoliv je to možné.
 
-        Narozdíl od CPU není vhodné tvořit z několika složitých po sobě jdoucích podmínek stromy obsahující jednodušší podmínky -- thread sice musí prozkoumat v průměru méně podmínek, aby stromem prošel, vznikne tím ovšem hodně \emph{divergentních threadů} (po cestě, kterou se vydaly nejdou skoro žádné další thready z warpu) a výpočty budou serializovány, protože se vytvoří mnoho řídce obsazených warpů. Ponecháme-li složité podmínky v kódu volně za sebou, bude sice vyhodnocení samotné podmínky trvat déle, ale bude vykonáno všemi thready naráz, protože ty se mezi podmínkymi synchronizují a tudíž bude kód ve výsledku ryhlejší.
+        Narozdíl od CPU není vhodné tvořit z několika složitých po sobě jdoucích podmínek stromy obsahující jednodušší podmínky -- vlákno sice musí prozkoumat v průměru méně podmínek, aby stromem prošlo, vznikne tím ovšem hodně \emph{divergentních vláken} (po cestě, kterou se vydaly nejdou skoro žádná další vlákna z warpu) a výpočty budou serializovány, protože se vytvoří mnoho řídce obsazených warpů. Ponecháme-li složité podmínky v kódu volně za sebou, bude sice vyhodnocení samotné podmínky trvat déle, ale bude vykonáno všemi vlákny naráz, protože ty se mezi podmínkami synchronizují a tudíž bude kód ve výsledku ryhlejší.
         \begin{Verbatim}[commandchars = \\\{\}]
 // rychlejší varianta
 \bl{if}(...) && (...)\{
 ...     // dvě (silné) větve
 \}
-    // zde se thready synchronizují
+    // zde se vlákna synchronizují
 \bl{if}(...) && (...)\{
 ...     // dvě (silné) větve
 \}
@@ -103,37 +103,40 @@ z += (x<y);
 
     Zde se konečně dostáváme ke popisu kernelů provádějících filtraci. Nyní v bodech probereme, co máme před začátkem vlastní filtrace k dispozici a co musíme při psaní kódu zohlednit:
     \begin{itemize}
-      \item Každý vstupní voxel chceme zpracovávat jedním threadem, nebo skupinou threadů (opak by šel proti filozofii paralelizace).
+      \item Každý vstupní voxel chceme zpracovávat jedním vláknem, nebo skupinou vláken.
       \item 3D data a {\tt wList} z masky jsou na GPU v globální paměti uložena ve stejném formátu jako na CPU a je k nim možno stejným způsobem přistupovat.
       \item Kernelu je předána reference na texturu, která byla svázána se zpracovávanými daty.
       \item V konstantní paměti GPU máme připravenou veškerou potřebnou geometrii a konstatní data masek.
-      \item Po inicializační části threadu máme k dispozici {\tt wList} použité masky ve sdílené paměti a v proměnné {\tt thread} index zpracovávaného voxelu vypočtený z ID threadu.
+      \item Po inicializační části vlákna máme k dispozici {\tt wList} použité masky ve sdílené paměti a v proměnné {\tt thread} index zpracovávaného voxelu vypočtený z ID vlákna.
     \end{itemize}
 
     Konkrétní kód inicializační části kernelu zde popisovat nebudeme, neboť její průběh není přiliš podstatný a navíc je kód díky optimalizacím (rychlost, recyklace proměnných) lehce nepřehledný. Nyní již k jednotlivým filtrům.
 
     \subsection{Morfologické filtry}
 
-    Jejich implementace je opět triviální: každý thread počítá hodnotu jednoho výstupního voxelu. Thread v cyklu načítá z textury podle {\tt wList} hodhoty příslušných okolních voxelů a z nich vybere minimum (eroze), maximum (dilatace), nebo oboje (detekce hran). Vzhledem k velkému množství přístupu do paměti ku počtu jiných operací (jedna, nebo dvě podmínky) se u těchto filtrů nedaří zcela překrýt paměťové latence. To má za následek, že v případě detekce hran je přidání druhé podmínky (jedna hledá maximum, druhá minimum) \bq zdarma\eq, neboť jinak by SM stejně nic nedělal a čekal na zpracování paměťových přístupů. Množství přístupů do paměti je ovšem u detekce hran \emph{stejné}, jako u dilatace a eroze.
+    Popis těchto filtrů je možné najít v sekci~\ref{sec morph}. Jejich implementace je opět triviální: každé vlákno počítá hodnotu jednoho výstupního voxelu. Vlákno v cyklu načítá z textury podle {\tt wList} hodnoty příslušných okolních voxelů a z nich vybere minimum (eroze), maximum (dilatace), nebo oboje (detekce hran). Vzhledem k velkému množství přístupu do paměti ku počtu jiných operací (jedna, nebo dvě podmínky) se u těchto filtrů nedaří zcela překrýt paměťové latence. To má za následek, že v případě detekce hran je přidání druhé podmínky (jedna hledá maximum, druhá minimum) \bq zdarma\eq, neboť jinak by SM stejně nic nedělal a čekal na zpracování paměťových přístupů. Množství přístupů do paměti je ovšem u detekce hran \emph{stejné}, jako u dilatace a eroze.
 
     Díky tomu ve výsledcích uvidíme, že detekce hran má takřka dvojnásobné relativní zrychlení vůči CPU (kde se podmínka navíc samozřejmě projeví), než dilatace, nebo eroze. U nich tedy má smysl uvažovat o snížení paměťových latencí. To by se dalo udělat například zkopírováním bloku zpracovávaných dat do sdílené paměti -- pro maximální efektivitu to však vyžaduje poměrně komplikovanou přestavbu kódu, včetně přepočítání masek a jiné režie, takže jsme od dalších optimalizací prozatím upustili.
 
     \subsection{Medián a BES}
 
-    Součástí těchto filtrů je částečné třídění pole. V současnosti existuje spousta literatury popisující paralelizaci známých třídících algoritmů, jako quicksort, mergesort, bitonic sort apod., které se však zaměřují na třídění obřích polí (10$^6$ až 10$^9$ prvků) a zřídka bývají efektivní pro malá pole. V našem případě však potřebujeme paralelně setřídit \emph{mnoho malých} polí, a to nejlépe při malé spotřebě sdílené paměti, což hardwaru umožní přidělit více bloků na jedno SM a lépe tak překrýt latence.
+    Popis těchto filtrů je možné najít v sekci~\ref{statisticky motivované}. Součástí těchto filtrů je částečné třídění pole. V současnosti existuje spousta literatury popisující paralelizaci známých třídících algoritmů, jako quicksort, mergesort, bitonic sort apod., které se však zaměřují na třídění obřích polí (10$^6$ až 10$^9$ prvků) a zřídka bývají efektivní pro malá pole. V našem případě však potřebujeme paralelně setřídit \emph{mnoho malých} polí, a to nejlépe při malé spotřebě sdílené paměti, což hardwaru umožní přidělit více bloků na jedno SM a lépe tak překrýt latence.
 
     Pro malé velikosti polí (destíky prvků) jsou obecně výhodnější \bq hloupější\eq ~\OOO($n^2$) algoritmy, protože mají oproti složitějším algoritmům velmi malou režii. Při použití na GPU na ně navíc klademe požadavek, aby jejich průběh byl pokud možno nezávislý na vstupních datech (co nejméně větví, nebo alespoň stejně dlouhé) -- to zamezí přílišnému rozdrobení warpů, jejich serializaci a následnému zpomalení. Jako vítěz se při těchto požadavcích jeví algoritmus zapomětlivého třídění \cite{Forgetful}.
 
         \subsubsection{Zapomětlivé třídění}
 
-        Buď \textbf{medián} \kk-tým prvkem v setříděném poli (\kk-tým a (\kk-1)-ním pro sudou délku pole), princip nalezení mediánu je následující:
+        Popis algoritmu provedeme pro pole liché délky (medián je jediný prvek -- viz~\ref{def median}):
+        buď \textbf{medián} $\lfloor \frac{c+1}{2} \rfloor$-tým prvkem v setříděném poli (označme tento prvek jako \kk-tý), princip jeho nalezení je následující:
         \begin{enumerate}
           \item Z nesetříděného pole vyberme libovolně \kk$+1$ prvků (nejjednodušeji od začátku pole).
-          \item Mezi vybranými prvky najděme maximum a minimum a ty zahoďme.
-          \item Do výběru přidejme jeden prvek z nesetříděného pole, který jsme ještě nevybrali.
-          \item Opakujme kroky 2. a 3. dokud nezbyde pouze jeden prvek (dva pro případ sudé velikosti pole), ten je hledaným mediánem.
+          \item Mezi vybranými prvky najděme maximum a minimum a ty zahoďme -- hledání můžeme provést např. jako první krok insertion-sortu.
+          \item Do výběru přidejme jeden prvek z nesetříděného pole, který jsme ještě nevybrali (lhostejno kam, třeba na konec).
+          \item Opakujme kroky 2. a 3. dokud nezbude pouze jeden prvek\footnote{dva pro případ sudé velikosti pole}, ten je hledaným mediánem.
         \end{enumerate}
-
+    
+        Úprava algoritmu pro sudou velikost pole je popsána v poznámce pod čarou a je jediná, pokud \kk~volíme tak, že medián se bude konstruovat z \kk-tého a (\kk$-1$)-tého prvku.
+         
         Při hledání se tedy pole neustále zmenšuje, až zbyde pouze medián. Navíc nepotřebujeme současně celé pole, ale pouze něco přes polovinu, což kvůli latencím umožní zvýšit rychlost až dvakrát (!) oproti algoritmům využívajícím celé pole. Algoritmus je jistě \OOO($n^2$) -- počet hledání maxim a minim je roven součtu aritmetické řady. Také je jasné, že algoritmus se větví pouze při podmínkách nutných k nalezení maxima a minima -- zde se osvědčil operátor \Vr"?".
 
         Nyní dokažme, že algoritmus nikdy nezahodí medián -- budiž počet prvků v poli lichý, pro sudý to platí obdobně:
@@ -150,9 +153,9 @@ z += (x<y);
           \item Medián je mezi vybranými prvky:
             \begin{enumerate}
                 \item Po zahození maxima a minima je medián stále uvnitř výběru (není minimem ani maximem z toho, co zbylo): při dalším kroku nebude zahozen.
-                \item Po zahození maxima a minima je medián (BÚNO) maximum ze zbytku: hodnota přidaná z ještě nesetříděných bude nutně větší než medián, neboť \emph{všechny} menší již ve výběru jsou (viz obrázek~4.1). Tudíž při dalším zahazování medián opět zůstane ve výběru.
+                \item Po zahození maxima a minima je medián maximum (pokud je minimem, platí tvrzení analogicky) ze zbytku: hodnota přidaná z ještě nesetříděných bude nutně větší než medián, neboť \emph{všechny} menší již ve výběru jsou (viz obrázek~4.1). Tudíž při dalším zahazování medián opět zůstane ve výběru.
             \end{enumerate}
-          \item Medián není mezi vybranými prvky, ale je mezi ně přidán po zahození maxima a minima: ve výběru je příliš mnoho prvků, a tak všechny nemohou být (BÚNO) menší než přidávaný medián a ten tudíž nebude v dalším kroku maximem.
+          \item Medián není mezi vybranými prvky, ale je mezi ně přidán po zahození maxima a minima: ve výběru je příliš mnoho prvků, a tak všechny nemohou být zároveň menší, nebo zároveň větší než přidávaný medián a ten tudíž nebude v dalším kroku maximem.
         \end{enumerate}
 
         Zapomětlivé třídění lze jednoduše modifikovat pro \textbf{BES} filtr: Na začátku stačí vzít tolik hodnot, abychom zajistili, že i první a třetí kvartil budou \emph{uvnitř} výběru (viz obrázek~4.2), poté provádíme
@@ -168,14 +171,14 @@ z += (x<y);
 
     \subsection{Hodges-Lehmannův medián a WBES}
 
-    Protože jsou tyto fitry postavené na Walshově seznamu (který na začátku paralelně vytvoříme, viz příloha~\ref{struktura kódu}), je tříděné pole již poměrně velké (stovky prvků). Kvůli tomu nám při přístupu jeden thread/jedno pole radidně klesne vytížení SM, protože se do sdílené paměti se vejde málo polí, a navíc se projeví pomalost \OOO($n^2$) algoritmů. Pro přístup pole/blok\footnote{což je také minimální hranice pro použití sofistikovanějších algoritmů} je zase pole příliš malé -- idelální je mnohonásobek velikosti bloku, zde máme v praxi něco kolem dvojnásobku.
+     Popis těchto filtrů je možné najít v sekci~\ref{statisticky motivované}. Protože jsou postavené na Walshově seznamu (který na začátku paralelně vytvoříme, viz příloha~\ref{struktura kódu}), je tříděné pole již poměrně velké (stovky prvků). Kvůli tomu nám při přístupu jedno pole/jedno vlákno rapidně klesne vytížení SM, protože se do sdílené paměti vejde málo polí, a navíc se projeví pomalost \OOO($n^2$) algoritmů. Pro přístup pole/blok\footnote{což je také minimální hranice pro použití sofistikovanějších algoritmů} je zase pole příliš malé -- idelální je mnohonásobek velikosti bloku, zde máme v praxi něco kolem dvojnásobku.
 
-    Jako kompromis jsme zvolili přístup pole/warp (nebo obecně skupina threadů) a použití velmi naivního algoritmu: pro každý prvek pole jednoduše spočítáme, kolik hodnot je ostře menší a ostře větších než tento prvek a na jejich základě určíme, zda je daný prvek mediánem (nebo libovolným jiným \kk-tým prvkem). Algoritmus má sice zcela jasně složitost \OOO($n^2$), ale dá se pro GPU celkem pěkně optimalizovat; popišme nyní jeho implementaci (popis jednoho warpu -- 32 threadů):
+    Jako kompromis jsme zvolili přístup pole/warp (nebo obecně skupina vláken) a použití velmi naivního algoritmu: pro každý prvek pole jednoduše spočítáme, kolik hodnot je ostře menší a ostře větších než tento prvek a na jejich základě určíme, zda je daný prvek mediánem (nebo libovolným jiným \kk-tým prvkem). Algoritmus má sice zcela jasně složitost \OOO($n^2$), ale dá se pro GPU celkem pěkně optimalizovat; popišme nyní jeho implementaci (popis jednoho warpu -- 32 vláken):
     \begin{enumerate}
       \item Ze vstupních dat vytvoříme ve sdílené paměti Walshův seznam (WS).
-      \item Každý thread si zapamatuje jeden z 32 prvků ze začátku WS.
-      \item V cyklu porovnává každý thread zapamatovaný prvek postupně se všemi prvky WS, počítá ostře menší a ostře větší prvky. Thready přitom postupují synchronně a v každém kroku je porovnávaný prvek pro všechny thready stejný.
-      \item Každý thread ověří, zda nenalez medián (případně jiný potřebný \kk-tý prvek), pokud ano, zapíše ho paměti.
+      \item Každé vlákno si zapamatuje jeden z 32 prvků ze začátku WS.
+      \item V cyklu porovnává každé vlákno zapamatovaný prvek postupně se všemi prvky WS, počítá ostře menší a ostře větší prvky. Vlákna přitom postupují synchronně a v každém kroku je porovnávaný prvek pro všechna vlákna stejný.
+      \item Každé vlákno ověří, zda nenalezlo medián (případně jiný potřebný \kk-tý prvek), pokud ano, zapíše ho do paměti.
       \item Pokud byly nalezeny všechny hledané prvky, warp už jen počká na konec celého bloku.
       \item V opačném případě načte warp dalších 32 prvků z WS a pokračuje na krok 3.
     \end{enumerate}
@@ -186,14 +189,13 @@ z += (x<y);
     \end{center}
     \end{figure}
 
-    Z definice mediánu (\ref{def median}) je zřejmé, že daný prvek je medián, právě když platí následující dvě nerovnosti ($c$ je délka pole, $p$ označuje množství napočtené při porovnávání):
+    Z definice mediánu (\ref{def median}) je zřejmé, že daný prvek je medián, právě když platí následující dvě nerovnosti ($c$ je délka pole, $p_{(<)}$ označuje počet prvků ostře menších než testovaný prvek, $p_{(>)}$ počet ostře větších):
     \begin{align}
       p_{(<)} < \Big\lfloor\frac{c+1}{2}\Big\rfloor \notag \\
       p_{(>)} < \Big\lceil\frac{c+1}{2}\Big\rceil \notag
     \end{align}
     Obdobné nerovnosti lze stanovi i pro jakýkoliv jiný \kk-tý prvek.
 
-    Výhodou této imlementace je, že v časově nejnáročnější části (krok 3.) se algoritmus díky použití optimalizace~\ref{větvení} vůbec nevětví a navíc minimálně přistupuje do paměti (načtení pouze jediného prvku pro celý warp). Navíc díky zapisování nalezených hodnot může algoritmus skončit ještě dříve, než porovná prvky \emph{všechny} prvky, což mírně sníží konstantu u časové náročnosti. Bohužel, algoritmus taktéž potřebuje hodně synchronizačních bodů a celkově se pohybuje na hraně efektivity kvůli špatným rozměrům vstupu -- to by se ale dalo částečně vyřešit použitím lepší GPU.
+    Výhodou této imlementace je, že v časově nejnáročnější části (krok 3.) se algoritmus díky použití optimalizace~\ref{vetvení} vůbec nevětví a navíc minimálně přistupuje do paměti (načtení pouze jediného prvku pro celý warp). Navíc díky zapisování nalezených hodnot může algoritmus skončit ještě dříve, než porovná \emph{všechny} prvky, což mírně sníží konstantu u časové náročnosti. Bohužel, algoritmus taktéž potřebuje hodně synchronizačních bodů a celkově se pohybuje na hraně efektivity kvůli špatným rozměrům vstupu -- to by se ale dalo částečně vyřešit použitím lepší GPU.
 
     Je zřejmé, že popsaný algorimus lze použít jak pro H-L mediá, tak pro WBES -- vše záleží pouze na volbě podmínek v kroku 4.
-    \note{GPU je někde mezi tím, že čas výpočtu je více závislý na celkovém počtu uzlů stavového stromu, než na délce jeho cest ?!} 

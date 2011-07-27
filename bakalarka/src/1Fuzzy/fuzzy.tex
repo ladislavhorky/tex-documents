@@ -19,10 +19,9 @@
             % Porovnání s lineárními filtry
 %==============================================================
 
-
-        \note{fuzzy -- dvouhodnotová logika je málo - příliš velká ztráta informace, struktura logiky je vhodná pro analýzu vlastností, umožňuje redukovat
-        magické konstanty a zároveň je dostačující pro většinu praktických úloh}
-
+\section{Úvod}
+    
+    Použití fuzzy logiky, jako nástoje vhodného ke zpracování obrazu, rozvíjí doc. Ing. Jaromír Kukal Ph.D. již řadu let. Teoretická část této práce navazuje na jeho výsledky a~výsledky jeho studentů, čerpá především z prací \cite{MajerovaPhD,Bělíček,Charypar}. V nich je možné nalézt i knihovny obsahující implementaci fuzzy logických filtrů a jejich sítí v prostředích MATLAB a \Cpp.
 
 \section{\L ukasiewiczova algebra s odmocninou}
     % bez odmocniny bude množina filtrů omezená (uzavření-otevření nic nedělá) -- vyhnout se přímo trvzení o konečnosti, nekonečnosti
@@ -82,7 +81,7 @@
       je k-tá pořadová statistika souboru $(x_1,x_2,...,x_n)$.
     \end{theo}
     \begin{proof}
-      Vnitřní operace vybere postupně ze všech \textit{l}-tic maximum, vnější operace pak vybere nejmenší z těchto maxim. Nejmenšího maxima se dosáhne právě tehdy, chybí-li v \textit{l}-tici největších $k-1$ prvků a tudíž tímto maximem bude tedy právě \kk-tý prvek.
+      Vnitřní operace vybere postupně ze všech \textit{l}-tic maximum, vnější operace pak vybere nejmenší z těchto maxim. Nejmenšího maxima se dosáhne právě tehdy, chybí-li v~\textit{l}-tici největších $k-1$ prvků a tudíž tímto maximem bude tedy právě \kk-tý prvek.
     \end{proof}
 
     Bohužel už medián ze sudého počtu prvků je nerealizovatelný (chybí nám aritmetický průměr), stejně jako jakýkoliv vysokofrekvenční filtr\footnote{například detektor hran} (chybí nám rozdíl). Z povahy svazových operací je navíc zřejmé, že získáme pouze hodnotu, která už se objevila na vstupu.
@@ -98,10 +97,10 @@
     Pak strukturu $(M,\wedge,\vee,\otimes,\rightarrow,0,1)$ nazýváme \textbf{residuovaný svaz}.
     \end{define}
 
-    Galoisova korespondence \eqref{Galoisova koresp} přiřazuje každému součinu právě jedno residuum \cite{MajerovaPhD}, k plnému popisu operací tedy stačí definovat pouze součin. Za ten zvolíme \L ukasiewiczovu t-normu:
+    Galoisova korespondence \eqref{Galoisova koresp} přiřazuje každému součinu právě jedno residuum \cite{MajerovaPhD}, k~plnému popisu operací tedy stačí definovat pouze součin. Za ten zvolíme \L ukasiewiczovu t-normu:
 
     \begin{define}\label{LA}
-    Residuovaný svaz $(\LL,\wedge,\vee,\otimes,\rightarrow,0,1)$ s operacemi $\otimes$ a $\rightarrow$ definovanými v souladu s \eqref{Galoisova koresp} jako
+    Residuovaný svaz $(\LL,\wedge,\vee,\otimes,\rightarrow,0,1)$ s operacemi $\otimes$ a $\rightarrow$ definovanými v~souladu s \eqref{Galoisova koresp} jako
     \begin{align}
     x \otimes y &= \max(x+y-1,0) \\
     x \rightarrow y &= \min(1,1-x+y)
@@ -117,7 +116,7 @@
       \[
       x \otimes 1 = \max(x+1-1,0) = \max(x,0) = x
       \]
-    V druhé ekvivalenci využijeme toho, že pro $\forall x,y \in \LL$ platí $\max(x,y) = -\min(-x,-y)$ a $x,y,z \geq 0$:
+    V druhé ekvivalenci využijeme toho, že pro $\forall x,y \in \LL$ platí $\max(x,y) = -\min(-x,-y)$ a~$x,y,z \geq 0$:
     \begin{align*}
       x \otimes y \leq z &\Leftrightarrow \max(x+y-1,0) \leq z \Leftrightarrow \max(x+y-1-z,-z) \leq 0 \Leftrightarrow\\
       &\Leftrightarrow \min(1+z-x-y,z) \geq 0 \Leftrightarrow \min(1+z-y,z+x) \geq x \Leftrightarrow\\
@@ -221,12 +220,12 @@ Pro další úvahy je dobré znát horní meze citliosti běžných fuzzy-logick
     \end{center}
 \end{table}\label{tabulka max citlivosti}
 
-Citlivost $\lambda_\varphi = 0$ znamená, že funkce $\varphi(\xx) = konst, \, \forall \xx \in \LL^n$ (v čitateli \eqref{citlivost} musí být 0 $\forall \xx$), což odpovídá ztátě veškeré informace nesené vektorem $\xx$. Nízkofrekvenční filtry mají citlivost obecně v intervalu $(0,1]$, vysokofrekvenční pak v intervalu $(1,\infty)$. Zjednodušeně řečeno nízká citlivost způsobuje vymizení detailů, zatímco vysoká může mít za následek vznik nových artefaktů v obraze, vše ale záleží na konkrétním filtru. Z tabulky je dále zřejmé, proč jsme zaváděli odmocninu -- ta jako jediná dokáže citlivost snížit, nebo ji spíše při skládání operací udržet v požadovaném intervalu. \note{dokazovat horní mez citlivosti pro  k-tý prvek, nebo to nechat až na filtry}
+Citlivost $\lambda_\varphi = 0$ znamená, že funkce $\varphi(\xx) = konst, \, \forall \xx \in \LL^n$ (v čitateli \eqref{citlivost} musí být 0 $\forall \xx$), což odpovídá ztátě veškeré informace nesené vektorem $\xx$. Nízkofrekvenční filtry mají citlivost obecně v intervalu $(0,1]$, vysokofrekvenční pak v intervalu $(1,\infty)$. Zjednodušeně řečeno nízká citlivost způsobuje vymizení detailů, zatímco vysoká může mít za následek vznik nových artefaktů v obraze, vše ale záleží na konkrétním filtru. Z~tabulky je dále zřejmé, proč jsme zaváděli odmocninu -- ta jako jediná dokáže citlivost snížit, nebo ji spíše při skládání operací udržet v požadovaném intervalu. \note{dokazovat horní mez citlivosti pro  k-tý prvek, nebo to nechat až na filtry}
 
 
 \section{Reprezentace obrazových dat}
 
-Při psaní demonstračního kódu jsme se zaměřili na zpracování 3D medicínských dat v odstínech šedi. Jejich zpracování je výpočetně náročnější než u 2D, kvůli vyššímu počtu okolních (viz definice~\ref{def okolí}) voxelů\footnote{základní element 3D obrazu, analogie s pixelem ve 2D -- odtud také jeho název \bq \underline{vo}lume-pi\underline{xel}\eq} a absolutní urychlení výpočtu je tak mnohem citelnější. Data budeme chtít zpracovat pomocí FLF, tzn. musíme nejprve přiřadit vstupům funkce hodnoty konkrétních voxelů.
+Při psaní demonstračního kódu jsme se zaměřili na zpracování 3D medicínských dat v~odstínech šedi. Jejich zpracování je výpočetně náročnější než u 2D, kvůli vyššímu počtu okolních (viz definice~\ref{def okolí}) voxelů\footnote{základní element 3D obrazu, analogie s pixelem ve 2D -- odtud také jeho název \bq \underline{vo}lume-pi\underline{xel}\eq} a absolutní urychlení výpočtu je tak mnohem citelnější. Data budeme chtít zpracovat pomocí FLF, tzn. musíme nejprve přiřadit vstupům funkce hodnoty konkrétních voxelů.
 
 \begin{define}\label{def obraz}
   \textbf{Obraz} o šířce $w$, výšce $h$ a hloubce $d$ ztotožníme s maticí $\PP \in \LL^{w\times h\times d}$, kde $\LL$ je interval zahrnující všechny přípustné intenzity v obraze. Dále voxel $\PP_{i,j,k}, \,i \in \widehat w, \,j \in \widehat h, \,k \in \widehat d$ označíme jako $x_{i,j,k}$.
@@ -241,17 +240,17 @@ Při psaní demonstračního kódu jsme se zaměřili na zpracování 3D medicí
       \beq
       \NN = \Big\{ x_{p,q,r} \in \PP \;\Big\vert\; |p-i| \leq R \wedge |q-j| \leq R \wedge |r-k| \leq R \, \, p,q,r \in \mathbb{Z} \Big\}
       \eeq
-      nazýváme \textbf{okolím voxelu $x_{i,j,k}$} o poloměru $R$ a $x_{i,j,k}$ nazýváme \textbf{centrální voxel}. Okolí představuje krychli voxelů $(2R+1) \times (2R+1)\times (2R+1)$, kterou můžeme po plátcích a následně po řádcích přeznačit a uspořádat do \textbf{vektoru okolí} $\Nb = (x_1,x_2,...,x_{(2R+1)^3})$.
+      nazýváme \textbf{okolím voxelu $x_{i,j,k}$} o poloměru $R$ a $x_{i,j,k}$ nazýváme \textbf{centrální voxel}. Okolí představuje krychli voxelů $(2R+1) \times (2R+1)\times (2R+1)$, kterou můžeme po plátcích a~následně po řádcích přeznačit a uspořádat do \textbf{vektoru okolí} $\Nb = (x_1,x_2,...,x_{(2R+1)^3})$.
     \end{define}
 
     Z předchozí definice je patrné, že bude problém s okraji obrazu, protože pouze centrální voxel musí ležet uvnitř obrazu. Aby nedocházelo k degeneraci okolí, dodefinujeme intenzity voxelů vně obrazu nějakým zvoleným způsobem \cite{MajerovaPhD}: buď konstatní nulou, hodnotou nejbližího krajního voxelu, periodickým opakováním obrazu, nebo jeho ozrcadlením přes okraj (na hranách se zrcadlí dvakrát, v rozích třikrát). Nejvhodnější způsob závisí na mnoha okolnostech -- od volby filtrů až po charakter samotných dat.
 
-    \subsection{Maska}
+    \subsection{Maska}\label{sec maska}
 
     Abychom získali větší variabilitu, ohodnotíme každý voxel z okolí vahou:
 
     \begin{define}\label{def maska}
-      \textbf{Maskou} s poloměrem $R$ nazveme krychlové pole $\MM \in \mathbb{N}_0^{(2R+1) \times (2R+1)\times (2R+1)}$ s prvky $m_{i,j,k}$. Číslo
+      \textbf{Maskou} s poloměrem $R$ nazveme krychlové pole $\MM \in \mathbb{N}_0^{(2R+1) \times (2R+1)\times (2R+1)}$ s prvky $m_{i,j,k}$, $i,j,k \in \widehat{2R+1}$. Číslo
       \beq
       c = \sum_{i,j,k=1}^{2R+1} m_{i,j,k}
       \eeq
@@ -312,7 +311,7 @@ Při psaní demonstračního kódu jsme se zaměřili na zpracování 3D medicí
 
     Hledisek, podle kterých by se daly filtry roztřídit je více. Jedno, souvidející se tím, jaké frekvence se výsledném obraze zachovají, jsme již zmínili. Vzhledem k tomu, že se dále v práci chceme věnovat hlavně implementaci filtrů, zmíníme ještě jedno rozdělení, které určuje, jak filtr zachází se vstupními daty -- totiž rozdělení na \emph{morfologické} a \emph{statisticky motivované} filtry.
 
-        \subsubsection{Morfologické}
+        \subsubsection{Morfologické}\label{sec morph}
         Jak název napovídá, do této kategorie patří filtry snažící se nějak postihnout či zvýraznit charakter tvarů v obraze. Základ tvoří dva \emph{morfologické operátory} \emph{eroze} a \emph{dilatace}:
 
         \begin{define}\label{de eroze dilatace}
@@ -386,13 +385,13 @@ Při psaní demonstračního kódu jsme se zaměřili na zpracování 3D medicí
           nazýváme \textbf{Best Easy Systematic} estimator.
         \end{define}
 
-        Filtry jsou FLF, neboť \kk-tý prvek je FLF a aritmetický průměr také. Kvazi-medián průměruje vždy dva prvky, tzn. variance gaussovského šumu se snižuje na polovinu a odolnost vůči kontaminaci klesá s $q$ až k nule -- to je důvod, proč se většinou $q$ volí relativně malé. BES naproti tomu má pevnou limitní odolnost proti kontaminaci 25 \% (vše se vejde pod první, nebo nad třetí kvartil) a varianci snižuje 3krát až 4krát, opět podle toho, zda je počet prvků lichý, nebo sudý.
+        Filtry jsou FLF, neboť \kk-tý prvek je FLF a aritmetický průměr také. Kvazi-medián průměruje vždy dva prvky, tzn. variance gaussovského šumu se snižuje na polovinu a~odolnost vůči kontaminaci klesá s $q$ až k nule -- to je důvod, proč se většinou $q$ volí relativně malé. BES naproti tomu má pevnou limitní odolnost proti kontaminaci 25 \% (vše se vejde pod první, nebo nad třetí kvartil) a varianci snižuje 3krát až 4krát, opět podle toho, zda je počet prvků lichý, nebo sudý.
 
-        Dalšího snížení variance při zachování odolnosti vůči kontaminaci dosáhneme použitím Walshova seznamu. Díky tomu se může počet průměrovaných vstupů až zdvojnásobit a variance tak klesne na polovinu oproti filtrům bez Walshova seznamu. Toto je další důvod, proč i v této kategorii filtrů není vhodné používat jinou, než binární masku -- při vyšší váze hrozí nebezpečí, že ten samý prvek bude vybrán několikrát a průměrováním jeho samého se sebou se variance šumu nesníží. Mediánu nad Walshovým seznamem říkáme Hodges-Lehmannův medián, BES nad Walshovým seznamem značíme WBES. Diskuse snižování variance a odolnosti proti kontaminaci je provedena v sekci \ref{diskuse masky}.
+        Dalšího snížení variance při zachování odolnosti vůči kontaminaci dosáhneme použitím Walshova seznamu. Díky tomu se může počet průměrovaných vstupů až zdvojnásobit a~variance tak klesne na polovinu oproti filtrům bez Walshova seznamu. Toto je další důvod, proč i v této kategorii filtrů není vhodné používat jinou, než binární masku -- při vyšší váze hrozí nebezpečí, že ten samý prvek bude vybrán několikrát a průměrováním jeho samého se sebou se variance šumu nesníží. Mediánu nad Walshovým seznamem říkáme Hodges-Lehmannův medián, BES nad Walshovým seznamem značíme WBES. Diskuse snižování variance a odolnosti proti kontaminaci je provedena v sekci \ref{diskuse masky}.
 
     \subsection{Sítě a kompromisní filtrování}\label{sítě}
 
-        Další možnost, jak zlepšit vlastnosti fitrů (zejména v oblasti odstanění šumu), je kompromisní filtrování a konstrukce sítí filtrů \cite{Compromise denoise},\cite{Minmax denoise}. Přístup spočívá v tom, že na obraz použijeme celou škálu oblíbených (třeba i průměrovacíc filtrů) filtrů a jejich výsedky zpracujeme pomocí další FLF $\phi$ na konečný výsledek (případně na několik mezivýsledků a ty pak stejným způsobem zpracujeme na konečný výsledek). Hledání $\phi$ se děje podobným způsobem, jako učení neuronové sítě, případně experimentováním. To je v obou případěch velmi výpočetně náročné, což je také jeden z důvodů vývoje paralelních algoritmů pro tyto filtry.
+        Další možnost, jak zlepšit vlastnosti fitrů (zejména v oblasti odstanění šumu), je kompromisní filtrování a konstrukce sítí filtrů \cite{Compromise denoise,Minmax denoise}. Přístup spočívá v tom, že na obraz použijeme celou škálu oblíbených (třeba i průměrovacíc filtrů) filtrů a jejich výsedky zpracujeme pomocí další FLF $\phi$ na konečný výsledek (případně na několik mezivýsledků a ty pak stejným způsobem zpracujeme na konečný výsledek). Hledání $\phi$ se děje podobným způsobem, jako učení neuronové sítě, případně experimentováním. To je v obou případěch velmi výpočetně náročné, což je také jeden z důvodů vývoje paralelních algoritmů pro tyto filtry.
 
 
 % Kvalita obrázku:

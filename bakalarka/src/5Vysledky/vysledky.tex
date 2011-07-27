@@ -2,14 +2,14 @@
 
 \section{Vliv masky na výsledek filtrace}\label{diskuse masky}
 
-    Nyní provedeme diskusi zvolené masky na dvě hlavní vlastnosti filtru: odolnost vůči kontaminaci a snižování variance gaussovského šumu. Porovnávat budeme s klasickým průměrovým filtrem, který nejlépe snižuje varianci šumu, ale nemá žádnou odolnost proti kontaminaci a bude nás zajímat, jak se tyto dvě vlastnosti dají efektivně směnit. Nejprve se podíváme na jednodušší filtry medián a BES. U těch má smysl používat binární (viz teorie \ref{statisticky motivované}) masku se sudou kapacitou, neboť pak musíme medián brát jako průměr dvou prostředních prvků, čímž lépe snížíme varianci šumu. Na obrázku~5.1 uvádíme tradiční masky (bez centrálního voxelu) pořadě o kapacitě 6, 18 a 26.
+    Nyní provedeme diskusi zvolené masky na dvě hlavní vlastnosti filtru: odolnost vůči kontaminaci a snižování variance gaussovského šumu (vysvětlení pojmů viz sekce~\ref{statisticky motivované}). Porovnávat budeme s klasickým průměrovým filtrem, který nejlépe snižuje varianci šumu, ale nemá žádnou odolnost proti kontaminaci a bude nás zajímat, jak se tyto dvě vlastnosti dají efektivně směnit. Nejprve se podíváme na jednodušší filtry medián a BES. U těch má smysl používat binární (viz teorie \ref{statisticky motivované}) masku se sudou kapacitou, neboť pak musíme medián brát jako průměr dvou prostředních prvků, čímž lépe snížíme varianci šumu. Na obrázku~5.1 uvádíme tradiční masky (bez centrálního voxelu) pořadě o kapacitě 6, 18 a 26.
 
 \begin{figure}[h]\label{obr masky}
   \includegraphics[width = \textwidth]{src/5Vysledky/masky.pdf}
   \caption{Tradiční masky}
 \end{figure}
 
-    V tabulce~5.1 uvádíme data pro zmíněné dva filtry. Sloupec \emph{snížení variance šumu} udává, jaká bude variance šumu ve filtrovaném obrázku vůči původní. Pro srovnání uvádíme jak snižuje varianci obyčejný aritmetický průměr nad stejnou maskou.
+    V tabulce~5.1 uvádíme vypočtené hodnoty pro zmíněné dva filtry. Sloupec \emph{snížení variance šumu} udává, jaká bude variance šumu ve filtrovaném obrázku vůči původní. Pro srovnání uvádíme jak snižuje varianci obyčejný aritmetický průměr nad stejnou maskou.
 
 \begin{table}[h]\label{tab med BES}
     \begin{center}
@@ -35,7 +35,7 @@
 
     U obecného mediánu pro liché $c$ nedochází ke snížení variance, pro sudé $c$ je to snížení na 1/2. U obecného BES je pro liché $c$ snížení variance 3/8, neboť počítáme varianci veličiny $(X_1 + 2X_2 + X_3)/4$, kde $X_i, i = 1,2,3 \sim N(\mu,\sigma^2)$. Pro sudé $c$ je 1/4 jasná.
 
-    Z tabulky je vidět, že fitry vykazují velkou odolnost vůči kontaminaci (v praxi se pohybuje na max 10 \%) a varianci nesnižují nikterak valně -- v případě mediánu z lichého počtu prvků dokonce vůbec. Lepšího snížení variance šumu na úkor nižší odolnosti vůči kontaminaci dosáhneme použítím Walshova seznamu, kde se se variance sníží navíc \emph{až} dvakrát. Může to být i méně, neboť $\Lw \subset \WL$ a při výběru prvku z $\Lw$ se žádné průměrování nekoná a variance se tak nesnižuje. Dále je třeba si uvědomit, že kontaminace \kk~prvků v masce vede k poškození
+    Z tabulky je vidět, že fitry vykazují velkou odolnost vůči kontaminaci (v praxi se pohybuje na max 10 \%) a varianci nesnižují nikterak valně -- v případě mediánu z lichého počtu prvků dokonce vůbec. Lepšího snížení variance šumu na úkor nižší odolnosti vůči kontaminaci dosáhneme použítím Walshova seznamu -- tedy použitím filtrů H.-L. medián a WBES -- kde se se variance sníží navíc \emph{až} dvakrát. Může to být i méně, neboť $\Lw \subset \WL$ a při výběru prvku z $\Lw$ se žádné průměrování nekoná a variance se tak nesnižuje. Dále je třeba si uvědomit, že kontaminace \kk~prvků v masce vede k poškození
     \beq
     \mathrm{f_{bad}}(k) = \sum_{i=0}^{k-1}(c-i)
     \eeq
@@ -43,7 +43,7 @@
     \beq
     \mathrm{f_{bad}^{-1}}(n) = \max\bigg\{k \in \Nn_0 \;\bigg\vert\; n \geq \sum_{i=0}^{k-1}(c-i)\bigg\}
     \eeq
-    Pokud budeme postupovat jako u filtrů medián a BES, tzn. že může být \emph{poškozeno} \textit{n} prvků seřazeného \emph{seznamu} až do prvního vybraného (buď medián, nebo první kvartil), což odpovídá $\mathrm{f_{bad}^{-1}}(n)$ kontaminovaným prvkům v \emph{masce}, zajistíme maximálně to, že při konstatních datech, kontaminovaných v příslušném poměru\footnote{respektive tak, že v masce bude vždy maximálně $\mathrm{f_{bad}^{-1}}(n)$ kontaminovaných voxelů}, dá filtr konstatntní výstup, tzn. nezahrne žádné poškozené prvky. Nebude-li však vstup konstantní, mohou se poškozené prvky (a zejména prvky $p_{\frac{1}{2}}$) rozprostřít celkem libovolně po celém seznamu a nijak je neodstaníme. V takovém případě ale prohlašme, že poškozené prvky jsou hodně blízko nějakých \bq zdravých\eq ~prvků a tedy jejich výběr pro výpočet výsledku filtru příliš nevadí. Pro zamezení tomu, aby se prvky ze skupinky $p_{\frac{1}{2}}$ (která drží pohromadě) příliš promítly do výsledku, můžeme indexy vybíraných prvků (medián a kvartily) posunout tak, aby vzdálenost mezi nimi byla větší, než počet $p_{\frac{1}{2}}$ prvků (například pomoc zavedení kvazi-mediánu). Toto ale také zanedbáme s ohledem na předchozí úmluvu.
+    Pokud budeme postupovat jako u filtrů medián a BES, tzn. že může být \emph{poškozeno} \textit{n} prvků seřazeného \emph{seznamu} až do prvního vybraného (buď medián, nebo první kvartil), což odpovídá $\mathrm{f_{bad}^{-1}}(n)$ kontaminovaným prvkům v \emph{masce}, zajistíme maximálně to, že při konstatních datech, kontaminovaných v příslušném poměru\footnote{respektive tak, že v masce bude vždy maximálně $\mathrm{f_{bad}^{-1}}(n)$ kontaminovaných voxelů}, dá filtr konstatntní výstup, tzn. nezahrne žádné poškozené prvky. Nebude-li však vstup konstantní, mohou se poškozené prvky (a zejména prvky $p_{\frac{1}{2}}$) rozprostřít celkem libovolně po celém seznamu a nijak je neodstraníme. V takovém případě ale prohlašme, že poškozené prvky jsou hodně blízko nějakých \bq zdravých\eq ~prvků a tedy jejich výběr pro výpočet výsledku filtru příliš nevadí. Pro zamezení tomu, aby se prvky ze skupinky $p_{\frac{1}{2}}$ (která drží pohromadě) příliš promítly do výsledku, můžeme indexy vybíraných prvků (medián a kvartily) posunout tak, aby vzdálenost mezi nimi byla větší, než počet $p_{\frac{1}{2}}$ prvků (například pomoc zavedení kvazi-mediánu). Toto ale také zanedbáme s ohledem na předchozí úmluvu.
 
     V tabulce~5.2 uvádíme výsledy Hodges-Lehmanova mediánu a WBES. Kvůli mediánu je opět vhodné, aby Walshův seznam měl sudý počet prvků, to nastane pokud $4|c \,\vee\, 4|(c+1)$, protože Walshův seznam má ${c+1 \choose 2} = \frac{c(c+1)}{2}$ prvků. Masky tedy použijeme stejné jako na obrázku~5.1, tentokrát ovšem s centrálním voxelem. Vzhledem k tomu, že Walshův seznam obsahuje prvky vzniklé průměrováním dvou různých prvků $\Lw$ i samotné prvky $\Lw$ a my předem nevíme, které prvky filtr vybere, je snížení rozptylu šumu závislé na konkrétních vstupech a jeho analýza je podstatně složitější. Proto se spokojíme pouze s konstatováním, že v praxi je snížení variance u H.-L. medánu a WBES o něco lepší, než u jejich ekvivalentů nevyužívajících Walshův seznam.
 
@@ -51,7 +51,7 @@
     \begin{center}
     \begin{tabular}{lllll}
       \toprule
-      \multirow{4}{*}{Filtr$_{\mathrm{\substack{kapacita\\ masky}}}$} 
+      \multirow{4}{*}{Filtr$_{\mathrm{\substack{kapacita\\ masky}}}$}
                                         &délka   & max konta-  & max konta- & odolnost    \\
                                         &Walshova& minovaných  & minovaných & proti       \\
                                         &seznamu & prvků       & voxelů v   & kontami-    \\
@@ -111,13 +111,16 @@
 
     \subsection{Výsledky}
 
-    V tabulkách 5.4 a 5.5 uvádíme výsledky pro sedm filtrů popsaných v dřívějších kapitolách. U každého jsme zvolili dvě v praxi používané masky s poloměrem 1. Měření bylo prováděno pomocí rychlého systémového čítače běžícího na frekvenci CPU (1,86 GHz). Každý filtr byl spuštěn 400krát na CPU, 400krát na GPU a to ve 20ti cyklech -- v každém z nich byl spuštěn 20krát bezprostředně za sebou. Při spouštění na GPU byla měřena pouze délka běhu samotného kernelu, režie přesunů dat na GPU a svázání textur nejsou započítány, protože se neprovádějí u všech filtrů. Vstupní data byla použita vždy stejná.
+    V tabulkách 5.4 a 5.5 uvádíme výsledky pro sedm filtrů popsaných v dřívějších kapitolách. U každého jsme zvolili dvě v praxi používané masky s poloměrem 1. Měření bylo prováděno pomocí rychlého systémového čítače běžícího na frekvenci CPU (1,86 GHz). Každý filtr byl spuštěn 400krát na CPU, 400krát na GPU a to ve 20ti cyklech -- v každém z nich byl spuštěn 20krát bezprostředně za sebou. Při spouštění na GPU byla měřena pouze délka běhu samotného kernelu, režie přesunů dat na GPU nebyla započítána, protože se neprovádí u všech filtrů. Vstupní data byla použita vždy stejná.
+    
+    \subsubsection{Morfologické filtry}
 
 \begin{table}[h]\label{výsl 1}
-    \begin{center}
+    \hspace{-0.1cm}
     \begin{tabular}{ljkujku}
       \toprule
-      Filtr$_{\frac{thread}{blok}}$ $\downarrow$ & \multicolumn{1}{c}{CPU (ms)} & \multicolumn{1}{c}{GPU (ms)} & \multicolumn{1}{c}{Urychlení} & \multicolumn{1}{c}{CPU (ms)} & \multicolumn{1}{c}{GPU (ms)} & \multicolumn{1}{c}{Urychlení}\\
+      Maska $\rightarrow$ & \multicolumn{3}{c}{kapacita masky: 26} & \multicolumn{3}{c}{kapacita masky: 18}\\
+      Filtr$_{\frac{vláken}{blok}}$ $\downarrow$ & \multicolumn{1}{c}{CPU (ms)} & \multicolumn{1}{c}{GPU (ms)} & \multicolumn{1}{c}{Urychlení} & \multicolumn{1}{c}{CPU (ms)} & \multicolumn{1}{c}{GPU (ms)} & \multicolumn{1}{c}{Urychlení}\\
       \midrule
       \multicolumn{7}{c}{{\tt unsigned char} (0-255)}  \vspace{0.1cm} \\
       Eroze$_{128}$     & 44,3 & 1,47 & \textbf{30,2} & 32,2 & 1,34 & \textbf{24,0}\\
@@ -128,28 +131,28 @@
       Eroze$_{128}$     & 49,8 & 1,61 & \textbf{31,0} & 36,8 & 1,37 & \textbf{26,9}\\
       Dilatace$_{128}$  & 50,0 & 1,62 & \textbf{30,9} & 37,2 & 1,37 & \textbf{27,1}\\
       Hrany$_{128}$     & 78,8 & 1,53 & \textbf{51,4} & 57,3 & 1,32 & \textbf{43,5}\\
-      \midrule
-      Maska $\rightarrow$ & \multicolumn{3}{c}{kapacita masky: 26} & \multicolumn{3}{c}{kapacita masky: 18}\\
       \bottomrule
     \end{tabular}
     \caption{Srovnání morfologických filtrů na CPU a GPU pro různé datové typy}
-    \end{center}
 \end{table}
 
     Morfologické filtry běžely ve všech variantách se stejnými nastaveními velikosti bloku i počtu bloků. Můžeme vidět několik věcí:
     \begin{itemize}
       \item Rozdíly mezi datovými typy nejsou nijak markantní, ale je zřejmé, že pro typ {\tt unsigned int} zvládá kompilátor o něco lépe optimalizovat a jeho zvýšené paměťové nároky se zde neprojeví.
       \item Při zmenšení masky je zrychlení o něco menší. To je dáno tím, že kernely jsou hodně paměťové vázané a hlavně hodně malé. Tím pádem se při menší masce výrazněji projeví režie a latence.
-      \item Hranový detektor vykazuje ve všech případech předpokládané, takřka dvojásobné zrychlení díky lepšímu překrytí paměťových latencí na GPU.
+      \item Hranový detektor (tabulka 5.4, Hrany) vykazuje ve všech případech předpokládané, takřka dvojásobné zrychlení díky lepšímu překrytí paměťových latencí na GPU.
     \end{itemize}
 
-    Další optimalizace těchto kernelů by se mohla zcela jistě ubírat směrem konsolidace práce s pamětí -- nyní thread hodnoty přečtené z globální paměti použije jen jednou a v tomto stavu ho nemá smysl optimalizovat. Ideální by bylo zajistit, aby skupina threadů hodnoty sdílela a využít při tom rychlosti sdílené paměti. To by se dalo zařídit například tak, že by blok načetl do sdílené paměti malý krychlový výřez z celého obrazu a filtraci pak prováděl pouze v něm. Každý takto načtený voxel by pak byl použit až tolikrát, kolik je kapacita masky. Otázkou ale zůstává míra efektivity, která by byla hodně závislá na tom, jak široké by byly okraje vůči celému výřezu (ty potřebujeme, ale budou znovupoužity již méněkrát) -- ponechme stranou další nutné režie spojené s kopírováním.
+    Další optimalizace těchto kernelů by se mohla zcela jistě ubírat směrem konsolidace práce s pamětí -- nyní vlákno hodnoty přečtené z globální paměti použije jen jednou a v tomto stavu ho nemá smysl optimalizovat. Ideální by bylo zajistit, aby skupina vláken hodnoty sdílela a využít při tom rychlosti sdílené paměti. To by se dalo zařídit například tak, že by blok načetl do sdílené paměti malý krychlový výřez z celého obrazu a filtraci pak prováděl pouze v něm. Každý takto načtený voxel by pak byl použit až tolikrát, kolik je kapacita masky. Otázkou ale zůstává míra efektivity, která by byla hodně závislá na tom, jak široké by byly okraje vůči celému výřezu (ty potřebujeme, ale budou znovupoužity již méněkrát) -- ponechme stranou další nutné režie spojené s kopírováním.
+    
+    \subsubsection{Statisticky motivované filtry}
 
 \begin{table}[h]
-    \begin{center}
+    \hspace{-0.4cm}
     \begin{tabular}{ljkujku}
       \toprule
-      Filtr$_{\frac{thread}{blok}}$ $\downarrow$ & \multicolumn{1}{c}{CPU (ms)} & \multicolumn{1}{c}{GPU (ms)} & \multicolumn{1}{c}{Urychlení} & \multicolumn{1}{c}{CPU (ms)} & \multicolumn{1}{c}{GPU (ms)} & \multicolumn{1}{c}{Urychlení}\\
+      Maska $\rightarrow$ & \multicolumn{3}{c}{kapacita masky: 26} & \multicolumn{3}{c}{kapacita masky: 18}\\
+      Filtr$_{\frac{vláken}{blok}}$ $\downarrow$ & \multicolumn{1}{c}{CPU (ms)} & \multicolumn{1}{c}{GPU (ms)} & \multicolumn{1}{c}{Urychlení} & \multicolumn{1}{c}{CPU (ms)} & \multicolumn{1}{c}{GPU (ms)} & \multicolumn{1}{c}{Urychlení}\\
       \midrule
       \multicolumn{7}{c}{{\tt unsigned char} (0-255)}  \vspace{0.1cm}  \\
       Medián$_{192}$        & 320,2 & 9,45      & \textbf{33,9} & 211,3  & 3,62   & \textbf{58,3}\\
@@ -162,27 +165,23 @@
       BES$_{176}$           & 390,1 & 10,95    & \textbf{35,6} & 274,3  & 6,45   & \textbf{42,5} \\
       H-L Medián$_{64}$    & 3108,3 & 1327,99 & \textbf{2,3}  & 1658,2 & 434,21 & \textbf{3,8}  \\
       WBES$_{64}$          & 4753,3 & 1328,10 & \textbf{3,6}  & 2570,0 & 520,38 & \textbf{4,9}  \\
-      \midrule
-      Maska $\rightarrow$ & \multicolumn{3}{c}{kapacita masky: 27} & \multicolumn{3}{c}{kapacita masky: 19}\\
       \bottomrule
     \end{tabular}
     \caption{Srovnání statistických filtrů na CPU a GPU pro různé datové typy}
-    \end{center}
 \end{table}\label{výsl 2}
 
-    \newpage
     Nyní pobrobněji k statisticky motivovaným filtrům:
     \begin{itemize}
       \item Protože filtry již potřebují větší množství sdílené paměti, je u datového typu {\tt unsigned int} velmi znát jeho čtyřnásobná velikost oproti {\tt unsigned char}. To jsme museli zohlednit ve velikosti bloku (aby se jich na SM vešel optimální počet), což se samozřejmě promítlo do výsledků.
-      \item Zrychlení při použítí menší masky se zvětšuje, což je následkem použití \OOO($n^2$) algoritmů, které jsou samozřejmě pro menší pole dat efektivnéjší a sofistikovanější, byť optimalizované, algoritmy na CPU zde ztrácí. Zrychlení se nám také u mediánu a BES podařilo udžet na vysoké úrovní díky extenzivnímu využití sdílené paměti.
-      \item Algoritmus použitý pro filtry nad Walshovým seznamem je zřejmě příliš triviální a zrychlení je zde dosaženo pouze hrubou výpočetní silou. Optimalizaci by zde mohly pomoci novější karty s větším množstvím paměti a registrů, protože pro VS 1.0 jsou rozměry vstupních dat velmi nepříjemné.
+      \item Zrychlení při použítí menší masky se zvětšuje, což je následkem použití \OOO($n^2$) algoritmů, které jsou samozřejmě pro menší pole dat efektivnější, a sofistikovanější (byť optimalizované) algoritmy na CPU zde ztrácí. Zrychlení se nám také u mediánu a BES podařilo udžet na vysoké úrovní díky extenzivnímu využití sdílené paměti.
+      \item Algoritmus použitý pro filtry nad Walshovým seznamem je zřejmě příliš triviální a zrychlení je zde dosaženo pouze hrubou výpočetní silou. Optimalizaci by zde mohly pomoci novější karty s větším množstvím paměti a registrů, protože pro CC 1.0 jsou rozměry vstupních dat velmi nepříjemné.
     \end{itemize}
 
-    Zvláštní je zpomalení mediánu při použití většího typu na vetší masce -- je vcelku nezávislé na počtu threadů v bloku (ověřeno experimentem) a při přechodu k menší masce vždy zmizí. Z části jde zřejmě o nešťastnou optimalizaci překladače v kombianci s nevhodnou velikostí masky, z části jde o to, že jsme od začátku optimalizovali algoritmus pro menší datový typ (stejný rozsah jako vstupní data, menší spotřeba paměti), takže nám tyto \bq výstřelky\eq ~zůstaly skryty.
+    Zvláštní je zpomalení mediánu při použití většího typu na vetší masce -- je vcelku nezávislé na počtu vláken v bloku (ověřeno experimentem) a při přechodu k menší masce vždy zmizí. Z části jde zřejmě o nešťastnou optimalizaci překladače v kombianci s nevhodnou velikostí masky, z části jde o to, že jsme od začátku optimalizovali algoritmus pro menší datový typ (stejný rozsah jako vstupní data, menší spotřeba paměti), takže nám tyto \bq výstřelky\eq ~zůstaly skryty.
 
     \vspace{0.5cm}
 
-    Celkově je uryhclení na GPU slušné. Zvláště cenné je zrychlení na jednotky ms u \bq menších\eq ~filtrů, které teoreticky umožňuje jejich použití v situacích, kde je třeba výsledek filtrace v reálném čase -- například interaktivní nastavování parametrů filtru. Jakékoliv zrychlení se pak uplatní při konstrukci sítí filtrů, jak bylo zmíněno v sekci~\ref{sítě}.
+    Celkově je urychlení na GPU slušné. Zvláště cenné je zrychlení na jednotky ms u \bq menších\eq ~filtrů, které teoreticky umožňuje jejich použití v situacích, kde je třeba výsledek filtrace v reálném čase -- například interaktivní nastavování parametrů filtru. Jakékoliv zrychlení se pak uplatní při konstrukci sítí filtrů, jak bylo zmíněno v sekci~\ref{sítě}.
 
 
 
