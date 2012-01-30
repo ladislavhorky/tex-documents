@@ -72,10 +72,222 @@
      Vidíme, že zvláště WBES$_{\mathrm{19,27}}$ se odolností proti kontaminaci blíží do teoretických požadovaných mezí. Zajímavá je situace u WBES$_{\mathrm{7}}$, kde je maska tak malá, že filtr, tak jak je navržen, podle naší úmluvy odolný proti kontaminaci není. To můžeme zlepšit tak, že místo prvního a třetího kvartilu vybereme prvky o jedna blíže ke středu pole -- pokozených pak může být 7, což odpovídá jednomu kontaminovanému v masce a 14,3\% odolnosti.
      \vspace{0.5cm}
 
-     V praxi však měříme kontaminaci pro celý obraz a ne na úrovni jednotlivých voxelů. Může se tedy stát, že při 10\% kontaminaci \emph{celého obrazu} nebude výsledek filtru WBES$_{\mathrm{27}}$ příliš dobrý, protože u mnoha voxelů bude kontaminováno více než 10,5 \% okolních voxelů (kontaminované voxely mohou být libovolně rozmístěny) a výstupní voxel bude poškozený -- což ale odpovídá vlastnostem filtru. V odolnosti proti kontaminaci je tudíž dobré mít oproti teoretickým výsledkům nějakou rezervu.
+     V praxi však měříme kontaminaci pro celý obraz a ne na úrovni jednotlivých voxelů. Může se tedy stát, že při 10\% kontaminaci \emph{celého obrazu} nebude výsledek filtru WBES$_{\mathrm{27}}$ příliš dobrý, protože u mnoha voxelů bude kontaminováno více než 10,5 \% okolních voxelů (kontaminované voxely mohou být libovolně rozmístěny) a výstupní voxel bude poškozený -- což ale odpovídá vlastnostem filtru. V odolnosti proti kontaminaci je tudíž dobré mít oproti teoretickým výsledkům nějakou rezervu. Následují praktické ukázky filtrace, včetně demontrace výsledků morfologických filtrů:
+     
+     \subsection{Výsledky filtrace -- příklady}
+     
+     Kompletní výsledky všech filtrů pro všechny dále uvedené šumy jsou k dispozici na přiložením DVD. Pro demonstraci filtrů byla opět pouužita stejná data jako pro měření urychlení: 3D SPECT scan mozku o rozměrech $79 \times 95 \times 69$ voxelů v odstínech šedi (0-255). Pro větší zřetelnost byl z výsledku vybrán vždy jeden reprezentativní horizontální řez (konkrétně 31.).
+     
+     \vspace{0.5cm}
+     
+     Rozdíly mezi filtry medián, BES, H.-L. medián a WBES předvedeme na kontaminovaném gaussovském šumu s velkou 10\% kontaminací a $\sigma = 10$ při použití datového typu {\tt usigned char}. Poté předvedeme subjektivně nejlepší výsledky (pouze jeden vítězný filtr) pro šum s kontaminací 5 \% a $\sigma = 15$ (agresivní šum) a šum s kontaminací 3 \% a $\sigma = 5$. Parametry šumů jsou poněkud nadsazené kvůli ilustraci schopností filtrů. U řezů vždy ukážeme výsledek filtrace a rozdíl oproti nepoškozenému originálu, pro lepší viditelnost inverzní a vynásobený pěti. Jako subjektivně vítězný fitr jsme pokaždé vybrali ten, kde rozdíl již neměl výrazný chrakter šumu, ale zároveň ještě nedošlo k přílišnému vyhazení (rozdíl byl stále hodně světlý).
 
-     U agresivnějších šumů (velká kontaminace, velký rozptyl gaussovského šumu) a nestačí malá maska s poloměrem 1, neboť průměr z tak malého okolí subjektivně nerozpoznáme. Větší maska (poloměr 2) již funguje lépe, ale filtry jsou samozřejmě časově náročnější -- zvláště pak ty na bázi Walshova seznamu. Zde by mohla být alternativou kombinace mediánu (H.-L. mediánu) na malé masce, který odstraní kontaminaci, a nějakého klasického filtru na bázi aritmetického průměru s větší maskou, který se postará o gaussovský šum. Příklady v příloze~\ref{příloha obrázky}, uvidíme, že volba vhodného filtru pro daný šum je celkem subjektivní záležitost.
+    Byla použita maska s poloměrem 1 a kapacitou 27 (poslední na obrázku 5.1) a pro dosažení lepších výsledků maska s poloměrem 2 a kapacitou 80 (krychle $5\times 5\times 5$ bez hran a středu). Čas výpočtu WBES na CPU se pro větší masku pohyboval okolo 40s, H.-L. mediánu okolo 27s, zrychlení na GPU není známo, protože po uplynutí cca 7s bez odezvy CPU kartu resetuje. Navíc zde by byl algoritmus použitý pro tyto filtry extrémě neefektivní kvůli velikosti Walshova seznamu.
 
+    Pro zašumění originálu byla napsána funkce {\tt AddNoise(...)}. V ní je nejprve rozhoduto zda dotyčný voxel bude kontaminovaný -- pokud ne, je pomocí Box-Mulleorvy\footnote{Umožňuje generovat dvě nezávislá N(0,1) rozdělení z dvou nezávislých U(0,1) rozdělení -- ta se dají získat pomocí fukce {\tt rand()}.} formule nagenerován šum s rozdělením N(0,1), který je posléze přetransformován a přičten k hodnotě voxelu.
+
+    U filtrů je opět v dolním indexu uváděna kapacita masky. Samotný šum bez kontaminace uvádíme jen kvůli porovnání, filtry samozřejmě pracují s kontaminovaným šumem. Nyní výsledky pro jednotlivé šumy v pořadí, jak byly popsány (10\%/10, 5\%/15 a 3\%/5):
+
+    \vfill
+    \newpage
+    \begin{figure}[htp]
+        \center
+        \begin{minipage}[c]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/original.png}
+            \caption{Originál}
+        \end{minipage}
+     \end{figure}
+     \begin{figure}[h]
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100noise.png}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100contaminated.png}
+        \end{minipage}
+        \\
+        \begin{minipage}[l]{0.5\textwidth}
+            \caption{Šum, $\sigma = 10$}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \caption{Šum, $\sigma = 10$, kontaminace 10~\%}
+        \end{minipage}
+    \end{figure}
+
+    \begin{figure}[htp]
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100med.png}
+            \caption{Medián$_{27}$}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100medD.png}
+            \caption{Medián$_{27}$ -- originál}
+        \end{minipage}
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100bes.png}
+            \caption{BES$_{27}$}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100besD.png}
+            \caption{BES$_{27}$ -- originál}
+        \end{minipage}
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100wmed.png}
+            \caption{H.-L. medián$_{27}$}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100wmedD.png}
+            \caption{H.-L. Medián$_{27}$ -- originál}
+        \end{minipage}
+    \end{figure}
+    \vfill
+    \newpage
+    ~\vfill~
+    \begin{figure}[htp]
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100wbes.png}
+            \caption{WBES$_{27}$}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100wbesD.png}
+            \caption{WBES$_{27}$ -- originál}
+        \end{minipage}
+    \end{figure}
+
+    \begin{figure}[h]
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100besL.png}
+            \caption{BES$_{80}$ (poloměr 2, vítěz)}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/10-100besLD.png}
+            \caption{BES$_{80}$ -- originál}
+        \end{minipage}
+    \end{figure}
+    ~\vfill~
+    \newpage
+    \begin{figure}[Htp] %-----------------------------------------
+        \center
+        \begin{minipage}[c]{0.5\textwidth}
+            \center
+            \includegraphics[width = 140pt]{src/8Appendix/final/original.png}
+            \caption{Originál}
+        \end{minipage}
+     \end{figure}\nopagebreak
+     \begin{figure}[h!]
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 140pt]{src/8Appendix/final/15-50noise.png}
+            %\caption{Zašuměný originál}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 140pt]{src/8Appendix/final/15-50contaminated.png}
+            %\caption{Zašuměný a kontaminovaný originál}
+        \end{minipage}
+        \\
+        \begin{minipage}[l]{0.5\textwidth}
+            \caption{Šum, $\sigma = 15$}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \caption{Šum, $\sigma = 15$, kontaminace 5~\%}
+        \end{minipage}
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 140pt]{src/8Appendix/final/15-50wbesL.png}
+            \caption{WBES$_{80}$ (poloměr 2, vítěz)}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 140pt]{src/8Appendix/final/15-50wbesLD.png}
+            \caption{WBES$_{80}$ -- originál}
+        \end{minipage}
+    \end{figure}
+    \newpage
+    \begin{figure}[Htp]
+        \center
+        \begin{minipage}[c]{0.5\textwidth}
+            \center
+            \includegraphics[width = 140pt]{src/8Appendix/final/original.png}
+            \caption{Originál}
+        \end{minipage}
+    \end{figure}
+    \begin{figure}[h!]
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 140pt]{src/8Appendix/final/5-30noise.png}
+            %\caption{Zašuměný originál}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 140pt]{src/8Appendix/final/5-30contaminated.png}
+            %\caption{Zašuměný a kontaminovaný originál}
+        \end{minipage}
+        \\
+        \begin{minipage}[l]{0.5\textwidth}
+            \caption{Šum, $\sigma = 5$}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \caption{Šum, $\sigma = 5$, kontaminace 3~\%}
+        \end{minipage}
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 140pt]{src/8Appendix/final/5-30bes.png}
+            \caption{BES$_{27}$ (vítěz)}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 140pt]{src/8Appendix/final/5-30besD.png}
+            \caption{BES$_{27}$ -- originál}
+        \end{minipage}
+    \end{figure}
+    \newpage
+    
+    Vidíme, že u agresivnějších šumů (velká kontaminace, velký rozptyl gaussovského šumu) a nestačí malá maska s poloměrem 1, neboť průměr z tak malého okolí subjektivně nerozpoznáme. Větší maska (poloměr 2) již funguje lépe, ale filtry jsou samozřejmě časově náročnější -- zvláště pak ty na bázi Walshova seznamu. Zde by mohla být alternativou kombinace mediánu (H.-L. mediánu) na malé masce, který odstraní kontaminaci, a nějakého klasického filtru na bázi aritmetického průměru s větší maskou, který se postará o gaussovský šum.
+     
+     \subsubsection{Ukázky morfologických filtrů}
+     
+     K vytvoření ukázek filtrů dilatace, eroze a detekce hran byla použita maska s poloměrem 1 a kapacitou 26 (poslední z masek na obrázku 5.1, bez centrálního voxelu). Můžeme vidět, že u detekce hran dochází kvůli nulovým okrajům na stranách obrázku k degeneraci, protože obrázek zasahuje až ke krajům -- zde by bylo vhodnější použít např. okraje s konstantním opakováním.
+    \vfill
+    \begin{figure}[htp]
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/original.png}
+            \caption{Originál}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/dilatace.png}
+            \caption{Dilatace}
+        \end{minipage}
+     \end{figure}
+     \begin{figure}[h]
+        \begin{minipage}[l]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/eroze.png}
+            \caption{Eroze}
+        \end{minipage}
+        \begin{minipage}[r]{0.5\textwidth}
+            \center
+            \includegraphics[width = 150pt]{src/8Appendix/final/hrany.png}
+            \caption{Detekce hran}
+        \end{minipage}
+    \end{figure}
+    \vfill
+    \newpage
+     
 \section{Urychlení výpočtů na GPU}
 
     \subsection{Testovací sestava a data}
@@ -112,7 +324,7 @@
     \subsection{Výsledky}
 
     V tabulkách 5.4 a 5.5 uvádíme výsledky pro sedm filtrů popsaných v dřívějších kapitolách. U každého jsme zvolili dvě v praxi používané masky s poloměrem 1. Měření bylo prováděno pomocí rychlého systémového čítače běžícího na frekvenci CPU (1,86 GHz). Každý filtr byl spuštěn 400krát na CPU, 400krát na GPU a to ve 20ti cyklech -- v každém z nich byl spuštěn 20krát bezprostředně za sebou. Při spouštění na GPU byla měřena pouze délka běhu samotného kernelu, režie přesunů dat na GPU nebyla započítána, protože se neprovádí u všech filtrů. Vstupní data byla použita vždy stejná.
-    
+
     \subsubsection{Morfologické filtry}
 
 \begin{table}[h]\label{výsl 1}
@@ -144,7 +356,7 @@
     \end{itemize}
 
     Další optimalizace těchto kernelů by se mohla zcela jistě ubírat směrem konsolidace práce s pamětí -- nyní vlákno hodnoty přečtené z globální paměti použije jen jednou a v tomto stavu ho nemá smysl optimalizovat. Ideální by bylo zajistit, aby skupina vláken hodnoty sdílela a využít při tom rychlosti sdílené paměti. To by se dalo zařídit například tak, že by blok načetl do sdílené paměti malý krychlový výřez z celého obrazu a filtraci pak prováděl pouze v něm. Každý takto načtený voxel by pak byl použit až tolikrát, kolik je kapacita masky. Otázkou ale zůstává míra efektivity, která by byla hodně závislá na tom, jak široké by byly okraje vůči celému výřezu (ty potřebujeme, ale budou znovupoužity již méněkrát) -- ponechme stranou další nutné režie spojené s kopírováním.
-    
+
     \subsubsection{Statisticky motivované filtry}
 
 \begin{table}[h]

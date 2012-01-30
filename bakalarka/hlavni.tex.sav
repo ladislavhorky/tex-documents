@@ -1,8 +1,8 @@
 % -*-coding: utf-8 -*-
-\documentclass[11pt,a4paper]{report}
+\documentclass[oneside,11pt,a4paper]{report}
 
 \newif\ifrelease % new boolean variable release. True = include some fancy content
-\releasefalse % and set it
+\releasetrue % and set it
 
 \usepackage[czech]{babel}
 \usepackage[utf8]{inputenc}
@@ -15,8 +15,14 @@
 \usepackage{epsfig}
 \usepackage{graphicx}
 \usepackage{color}
+\usepackage{multirow}
 \usepackage{booktabs}
-%\usepackage[justification=centering]{caption}
+\usepackage[abs]{overpic}
+\setlength\unitlength{1mm}
+\usepackage{fancyvrb}
+\usepackage{dcolumn}
+
+\usepackage[justification=centering]{caption}
 \ifrelease
 	\usepackage{pdfpages}
 \fi
@@ -24,16 +30,21 @@
 
 \hypersetup{
 	pdfauthor={Ladislav Horký},
-	pdftitle={Použití fuzzy logiky ve zpracování obrazu na GPU}
+	pdftitle={Paralelní implementace fuzzy filtrů ve zpracování obrazu na GPU}
 }
 
 %% Nastavení zrcadla sazby
 \usepackage{calc}
-\setlength{\textheight}{9in}
-\setlength{\textwidth}{6in}
-\setlength\oddsidemargin{(\paperwidth-\textwidth)/2 - 1in}
-\setlength\evensidemargin{(\paperwidth-\textwidth)/2 - 1in}
-\setlength\topmargin{(\paperheight-\textheight-\headheight-\headsep-\footskip)/2 - 1in}
+\setlength{\textheight}{\paperheight -3cm -3cm}  % horni a dolni okraje 3cm, do tech se musi vejit header a footer
+\setlength{\textwidth}{\paperwidth -3.5cm -2.6cm}  % levy okraj 3,5cm (na vazbu), pravy okraj 2,5cm
+\setlength{\oddsidemargin}{3.5cm -1in}
+\setlength{\topmargin}{(\paperheight-\textheight-\headheight-\headsep-\footskip)/2 - 1in}
+%\usepackage{calc}
+%\setlength{\textheight}{9in}
+%\setlength{\textwidth}{6in}
+%\setlength\oddsidemargin{(\paperwidth-\textwidth)/2 - 1in}
+%\setlength\evensidemargin{(\paperwidth-\textwidth)/2 - 1in}
+%\setlength\topmargin{(\paperheight-\textheight-\headheight-\headsep-\footskip)/2 - 1in}
 
 %\parindent=0pt % odsazení 1. řádku odstavce
 %\parskip=4pt   % mezera mezi odstavci
@@ -55,7 +66,7 @@
 \newif\ifshownotes % zobraz poznámky level 1
 \shownotesfalse
 \newif\ifshownotesadd % zobraz poznámky level 2
-\shownotesaddtrue
+\shownotesaddfalse
 
 \newcommand{\LAs}{\L A_{sqrt}}
 \newcommand{\rl}{\textup{(}}
@@ -72,7 +83,7 @@
 \fi
 \newcommand{\LL}{\mathbf{L}}
 \newcommand{\sqr}{\mathrm{sqrt}}
-\newcommand{\LAsq}{$\mathrm{\L A_{sqrt}}$}
+\newcommand{\LAsq}{$\mathrm{\L A_{sqrt}}$ }
 \newcommand{\beq}{\begin{equation}}
 \newcommand{\eeq}{\end{equation}}
 \newcommand{\xx}{\mathbf{x}}
@@ -93,7 +104,28 @@
 \newcommand{\MED}{\mathrm{MED}}
 \newcommand{\BES}{\mathrm{BES}}
 \newcommand{\kk}{\textit{k}}
+\newcommand{\ccc}{\textit{c}}
 \newcommand{\et}{\;\,\mathrm{et}\;\,}
+\newcommand{\Cpp}{C\raisebox{0.15ex}[0ex][0ex]{++}}
+
+\newcommand{\Nn}{\mathbb{N}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\Imageman}{{\tt ImageManager<imDataType>}}
+\newcommand{\Imageinfo}{{\tt ImageInfo}}
+\newcommand{\imDataType}{{\tt imDataType}}
+\newcommand{\Analyze}{Analyze$^{\mathrm{\textsc{tm}}}$ 7.5}
+\newcommand{\image}{{\tt image}}
+\newcommand{\imageGpu}{{\tt imageGpu}}
+\newcommand{\bl}[1]{\textcolor[rgb]{0,0,1}{#1}} % prostě fancyverbatim neumí textbf
+\newcommand{\cy}[1]{\textcolor[rgb]{1,0,1}{#1}}
+\newcommand{\FERMI}{FERMI$^{\mathrm{\textsc{tm}}}$}
+\newcommand{\Vr}{\Verb[commandchars = \\\{\}]}
+\newcommand{\OOO}{$\mathcal{O}$}
+
+\newcolumntype{d}{D{,}{,}{4.2}}
+\newcolumntype{k}{D{,}{,}{2}}
+\newcolumntype{j}{D{,}{,}{1}}
+\newcolumntype{u}{D{,}{,}{0}}
 
 % Definice makra pro české uvozovky:
 \def\bq{\mbox{\kern.1ex\protect\raisebox{-1.3ex}[0pt][0pt]{''}\kern-.1ex}}
@@ -104,7 +136,7 @@
 \fi
 
 % Dělení slov:=============================================
-%\hyphenation{t-norma}  JAK KRUCI ABY TO NEDĚLILO?
+\hyphenation{pře-klá-da-jí-cí}
 
 % =========================================================
 \begin{document}
@@ -112,11 +144,13 @@
 \ifrelease
 	\input{startpages.tex} % úvodní strany
 \fi
-
+    \newpage
+    \pagenumbering{roman}
     \tableofcontents
 
-    \addcontentsline{toc}{chapter}{Úvod}
     \chapter*{Úvod}
+    \pagenumbering{arabic}
+        \addcontentsline{toc}{chapter}{Úvod}
         \input{src/0Uvod/uvod.tex}
 
     \chapter{Fuzzy logika}
@@ -140,7 +174,7 @@
 
         \input{src/1Fuzzy/fuzzy.tex}
 
-    \chapter{implementace na CPU}
+    \chapter{Implementace na CPU}\label{cpu impl}
         % Celočíselná aritmetika
             % Přesnost
         % Práce s 3D obrazovými daty
@@ -149,12 +183,10 @@
         % Masky, strukturní elementy
         % Implementace filtrů
             % Quickselect
-            
+
          \input{src/7Cpu/cpu.tex}
 
-    % algoritmy -- co patří k CPU do CPU, co ke GPU do GPU
-
-    \chapter{Výpočty na GPU}
+    \chapter{Výpočty na GPU}\label{gpu úvod}
         % Vývoj GPU
         % Programovací prostředí
             % CUDA
@@ -163,12 +195,6 @@
             % Hierarchie paralelizace
 
         \input{src/2Gpu/gpu.tex}
-
-    \chapter{Třídící algoritmy} % možná před GPU
-        % Quickselect
-        % Zapomětlivé třídění
-
-        \input{src/3Trideni/trideni.tex}
 
     \chapter{Implementace v CUDA}
         % Kernel
@@ -179,21 +205,39 @@
         \input{src/4Implementace/implementace.tex}
 
     \chapter{Výsledky}
-        % volba masky 
+        % volba masky
         % Testovací data
         % Testovací sestava
         % Urychlení vůči CPU
 
-    \addcontentsline{toc}{chapter}{Závěr}
+        \input{src/5Vysledky/vysledky.tex}
+
     \chapter*{Závěr}
+     \addcontentsline{toc}{chapter}{Závěr}
+         \input{src/6Zaver/zaver.tex}
+
+    % APENDIX
+
+    \appendix
+
+    \input{src/8Appendix/app.tex}
 
     \addcontentsline{toc}{chapter}{Literatura}
-
     \include{src/bibliography}
+    
+    \newpage
+    \chapter*{Errata}
+    
+    Český abstrakt, 6. řádek: 
+    
+    ...celé škále 2,3krát \underline{(kde jsme naráželi na pro hardware nevhodné rozměry zpracovávaných dat)} až 60krát...
+    \vspace{0.5cm}
+    
+    Sekce 1.5.1, 2. řádek:
+    
+    ...jaké frekvence se \underline{ve} výsledném obraze zachovají...
+    
+    
 
-    % CITACE:
 
 \end{document} 
-
-% def k-tá statistika
-% dl, že operace LA splňují residuovaný svaz.

@@ -134,7 +134,7 @@
 \ifundefined{uv}%
         \gdef\uv#1{\bq #1\eq}
 \fi
-
+\parindent=0pt
 % Dělení slov:=============================================
 \hyphenation{pře-klá-da-jí-cí}
 
@@ -221,9 +221,27 @@
     \appendix
 
     \input{src/8Appendix/app.tex}
-    
+
     \addcontentsline{toc}{chapter}{Literatura}
     \include{src/bibliography}
+    
+    \newpage
+    \chapter*{Errata}
+    
+    Český abstrakt, 6. řádek: 
+    
+    ...celé škále 2,3krát \underline{(kde jsme naráželi na pro hardware nevhodné rozměry} \underline{zpracovávaných dat)} až 60krát...
+    \vspace{0.5cm}
+    
+    Sekce 1.5.1, 2. řádek:
+    
+    ...jaké frekvence se \underline{ve} výsledném obraze zachovají...
+     \vspace{0.5cm}
+     
+    Strana 16, poslední odstavec, 5. řádek:
+    
+    ...a prvky mezi nimi jsou také velikostně mezi pivoty.
+    
 
 
 \end{document} 
