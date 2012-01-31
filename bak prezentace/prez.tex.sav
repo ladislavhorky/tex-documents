@@ -61,9 +61,9 @@
 
 \section{Úvod}
     \begin{frame}{Motivace, cíle}
-        Cílem práce je ukázat možnosti zrychlení obrazových fuzzy filtrů na GPU
-        a umožnit tak konstrukci a testování složitějších filtrů v reálném
-        čase:
+        Cílem práce je ukázat možnosti zrychlení obrazových fuzzy filtrů na GPU 
+        na 3D medicínských datech a umožnit tak konstrukci a testování složitějších 
+        filtrů v reálném čase:
         \beI
             \item[$\rightarrow$] GPU jsou vhodné pro filtrování obrazu, což je
                 přirozeně paralelní proces
@@ -76,6 +76,76 @@
     \end{frame}
     
 \section{Fuzzy Logika}
+
+    \begin{frame}{Proč fuzzy?}
+        Výhody
+        \beI
+            \item Solidní teoretický základ pro analýzu filtrů
+            \item Matematický model je přímo aplikovatelný na data, 
+                tak jak jsou reprezentována v počítači
+            \item Omezená citlivost filtrů (odšumění)
+            \item Redukce na jednoduché matematické operace
+            \item Možnost návrhu a analýzy sítí filtrů
+        \enI
+        Nevýhody
+        \beI
+            \item Několik oblíbených filtrů zde nelze implementovat (Gauss)
+        \enI
+    \end{frame}
+    
+     \begin{frame}{\L ukasiewiczova algebra s odmocninou}
+        \begin{define}
+            Nechť $\bL = [0,1]$ a $a,b \in \bL$. Nechť $\langle\bL,\wedge,\vee,\otimes,
+            \rightarrow,0,1\rangle$, kde
+            \begin{align}
+                 a \wedge b &= \min(a,b) & a \otimes b &= \max(a+b-1,0)\notag\\
+                 a \vee b &= \max(a,b) &  a \rightarrow b &= \min(1-a+b,1)\notag
+            \end{align}
+            je \textbf{reziduovaný svaz} s \textbf{\L ukasiewiczovou
+            t-normou $\otimes$}, s největším prvkem 1 a nejmenším prvkem 0,
+            pak $\langle\bL,\wedge,\vee,\otimes,\rightarrow,sqrt,0,1\rangle$, kde
+                 $$\mathrm{sqrt}(a) = (1+a)/2$$
+            je \textbf{\L ukasiewiczova algebra s odmocninou} [1]. Značíme ${\textit\L} A_{sqrt}$.
+        \end{define}
+    \end{frame}
+    
+    \subsection{Obraz ve fuzzy logice}
+     \begin{frame}{Reprezentace obrazu}
+        \beI
+            \item Pouze jednokanálové obrazy (odstíny šedi)
+            \item Zpracování po voxelech (Local Image Processing)
+            \item Hodnota výsledného voxelu je funkcí pouze voxelů z přesně 
+                definovaného sousedství (tzv. strukturní element, maska) zdrojového voxelu
+            \item Z použití sousedství voxelu plynou problémy s okraji obrázku
+        \enI
+            \begin{figure}[h]
+              \includegraphics[width = 0.8\textwidth]{img/masky.pdf}
+              \caption{Tradiční strukturní elementy}
+            \end{figure}
+     \end{frame}
+        
+     
+     \begin{frame}{Filtry}
+        Roztřídění filtrů z implementačního hlediska:
+        \beI
+            \item Pomocné, algebraické (sčítání, prahování)
+            \item Morfologické (eroze, dilatace, hrany)
+            \item Vyhlazovací využívající seřazené pole (median, BES)
+            \beI
+                \item Využívající Walshův seznam (H.L. median, WBES)
+            \enI
+        \enI
+    \end{frame}
+    
+\section{GPU}
+
+     \begin{frame}{Rozdíly CPU a GPU}
+        \begin{figure}
+            \includegraphics[width=90mm]{img/CPUGPU.PNG}
+            \caption{Rozdíly v architektuře, [2]}
+        \end{figure}
+    \end{frame}
+
 
 \section{Výsledky}
     \begin{frame}{Testovací sestava}
@@ -98,6 +168,7 @@
         \end{tabular}
         %\caption{Testovací sestava}
         \end{table}
+        Testovací data: 3D SPECT obraz 79x95x69 voxelů
     \end{frame}
     
     \begin{frame}{Urychlení morfologických filtrů}
