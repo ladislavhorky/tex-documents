@@ -46,7 +46,7 @@
 \author{Ladislav Horký}
 \institute{FJFI ČVUT v Praze \newline \newline Vedoucí práce: Ing. Tomáš Oberhuber Ph.D.
 \newline Konzultant: doc. Ing. Jaromír Kukal Ph.D.}
-\date{\today} 
+\date{\today}
 
 \begin{document}
 % úvodní slidy
@@ -70,17 +70,17 @@
             \item Aplikovat algoritmy na reálná 3D obrazová data
         \enI
     \end{frame}
-    
+
 \section{Fuzzy Logika}
 
     \begin{frame}{Proč fuzzy?}
         Výhody
         \beI
-            \item Solidní teoretický základ pro analýzu filtrů, 
+            \item Solidní teoretický základ pro analýzu filtrů,
                 postavený na \L ukasiewiczově algebře s odmocninou
-            \item Matematický model je přímo aplikovatelný na data, 
-                tak jak jsou reprezentována v počítači
-            \item Omezená citlivost filtrů (odšumění)
+            \item \alert<2>{Matematický model je přímo aplikovatelný na data,
+                tak jak jsou reprezentována v počítači}
+            \item Specializovaná na robustní odšumovací filtry
             \item Redukce na jednoduché matematické operace
             \item Možnost návrhu a analýzy sítí filtrů
         \enI
@@ -89,7 +89,7 @@
             \item Několik oblíbených filtrů zde nelze implementovat (Gauss)
         \enI
     \end{frame}
-    
+
      \begin{frame}{\L ukasiewiczova algebra s odmocninou}
         \begin{define}
             Nechť $\bL = [0,1]$ a $a,b \in \bL$. Nechť $\langle\bL,\wedge,\vee,\otimes,
@@ -100,19 +100,19 @@
             \end{align}
             je \textbf{reziduovaný svaz} s \textbf{\L ukasiewiczovou
             t-normou $\otimes$}, s největším prvkem 1 a nejmenším prvkem 0,
-            pak $\langle\bL,\wedge,\vee,\otimes,\rightarrow,sqrt,0,1\rangle$, kde
+            pak $\langle\alert<2-4>{\bL,\wedge,\vee}\alert<3-4>{,\otimes,\rightarrow}\alert<4>{,sqrt},0,1\rangle$, kde
                  $$\mathrm{sqrt}(a) = (1+a)/2$$
             je \textbf{\L ukasiewiczova algebra s odmocninou}. Značíme ${\textit\L} A_{sqrt}$.
         \end{define}
     \end{frame}
-    
+
     \subsection{Obraz ve fuzzy logice}
-     \begin{frame}{Práce s obrazem}
+     \begin{frame}{Práce s 3D obrazem}
         \beI
             \item Pouze jednokanálové obrazy (odstíny šedi)
-            \item Hodnota výtupního voxelu je funkcí pouze voxelů ze sousedství 
-                (definovaného tzv. strukturním elementem) zdrojového voxelu
-            \item Voxely lze tudíž zpracovávat odděleně paralelně
+            \item \alert<2>{Hodnota výtupního voxelu je funkcí pouze voxelů ze sousedství
+                (definovaného tzv. strukturním elementem) zdrojového voxelu}
+            \item Tvar strukturního elementu má velký vliv na výsledek
             \item Z použití sousedství voxelu plynou problémy s okraji obrázku
         \enI
             \begin{figure}[h]
@@ -120,20 +120,20 @@
               \caption{Tradiční strukturní elementy}
             \end{figure}
      \end{frame}
-        
-     
+
+
      \begin{frame}{Filtry}
         Roztřídění filtrů z implementačního hlediska:
         \beI
             \item Pomocné, algebraické (sčítání, prahování)
             \item Morfologické (eroze, dilatace, hrany)
-            \item Vyhlazovací využívající seřazené pole (median, BES)
+            \item Odšumovací využívající seřazené pole (median, BES)
             \beI
                 \item Založené na průměrování využívající Walshův seznam (H.L. median, WBES)
             \enI
         \enI
     \end{frame}
-    
+
 \section{GPU}
 
      \begin{frame}{Rozdíly CPU a GPU}
@@ -142,7 +142,7 @@
             \caption{Rozdíly v architektuře}
         \end{figure}
     \end{frame}
-    
+
     \begin{frame}{Hlavní rozdíly v programování}
 
     \begin{minipage}{\textwidth}
@@ -159,7 +159,7 @@
         \end{column}
         \end{columns}
     \end{minipage}
-    
+
     \begin{minipage}{\textwidth}
         \begin{columns}
         \begin{column}{0.4\textwidth}
@@ -181,7 +181,7 @@
         \end{column}
         \end{columns}
     \end{minipage}
-    
+
     \begin{minipage}{\textwidth}
         \begin{columns}
         \begin{column}{0.4\textwidth}
@@ -202,18 +202,18 @@
         \end{column}
         \end{columns}
     \end{minipage}
-    
+
     \end{frame}
-    
+
 \subsection{Implementace}
     \begin{frame}{Implementační postřehy pro GPU}
-      Implementace na starší kartě 8800 GTX:  
+      Implementace na starší kartě 8800 GTX:
       \beI
         \item Překrývání latencí paměti - masivní paralelismus
         \item Šetření rychlou sdílenou pamětí
         \item Lepší je hloupější, ale nevětvící se program
         \item Využití manuální texturové cache
-        \item U statistických filtrů se problém redukoval na 
+        \item U odšumovacích filtrů se problém redukoval na
             nalezení vhodného třídícího algoritmu
       \enI
     \end{frame}
@@ -226,9 +226,10 @@
         \item Lepší rozvrstvení přístupů do pomalé globální paměti pro vstupní data
         \item Náročnost $\mathcal{O}(n^2)$
       \enI
-      Pro velká pole byl použit \bq hloupý\eq~$\mathcal{O}(n^2)$ algoritmus založený na 
+      Pro velká pole byl použit \bq hloupý\eq~$\mathcal{O}(n^2)$ algoritmus založený na
       zjištění počtu prvků větších a menších, než zkoumaný prvek.
       \vspace{5pt}
+      
       Na CPU byl použit optimalizovaný \textbf{Introselect}.
     \end{frame}
 
@@ -246,7 +247,7 @@
           jednotky & (využita 1) & (4 SM $\times$ 32 CUDA-jader) \\
           Frekvence & 1860 MHz & 1400 MHz \\
           Výpočetní & \multirow{2}{*}{---} & \multirow{2}{*}{1.0} \\
-          schopnost & & \\ 
+          schopnost & & \\
           Cache & 2 MB L2 & --- \\
           RAM/DRAM & 2 GB DDR2 & 768 MB GDDR3 \\
           FSB & 800 MHz & 1800 MHz \\
@@ -257,9 +258,9 @@
         \begin{center}
            Testovací data: 3D SPECT obraz 79x95x69 voxelů
         \end{center}
-       
+
     \end{frame}
-    
+
     \begin{frame}{Urychlení morfologických filtrů}
         \begin{table}
         %\hspace{-0.1cm}
@@ -307,9 +308,10 @@
         %\caption{Srovnání morfologických filtrů na CPU a GPU pro různé datové typy}
         \end{table}
     \end{frame}
-    
+
+\subsection{Ukázky}
     \begin{frame}{Ukázky morfologických filtrů}
-    
+
     \begin{columns}
     \begin{column}{0.3\textwidth}
         \begin{table}
@@ -319,9 +321,9 @@
             Eroze  & Dilatace \\
           \end{tabular}
         \end{table}
-    \end{column} 
-    
-    \begin{column}{0.6\textwidth}  
+    \end{column}
+
+    \begin{column}{0.6\textwidth}
     \begin{figure}
      \includegraphics[width = 70pt]{img/original.png}
              \hspace{10pt}
@@ -335,20 +337,54 @@
     \end{figure}
     \end{column}
     \end{columns}
-        
+    \end{frame}
     
+    \begin{frame}{Ukázka BES}
+
+    \begin{columns}
+    \begin{column}{0.4\textwidth}
+        \begin{table}
+          \begin{tabular}{ll}
+            \multirow{2}{*}{Originál} \hfill & kontaminace $5\%$ \hfill\\
+            & šum $\sigma = 5/256$ \\
+            \vspace{2cm} & \\
+            Výsledek & Rozdíl od \\
+            BES & originálu\\
+          \end{tabular}
+        \end{table}
+    \end{column}
+
+    \begin{column}{0.6\textwidth}
+    \begin{figure}
+     \includegraphics[width = 70pt]{img/original.png}
+             \hspace{10pt}
+     \includegraphics[width = 70pt]{img/5-30contaminated.png}
+    \end{figure}
+    \vspace{-10pt}
+    \begin{figure}
+    \includegraphics[width = 70pt]{img/5-30bes.png}
+         \hspace{10pt}
+    \includegraphics[width = 70pt]{img/5-30besD.png}
+    \end{figure}
+    \end{column}
+    \end{columns}
     \end{frame}
 
 \section{Závěr}
     \begin{frame}{Závěr}
-      
+      \beI
+        \item Fuzzy logika se pro popis filtrů výborně osvědčila
+        \item Některé filtry se podařilo zrychlit na jednotky ms, což je předpoklad pro použití v reálném čase
+        \item Třídění (selekce) malých polí jako zajímavý problém pro GPU
+        \item Lze odhadovat, kterým směrem se bude ubírat vývoj GPU
+      \enI
     \end{frame}
-    
+
     \begin{frame}{Dotaz oponenta I}
       Jakého zrychlení by bylo možné dosáhnout paralelizací na vícejádrovém CPU oproti sériovému výpočtu na CPU?
-      
+
       \textbf{Odpověď:} Až maximální teoretická hranice -- n-násobek při použití n jader.
     \end{frame}
-    
 
-\end{document}
+
+\end{document} 
