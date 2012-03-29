@@ -1,0 +1,69 @@
+% -*-coding: utf-8 -*-
+\documentclass[12pt, a4paper]{report}
+
+% JAZYK, FONTY, LAYOUT
+\usepackage[czech]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1,IL2]{fontenc}
+\usepackage[margin=1in]{geometry}
+
+% MATEMATICKÉ DEFINICE
+% POUŽÍVEJTE PROSTŘEDÍ theorem, lemma, definition, remark, example, NEBO SI DEFINUJTE NOVÉ
+\usepackage{amsmath,amsfonts,amsthm,mathtools,upgreek}
+\def\proofname{{\scshape Důkaz.}}
+
+\begin{document}
+
+Ladislav Horký \hfill 16.2.2012
+\section{Lehký příklad}
+Spočtěte (absolutně přesně a bez hrubé síly) mocninu $A^{1000}$ k matici
+\[ A =
+\begin{pmatrix}
+\quad3/2 & 1/2  \\
+-1/2 & 1/2
+\end{pmatrix} =
+\frac{1}{2}
+\begin{pmatrix}
+\quad3 & 1  \\
+-1 & 1
+\end{pmatrix}.
+\]
+
+\vspace{1cm}
+Zkusme několik kroků:
+\[ A^3 =
+\begin{pmatrix} \quad3/2 & 1/2  \\ -1/2 & 1/2 \end{pmatrix}
+\begin{pmatrix} \quad3/2 & 1/2  \\ -1/2 & 1/2 \end{pmatrix}
+\begin{pmatrix} \quad3/2 & 1/2  \\ -1/2 & 1/2 \end{pmatrix} =
+\]
+\[
+ = \begin{pmatrix} \quad2 & 1  \\ -1 & 0 \end{pmatrix}
+\begin{pmatrix} \quad3/2 & 1/2  \\ -1/2 & 1/2 \end{pmatrix} =
+\begin{pmatrix} \quad5/2 & \quad3/2  \\ -3/2 & -1/2 \end{pmatrix}.
+\]
+Po několika krocích máme hypotézu:
+\[ A^{k+1} = \frac{1}{2}
+\begin{pmatrix} \quad3+k & 1+k  \\ -1-k & 1-k \end{pmatrix}.
+\]
+\begin{proof}
+Pro $k=1,2$ hypotéza evidentně platí. Pokračujme v indukci $k \rightarrow k+1$:
+\[ A^{k+1} = A^k A = \frac{1}{2}
+\begin{pmatrix} \quad3+(k-1) & \;1+(k-1)  \\ -1-(k-1) & \;1-(k-1) \end{pmatrix}
+\begin{pmatrix} \quad3/2 & 1/2  \\ -1/2 & 1/2 \end{pmatrix} =
+\]
+\[
+ = \frac{1}{4} \begin{pmatrix} \quad6+2k & \quad2+2k  \\ -2-2k & \quad2-2k \end{pmatrix} =
+ \frac{1}{2}
+\begin{pmatrix} \quad3+k & 1+k  \\ -1-k & 1-k \end{pmatrix} = A^{k+1}.
+\]
+\end{proof}
+
+Z toho plyne pro náš případ
+
+\[ A^{1000} = A^{999+1} = \frac{1}{2}
+\begin{pmatrix} \quad1002 & \quad1000  \\ -1000 & -998 \end{pmatrix} =
+\begin{pmatrix} \quad501 & \quad500  \\ -500 & -499 \end{pmatrix}.
+\]
+
+
+\end{document} 

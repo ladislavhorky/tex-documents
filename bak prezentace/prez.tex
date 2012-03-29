@@ -229,7 +229,7 @@
       Pro velká pole byl použit \bq hloupý\eq~$\mathcal{O}(n^2)$ algoritmus založený na
       zjištění počtu prvků větších a menších, než zkoumaný prvek.
       \vspace{5pt}
-      
+
       Na CPU byl použit optimalizovaný \textbf{Introselect}.
     \end{frame}
 
@@ -338,7 +338,7 @@
     \end{column}
     \end{columns}
     \end{frame}
-    
+
     \begin{frame}{Ukázka BES}
 
     \begin{columns}
@@ -374,16 +374,35 @@
     \begin{frame}{Závěr}
       \beI
         \item Fuzzy logika se pro popis filtrů výborně osvědčila
-        \item Některé filtry se podařilo zrychlit na jednotky ms, což je předpoklad pro použití v reálném čase
-        \item Třídění (selekce) malých polí jako zajímavý problém pro GPU
         \item Lze odhadovat, kterým směrem se bude ubírat vývoj GPU
+        \item Třídění (selekce) malých polí jako zajímavý problém pro GPU
+        \item Některé filtry se podařilo zrychlit na jednotky ms, což je předpoklad pro použití v reálném čase
       \enI
+    \end{frame}
+
+     \begin{frame}
+      \centering
+     \textbf{Děkuji za pozornost.}
     \end{frame}
 
     \begin{frame}{Dotaz oponenta I}
       Jakého zrychlení by bylo možné dosáhnout paralelizací na vícejádrovém CPU oproti sériovému výpočtu na CPU?
 
-      \textbf{Odpověď:} Až maximální teoretická hranice -- n-násobek při použití n jader.
+        \vspace{20pt}
+      \textbf{Odpověď:}
+
+      Maximální teoretické hranice -- n-násobek při použití n jader.
+    \end{frame}
+
+    \begin{frame}{Dotaz oponenta II}
+      Zaznamenal jste při srovnání statistických filtru na CPU a GPU pro různé datové
+        typy kvalitativní změny ve výsledných datech?
+
+        \vspace{20pt}
+      \textbf{Odpověď:}
+
+      Tyto kvalitativní rozdíly jsem nezkoumal. Z aritmetiky chyb popsané v kapitole 2.1 plyne,
+      že tento rozdíl může být nejvýš o 1 (na škále 256), což je okem nerozlišitelné.
     \end{frame}
 
 

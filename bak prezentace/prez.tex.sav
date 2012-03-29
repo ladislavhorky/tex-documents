@@ -46,7 +46,7 @@
 \author{Ladislav Horký}
 \institute{FJFI ČVUT v Praze \newline \newline Vedoucí práce: Ing. Tomáš Oberhuber Ph.D.
 \newline Konzultant: doc. Ing. Jaromír Kukal Ph.D.}
-\date{\today} 
+\date{\today}
 
 \begin{document}
 % úvodní slidy
@@ -60,28 +60,25 @@
 	\end{frame}
 
 \section{Úvod}
-    \begin{frame}{Motivace, cíle}
-        Cílem práce je ukázat možnosti zrychlení obrazových fuzzy filtrů na GPU 
-        na 3D medicínských datech a umožnit tak konstrukci a testování složitějších 
-        filtrů v reálném čase:
+    \begin{frame}{Cíle práce}
         \beI
-            \item[$\rightarrow$] GPU jsou vhodné pro filtrování obrazu, což je
-                přirozeně paralelní proces
-            \item[$\rightarrow$] Díky fuzzy logice stačí vyřešit implementaci
-                pouze několika základních algoritmů, ze kterých se filtry skládají
-            \item[$\rightarrow$] Zpracování obrazu (Image Enhancing/Segmentation)
-                na GPU je velmi živý problém, neboť paralelizace většiny algoritmů
-                není triviální.
+            \item Seznámit se se základy fuzzy filtrů pro zpracování obrazu
+            \item Seznámit se s programovacím prostředí CUDA
+            \item Implementace vybraných algoritmů filtrace na CPU
+            \item Provést paralelizaci algoritmů a implementaci na GPU
+            \item Porovnat urychlení vůči CPU při použití různých datových typů
+            \item Aplikovat algoritmy na reálná 3D obrazová data
         \enI
     \end{frame}
-    
+
 \section{Fuzzy Logika}
 
     \begin{frame}{Proč fuzzy?}
         Výhody
         \beI
-            \item Solidní teoretický základ pro analýzu filtrů
-            \item Matematický model je přímo aplikovatelný na data, 
+            \item Solidní teoretický základ pro analýzu filtrů,
+                postavený na \L ukasiewiczově algebře s odmocninou
+            \item Matematický model je přímo aplikovatelný na data,
                 tak jak jsou reprezentována v počítači
             \item Omezená citlivost filtrů (odšumění)
             \item Redukce na jednoduché matematické operace
@@ -92,7 +89,7 @@
             \item Několik oblíbených filtrů zde nelze implementovat (Gauss)
         \enI
     \end{frame}
-    
+
      \begin{frame}{\L ukasiewiczova algebra s odmocninou}
         \begin{define}
             Nechť $\bL = [0,1]$ a $a,b \in \bL$. Nechť $\langle\bL,\wedge,\vee,\otimes,
@@ -105,17 +102,17 @@
             t-normou $\otimes$}, s největším prvkem 1 a nejmenším prvkem 0,
             pak $\langle\bL,\wedge,\vee,\otimes,\rightarrow,sqrt,0,1\rangle$, kde
                  $$\mathrm{sqrt}(a) = (1+a)/2$$
-            je \textbf{\L ukasiewiczova algebra s odmocninou} [1]. Značíme ${\textit\L} A_{sqrt}$.
+            je \textbf{\L ukasiewiczova algebra s odmocninou}. Značíme ${\textit\L} A_{sqrt}$.
         \end{define}
     \end{frame}
-    
+
     \subsection{Obraz ve fuzzy logice}
-     \begin{frame}{Reprezentace obrazu}
+     \begin{frame}{Práce s obrazem}
         \beI
             \item Pouze jednokanálové obrazy (odstíny šedi)
-            \item Zpracování po voxelech (Local Image Processing)
-            \item Hodnota výsledného voxelu je funkcí pouze voxelů z přesně 
-                definovaného sousedství (tzv. strukturní element, maska) zdrojového voxelu
+            \item Hodnota výtupního voxelu je funkcí pouze voxelů ze sousedství
+                (definovaného tzv. strukturním elementem) zdrojového voxelu
+            \item Voxely lze tudíž zpracovávat odděleně paralelně
             \item Z použití sousedství voxelu plynou problémy s okraji obrázku
         \enI
             \begin{figure}[h]
@@ -123,8 +120,8 @@
               \caption{Tradiční strukturní elementy}
             \end{figure}
      \end{frame}
-        
-     
+
+
      \begin{frame}{Filtry}
         Roztřídění filtrů z implementačního hlediska:
         \beI
@@ -132,18 +129,107 @@
             \item Morfologické (eroze, dilatace, hrany)
             \item Vyhlazovací využívající seřazené pole (median, BES)
             \beI
-                \item Využívající Walshův seznam (H.L. median, WBES)
+                \item Založené na průměrování využívající Walshův seznam (H.L. median, WBES)
             \enI
         \enI
     \end{frame}
-    
+
 \section{GPU}
 
      \begin{frame}{Rozdíly CPU a GPU}
         \begin{figure}
             \includegraphics[width=90mm]{img/CPUGPU.PNG}
-            \caption{Rozdíly v architektuře, [2]}
+            \caption{Rozdíly v architektuře}
         \end{figure}
+    \end{frame}
+
+    \begin{frame}{Hlavní rozdíly v programování}
+
+    \begin{minipage}{\textwidth}
+        \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \begin{center}
+                CPU
+            \end{center}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \begin{center}
+                GPU
+            \end{center}
+        \end{column}
+        \end{columns}
+    \end{minipage}
+
+    \begin{minipage}{\textwidth}
+        \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \begin{center}
+                \beI
+                    \item Velké odstupňované cache
+                    \item Chytrý hardware
+                \enI
+            \end{center}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \begin{center}
+                \beI
+                    \item Hrubé odstupňování pamětí
+                    \item Manuální, ale větší kontrola nad HW
+                    \item Přísná pravidla pro přístup do paměti
+                \enI
+            \end{center}
+        \end{column}
+        \end{columns}
+    \end{minipage}
+
+    \begin{minipage}{\textwidth}
+        \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \begin{center}
+                \beI
+                    \item V případě více jader plnohodnotný MIMD
+                    \item Cacheování instrukcí, branch-prediction
+                \enI
+            \end{center}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \begin{center}
+                \beI
+                    \item Pouze chytřejší, po částech vektorový procesor
+                    \item Výpočet je paralelní, pouze pokud 32 současně běžících vláken vykonává stejný kód
+                \enI
+            \end{center}
+        \end{column}
+        \end{columns}
+    \end{minipage}
+
+    \end{frame}
+
+\subsection{Implementace}
+    \begin{frame}{Implementační postřehy pro GPU}
+      Implementace na starší kartě 8800 GTX:
+      \beI
+        \item Překrývání latencí paměti - masivní paralelismus
+        \item Šetření rychlou sdílenou pamětí
+        \item Lepší je hloupější, ale nevětvící se program
+        \item Využití manuální texturové cache
+        \item U statistických filtrů se problém redukoval na
+            nalezení vhodného třídícího algoritmu
+      \enI
+    \end{frame}
+\subsection{Algoritmy}
+     \begin{frame}{Selekční algoritmy}
+      Pro malá pole bylo GPU použito \textbf{Zapomnětlivé třídění}:
+      \beI
+        \item Spotřeba jen polovičního množství rychlé paměti, než je velikost tříděního pole (3/4 u BES)
+        \item Větvení programu je minimální pro jakýkoliv vstup
+        \item Lepší rozvrstvení přístupů do pomalé globální paměti pro vstupní data
+        \item Náročnost $\mathcal{O}(n^2)$
+      \enI
+      Pro velká pole byl použit \bq hloupý\eq~$\mathcal{O}(n^2)$ algoritmus založený na
+      zjištění počtu prvků větších a menších, než zkoumaný prvek.
+      \vspace{5pt}
+      Na CPU byl použit optimalizovaný \textbf{Introselect}.
     \end{frame}
 
 
@@ -160,7 +246,7 @@
           jednotky & (využita 1) & (4 SM $\times$ 32 CUDA-jader) \\
           Frekvence & 1860 MHz & 1400 MHz \\
           Výpočetní & \multirow{2}{*}{---} & \multirow{2}{*}{1.0} \\
-          schopnost & & \\ 
+          schopnost & & \\
           Cache & 2 MB L2 & --- \\
           RAM/DRAM & 2 GB DDR2 & 768 MB GDDR3 \\
           FSB & 800 MHz & 1800 MHz \\
@@ -168,9 +254,12 @@
         \end{tabular}
         %\caption{Testovací sestava}
         \end{table}
-        Testovací data: 3D SPECT obraz 79x95x69 voxelů
+        \begin{center}
+           Testovací data: 3D SPECT obraz 79x95x69 voxelů
+        \end{center}
+
     \end{frame}
-    
+
     \begin{frame}{Urychlení morfologických filtrů}
         \begin{table}
         %\hspace{-0.1cm}
@@ -218,9 +307,9 @@
         %\caption{Srovnání morfologických filtrů na CPU a GPU pro různé datové typy}
         \end{table}
     \end{frame}
-    
+
     \begin{frame}{Ukázky morfologických filtrů}
-    
+
     \begin{columns}
     \begin{column}{0.3\textwidth}
         \begin{table}
@@ -230,9 +319,9 @@
             Eroze  & Dilatace \\
           \end{tabular}
         \end{table}
-    \end{column} 
-    
-    \begin{column}{0.6\textwidth}  
+    \end{column}
+
+    \begin{column}{0.6\textwidth}
     \begin{figure}
      \includegraphics[width = 70pt]{img/original.png}
              \hspace{10pt}
@@ -246,13 +335,25 @@
     \end{figure}
     \end{column}
     \end{columns}
-        
-    
+
+
     \end{frame}
 
 \section{Závěr}
     \begin{frame}{Závěr}
-      
+      \beI
+        \item Fuzzy logika se pro popis filtrů výborně osvědčila
+        \item Některé filtry se podařilo zrychlit na jednotky ms, což je předpoklad pro použití v reálném čase
+        \item Třídění (selekce) malých polí jako zajímavý problém pro GPU
+        \item Lze odhadovat, kterým směrem se bude vývoj GPU ubírat.
+      \enI
     \end{frame}
 
-\end{document}
+    \begin{frame}{Dotaz oponenta I}
+      Jakého zrychlení by bylo možné dosáhnout paralelizací na vícejádrovém CPU oproti sériovému výpočtu na CPU?
+
+      \textbf{Odpověď:} Až maximální teoretická hranice -- n-násobek při použití n jader.
+    \end{frame}
+
+
+\end{document} 

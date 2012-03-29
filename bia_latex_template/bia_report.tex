@@ -1,0 +1,209 @@
+\documentclass[journal]{IEEEtrancz}
+% zvolte kodovani
+\usepackage[utf8]{inputenc} % linux/unix
+%\usepackage[latin2]{inputenc}
+%\usepackage[cp1250]{inputenc} % Windows
+\usepackage[czech]{babel}
+\usepackage{graphicx}
+
+\begin{document}
+
+\title{Pokusy s NS při diagnóze srdeční choroby}
+\author{Ladislav Horký}
+
+\maketitle
+
+\begin{abstrakt}
+Cílem práce bylo otestovat schopnosti neuronových sítí (NS) na klasifikační úloze týkající se onemocnění srdce.
+V prostředí MATLAB byly provedeny experimenty s šesti učícími algoritmy na čtyřech různých architekturách. 
+Bylo sice dosaženo úspěšnosti 84,2\%, zároveň se však ukázala značná nevhodnost dat pro zpracování pomocí NS.
+
+%Zde uvést krátky odstavec s abstraktem. V abstraktu stručně shrnuto o čem článek je.
+%Čtenář je motivován, proč by měl článek číst, poslední věta zpravidla.
+%shrnuje dosažené výsledky.
+\end{abstrakt}
+
+\IEEEpeerreviewmaketitle
+
+\section{Zadání}
+Otestovat schopnost NS klasifikovat zadaná data. Vyzkoušet nejméně 3 učící algoritmy, 3 architektury a různá nastavení učících parametrů a změřit délku učení, počet epoch potřebných k naučení a úspěšnost sítě.
+
+%Několika větami naformulované zadání práce tak, jak jste je dohodli se cvičicím.
+
+\section{Úvod}
+Zvolená data (UCI -- Hearth SPECT) tvoří soubor diagnóz srdeční choroby určených z SPECT scanu srdce pacienta. Mají 22 binárních vstupů, určujících zda je daný parametr u pacienta v normě, či nikoliv, a jeden binární výstup indikující celkovou diagnózu zdráv/nemocen stanovenou kardiologem. Data jsou kompletní, obsahují 267 vzorků z nichž 40+40 je předem vyhrazeno pro učení sítě a mají rovnoměrné zastoupení obou výsledných diagnóz. Zbylé vzorky jsou v cílových kategoriích zastoupeny v poměru 15:172.
+
+\section{Experimenty}
+Všechny experimenty byly prováděny v prostředí MATLAB, NNS toolbox.
+
+\subsection{Příprava sítě a dat}
+Jako testovací síť byla použita klasifikační síť \texttt{patternnet} s proměnným počtem skrytých vrstev a přechodovou funkcí logistická sigmoida, neboť všechny vstupy byly 0/1. Vstupní data byla síti předávána bez jakékoliv úpravy, jako výstup byly použity dva neurony místo jednoho (spíše zdráv, spíše nemocen, kategorie byla určena podle toho, který neuron má vyšší výstup) a vzorová výstupní data byla transformována na hodnoty 0,1 a 0,9 pro lepší učení sítě.
+
+Experimentální architektury byly zvoleny:
+\begin{itemize}
+    \item 5 skrytých vrstev 22,18,14,11,9 neuronů
+    \item 3 skryté vrstvy 30,25,20 neuronů
+    \item 2 skryté vrstvy 35,35 neuronů
+    \item 1 skrytá vrstva 40 neuronů
+\end{itemize}
+Větší vrstvy bylo těžké zkoušet, neboť pak již bylo učení sítě časově velmi náročné. Navíc z výsledků nebylo jasné, kterým směrem se v rozšiřování sítě vydat.
+
+\subsection{Učení sítě}
+Jako pokusné učící algoritmy byly zvoleny:
+\begin{itemize}
+    \item Batch training s učícími pravidly pro váhy a prahy -- \textbf{b}
+    \item BFGS kvazi-Newtonovská backpropagace (aproximace Hessiánu) -- \textbf{bfg}
+    \item Gradient descent backpropagace -- \textbf{gd}
+    \item Gradient descent se setrvačností a adaptivním učícím krokem při backpropagaci -- \textbf{gdx}
+    \item Levenberg-Marquardtova backpropagace -- \textbf{lm}
+    \item RPROP backpropagace-- \textbf{rp}
+\end{itemize}
+Pro lepší učení sítě byla použita 10-násobná crossvalidace (náhodné rozdělení 80ti trénovacích vzorků na desetiny, homogenní co do počtu pozitivních a negativních konečných diagnóz), protože se ukázalo, že v poměru k počtu vstupních parametrů je trénovacích vzorků zřejmě málo. Parametry učení byly ponechány v základním nastavení, protože i přes použití crossvalidace byly výsledky sítí značně nekonzistentní (viz dále) a vliv změny parametrů by tedy byl velmi těžko prokazatelný.
+
+\subsection{Měření}
+Protože dat bylo málo, síť se často přeučovala, nebo uvízla v lokálních minimech a cca polovina všech sítí nakonec klasifikovala všechny prvky do jedné kategorie. Tento výsledek, ač má nulovou vypovídající hodnotu, však vzhledem k poměru diagnóz (55:212) znamenal 79\% úspěšnost klasifikace a tedy pro další zpracování bylo rozumné použít ho jako minimum, t.j. sítě, které klasifikovaly špatně více jak 55 prvků nebrat jako úspěch.
+
+Dalším zjištěním bylo, že po naučení se výstupy hodnoty obou klasifikačních neuronů pohybovaly nad hodnotou 0,5, což možná značí horší rozlišitelnost kategorií, avšak k přechodu mezi nimi pak stačila mnohem menší změna výstupů. To zřejmě vedlo k tomu, že síť často klasifikovala vše do jedné kategorie, i když její střední kvadratická chyba byla v porovnání s ostatními malá.
+
+Z těchto důvodů byl pro měření zvolen následující postup:
+\begin{enumerate}
+    \item Pro každý učící algoritmus a každou architekturu bylo crossvalidací naučeno 10 sítí (celkem 24*10 sítí).
+    \item Z těchto 10ti sítí byly vybrány nejlepší v kategoriích (celkem 24*4 nejlepší): 
+        \begin{itemize}
+          \item střední kvadratická chyba na trénovacích datech
+          \item střední kvadratická chyba na validačních datech
+          \item počet chyb v klasifikaci na trénovacích+validačních datech
+          \item počet chyb v klasifikaci celkově
+        \end{itemize}
+    \item K těmto nejlepším sítím byly zjištěny i ostatní parametry a byl pozorován jejich vzájemný vztah i s ohledem na učící algoritmy a architekturu.
+\end{enumerate}
+Čtyři kategorie byly zvoleny, protože kvůli výsledkům sítí (zvláště klasifikace do jedné kategorie) nebylo jisté, zda validační chyba bude vhodným kritériem pro výběr nejlepší sítě po corssvalidaci.
+
+\section{Diskuse výsledků}
+Z každé kategorie bylo pro ukázku vybráno 5 nejlepších sítí:
+
+\begin{table}[h]
+  \centering
+  \caption{Kategorie podle trénovací chyby}
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+  \hline
+   &skryté & trén. & \textbf{trén.} & val & val.+trén. & celková \\
+  \#  &vrstvy & funkce & \textbf{chyba} & chyba & klas. chyba & klas. chyba \\
+  \hline
+  \hline
+  1 & 2  &  lm  &  0.093  &  0.117  &  6 & 52 \\
+  2 & 1  &  lm  &  0.096  &  0.143  &  7 & 57 \\
+  3 & 3  &  rp  &  0.098  &  0.091  &  5 & 49 \\
+  4 & 1  &  rp  &  0.102  &  0.124  & 10 & 51\\
+  5 & 2  &  rp  &  0.105  &  0.096  &  9 & 47\\
+  \hline
+  \end{tabular}
+  \label{tab:tperf}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Kategorie podle validační chyby}
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+  \hline
+   &skryté & trén. & trén. & \textbf{val} & val.+trén. & celková \\
+  \#  &vrstvy & funkce & chyba & \textbf{chyba }& klas. chyba & klas. chyba \\
+  \hline
+  \hline
+  1&3&bfg&0.107&0.088&7&53\\
+  2&5&rp&0.105&0.090&7&60\\
+  3&3&rp&0.098&0.091&5&49\\
+  4&2&rp&0.124&0.094&14&66\\
+  5&1&rp&0.126&0.100&15&69\\
+  \hline
+  \end{tabular}
+  \label{tab:vperf}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Kategorie podle chybně klas. z trénovací a validační množiny}
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+  \hline
+   &skryté & trén. & trén. & val & \textbf{val.+trén.} & celková \\
+  \#  &vrstvy & funkce & chyba & chyba & \textbf{klas. chyba }& klas. chyba \\
+  \hline
+  \hline
+1&3&rp&0.098&0.091&5&49\\
+2&2&lm&0.093&0.117&6&52\\
+3&3&bfg&0.107&0.088&7&53\\
+4&1&lm&0.096&0.143&7&57\\
+5&5&rp&0.105&0.090&7&60\\
+  \hline
+  \end{tabular}
+  \label{tab:tvklas}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Kategorie podle celkového počtu chybně klasifikovaných}
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+  \hline
+   &skryté & trén. & trén. & val & val.+trén. & \textbf{celková} \\
+  \#  &vrstvy & funkce & chyba & chyba & klas. chyba & \textbf{klas. chyba} \\
+  \hline
+  \hline
+\textbf{1}&\textbf{5}&\textbf{lm}&\textbf{0.127}&\textbf{0.130}&\textbf{26}&\textbf{42}\\
+2&2&rp&0.112&0.131&10&44\\
+3&3&rp&0.129&0.127&14&47\\
+4&2&gdx&0.114&0.109&11&50\\
+5&1&gdx&0.120&0.126&13&50\\
+  \hline
+  \end{tabular}
+  \label{tab:klas}
+\end{table}
+
+Celkově se dá říci, že nejlepších výsledků dosáhly učící algoritmy \textbf{rp} a \textbf{lm}, o architektuře sítě se nic takového říci nedá -- všechny jsou v tabulkách rozmístěny takřka zcela rovnoměrně. Jaký parametr použít pro rozhodnutí, kterou síť po crossvalidaci prohlásíme za nejlepší zůstává otázkou -- nejlepší sítě z prvních tří kategorií sice vykazují celkem konzistentní, nikoliv však použitelné výsledky (hodně jich klasifikuje špatně více jak 55 vzorků). 
+
+Naopak u vítězné sítě vidíme, že z hlediska učení je stále silně neoptimální. To ukazuje na nereprezentativní trénovací soubor (v lepším případě) nebo na celkový malý počet vzorků, což souhlasí s tím, že ostatní sítě se de facto přeučují a dobrý výkon sítě může zajistit jen zdařilá inicializace.
+
+Před závěrečným zhodnocením ještě uvádím průměrný čas učení a průměrný počet epoch.
+\begin{table}[h]
+  \centering
+  \caption{Průměrný čas naučení sítě (s)}
+  \begin{tabular}{|l||c|c|c|c|c|c|}
+  \hline
+  skryté vrstvy & b & bfg & gd & gdx & lm & rp\\
+   \hline
+  \hline
+  5&38.9&158&28.2&4.97&26.4&0.484\\
+3&22.8&813&38.6&3.43&43.8&0.423\\
+2&21.3&258&23.5&3.33&89.2&0.389\\
+1&17.4&26.3&18.8&2.65&13.6&0.355\\
+  \hline
+  \end{tabular}
+  \label{tab:klas}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Průměrný počet epoch na učení sítě}
+  \begin{tabular}{|l||c|c|c|c|c|c|}
+  \hline
+  skryté vrstvy & b & bfg & gd & gdx & lm & rp\\
+  \hline
+  \hline
+  5&920&6.6&828&138&4.1&7.0\\
+3&977&17&1000\footnote{1000 epoch byla horní hranice, pak bylo učení zastaveno}&134&2.9&9.6\\
+2&984&3.9&1000&131&6.4&7.5\\
+1&900&3.9&900&128&4.3&8.8\\
+  \hline
+  \end{tabular}
+  \label{tab:klas}
+\end{table}
+\
+Vidíme, že celkově se za vítěznou metodu může považovat \textbf{rp}, to by se ale mohlo při lepších datech změnit.
+
+\subsection{Kam dál?}
+Vítězná síť dosáhla 84\% úspěšnosti, což je stejně jako referenční algoritmus CLIP3 na webu UCI, bohužel však tohoto výsledku bylo dosaženo evidentně čistě náhodou. Další pokusy by tedy mohly směřovat k jeho dosažení systematickým způsobem. Zřejmě by bylo vhodné (i díky časové náročnosti) experimentovat s metodami \textbf{rp}, či \textbf{lm} a možná místo klasické dopředné sítě použít nějakou, která více připomíná systém pravidel, než aproximátor funkce (na systému pravidel funguje právě CLIP3).
+
+
+\section{Závěr}
+Bylo sice dosaženo úspěšnosti klasifikace 84\% dosažené taktéž referenčním algoritmem udaným spolu s daty, díky špatnému charakteru dat však nebyla příliš možnost analyzovat chování konkrétního učícího algoritmu ani vliv architektury sítě na učení a experimenty se zaměřily na to z dat vůbec něco dostat. Nicméně tato práce by mohla být posloužit jako první krok k podrobnějšímu (a nyní informovanějšímu) průzkumu daných dat pomocí NS se zaměřením nejspíše na RPROP metodu.
+
+\end{document}

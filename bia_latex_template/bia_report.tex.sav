@@ -1,0 +1,134 @@
+\documentclass[journal]{IEEEtrancz}
+% zvolte kodovani
+\usepackage[utf8]{inputenc} % linux/unix
+%\usepackage[latin2]{inputenc}
+%\usepackage[cp1250]{inputenc} % Windows
+\usepackage[czech]{babel}
+\usepackage{graphicx}
+
+\begin{document}
+
+\title{Šablona pro semestrální práci A4M33BIA}
+\author{Jan Koutník}
+
+\maketitle
+
+\begin{abstrakt}
+Cílem práce bylo otestovat schopnosti neuronových sítí (NS) na klasifikační úloze týkající se onemocnění srdce.
+V prostředí MATLAB byly provedeny experimenty s šesti učícími algoritmy na čtyřech různých architekturách. 
+Bylo sice dosaženo úspěšnosti 84,2\%, zároveň se však ukázala značná nevhodnost dat pro zpracování pomocí NS.
+
+%Zde uvést krátky odstavec s abstraktem. V abstraktu stručně shrnuto o čem článek je.
+%Čtenář je motivován, proč by měl článek číst, poslední věta zpravidla.
+%shrnuje dosažené výsledky.
+\end{abstrakt}
+
+\IEEEpeerreviewmaketitle
+
+\section{Zadání}
+Otestovat schopnost NS klasifikovat zadaná data. Vyzkoušet nejméně 3 učící algoritmy, 3 architektury a různá nastavení učících parametrů a změřit délku učení, počet epoch potřebných k naučení a úspěšnost sítě.
+
+%Několika větami naformulované zadání práce tak, jak jste je dohodli se cvičicím.
+
+\section{Úvod}
+Zvolená data (ICU -- Hearth SPECT) tvoří soubor diagnóz srdeční choroby určených z SPECT scanu srdce pacienta. Mají 22 binárních vstupů, určujících zda je daný parametr u pacienta v normě, či nikoliv, a jeden binární výstup indikující celkovou diagnózu zdráv/nemocen stanovenou kardiologem. Data jsou kompletní, obsahují 267 vzorků z nichž 40+40 je předem vyhrazeno pro učení sítě a mají rovnoměrné zastoupení obou výsledných diagnóz. Zbylé vzorky jsou v cílových kategoriích zastoupeny v poměru 15:172.
+
+\section{Experimenty}
+Všechny experimenty byly prováděny v prostředí MATLAB, NNS toolbox.
+
+\subsection{Příprava sítě a dat}
+Jako testovací síť byla použita klasifikační síť \texttt{patternnet} s proměnným počtem skrytých vrstev a přechodovou funkcí logistická sigmoida, neboť všechny vstupy byly 0/1. Vstupy byly síti předávány bez jakékoliv úpravy, jako výstup byly použity dva neurony místo jednoho (spíše zdráv, spíše nemocen, kategorie byla určena podle toho, který neuron má vyšší výstup) a vzorová výstupní data byla transformována na hodnoty 0,1 a 0,9 pro lepší učení sítě.
+
+Experimentální architektury byly zvoleny:
+\begin{itemize}
+    \item 5 skrytých vrstev 22,18,14,11,9 neuronů
+    \item 3 skryté vrstvy 30,25,20 neuronů
+    \item 2 skryté vrstvy 35,35 neuronů
+    \item 1 skrytá vrstva 40 neuronů
+\end{itemize}
+Větší vrstvy bylo těžké zkoušet, neboť pak již bylo učení sítě časově velmi náročné. Navíc z výsledků nebylo jasné, kterým směrem se v rozšiřování sítě vydat.
+
+\subsection{Učení sítě}
+Jako pokusné učící algoritmy byly zvoleny:
+\begin{itemize}
+    \item Batch training s učícími pravidly pro váhy a prahy -- \textbf{b}
+    \item BFGS kvazi-Newtonovská backpropagace (aproximace Hessiánu) -- \textbf{bfg}
+    \item Gradient descent backpropagace -- \textbf{gd}
+    \item Gradient descent se setrvačností a adaptivním učícím krokem při backpropagaci -- \textbf{gdx}
+    \item Levenberg-Marquardtova backpropagace -- \textbf{lm}
+    \item RPROP backpropagace-- \textbf{rp}
+\end{itemize}
+Pro lepší učení sítě byla použita 10-násobná crossvalidace (náhodné rozdělení na desetiny, homogenní co do počtu pozitivních a negativních konečných diagnózy), protože se ukázalo, že na počet vstupních parametrů je trénovacích dat zřejmě málo. Parametry učení byly taktéž ponechány v základním nastavení, protože i přes použití crossvalidace byly výsledky sítí značně nekonzistentní (viz dále) a vliv změny parametrů by tedy byl velmi těžko prokazatelný.
+
+\subsection{Měření}
+Protože dat bylo málo, síť se často přeučovala, nebo uvízla v lokálních minimech a cca polovina všech sítí nakonec klasifikovala všechny prvky do jedné kategorie. Tento výsledek, ač má nulovou vypovídající hodnotu, však vzhledem k poměru diagnóz (55:212) znamenal 79\% úspěšnost klasifikace a tedy pro další zpracování bylo rozumné použít ho jako minimum, t.j. nebrat v potaz sítě, které klasifikovaly špatně více jak 55 prvků.
+
+Dalším zjištěním bylo, že po naučení se výstupy hodnoty obou klasifikačních neuronů pohybovaly nad hodnotou 0,5, což možná značí horší rozlišitelnost kategorií a k přechodu mezi nimi pak stačí mnohem menší změna výstupů. To zřejmě vedlo k tomu, že síť síť často klasifikovala vše do jedné kategorie, i když střední kvadratická chyba byla objektivně malá.
+
+Z těchto důvodů byl pro měření zvolen následující postup:
+\begin{enumerate}
+    \item Pro každý učící algoritmus a každou architekturu bylo crossvalidací naučeno 10 sítí.
+    \item Z těchto 10 byly vybrány nejlepší v kategoriích: 
+        \begin{itemize}
+          \item střední kvadratická chyba na trénovacích datech
+          \item střední kvadratická chyba na validačních datech
+          \item počet chyb v klasifikaci na trénovacích+validačních datech
+          \item počet chyb v klasifikaci celkově
+        \end{itemize}
+    \item K těmto nejlepším sítím byly zjištěny i ostatní parametry a byl pozorován jejich vzájemný vztah i s ohledem na učící algoritmy a architekturu.
+\end{enumerate}
+
+\section{Diskuse výsledků}
+V kategorii střední 
+
+
+Do experimetální části se přímo hodí obrázky. Každý obrázek musí být řádně vysvětlen
+a okomentován. U grafů musí být popsány osy, pod obrázek umístíme název a
+krátké vysvětlení toho, co na obrázku je. Obrázek \ref{fig:exfig} je příklad
+umístění obrázku do dokumentu.
+
+\begin{table}
+  \centering
+  \caption{Parametry experimentu}
+  \begin{tabular}{|l||c|c|c|}
+  \hline
+    & A & B & C \\
+  \hline
+  \hline
+  S učitelem  & 0.22 & 0.27 & 0.29 \\
+  \hline
+  Bez učitele & 0.12 & 0.17 & 0.20 \\
+  \hline
+  \end{tabular}
+  \label{tab:extab}
+\end{table}
+
+Výsledky experimentu je vhodné shrnout tabulkou, příkladem
+je tabulka \ref{tab:extab}. Pro tabulku platí totéž co
+pro obrázek s výjimkou toho, že popis a název tabulky je nad tabulkou. Z tabulky
+musí být jasné, co je jejím obsahem. Vysvětlení obsahu je vhodné uvést
+do textu poblíž tabulky.
+
+
+Referát na tento předmět by neměl být větší než 3 strany v tomto formátu.
+Vlastní text by měl obsahovat úvod do problematiky zkoumaných dat, jejich rozbor. Návrh
+použité neuronové sítě a v tabulce přehledné vstupní nastavení experimentu. Vždy je vhodné
+uvést příklad zkoumaných dat, jaké obsahují atributy apod. Diskuse je důležitá kapitola,
+která rozebírá dosažené výsledky.
+
+\section{Závěr}
+Každý článek/referát musí obsahovat závěr, který stručně shrnuje dosažené výsledky
+experimentů. Závěr neobsahuje žádná nová zjištění, která by předtím v textu nebyla rozvedena.
+Závěr je nejdůležitější část článku. Na základě závěru zpravidla pokrařujeme ve čtení
+publikace.
+
+\section*{Poděkování}
+Volitelně poděkování, třeba spolupracující instituci.
+
+\begin{literatura}{1}
+
+\bibitem{autor:rok}
+Autor P., Autor M.: \emph{Název knihy}, druh literatury, 2002.
+
+\end{literatura}
+\end{document}
