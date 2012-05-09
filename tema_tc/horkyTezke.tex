@@ -38,21 +38,21 @@ Cy = \lambda y,
 \]
 pro m-tý řádek tedy:
 \[
-\sum_{k=n-m+1}^{n} c_k y_{k-n+m} + \sum_{k=0}^{n-m} c_k y_{k+m} = \lambda y_m
+\sum_{k=n-m+1}^{n-1} c_k y_{k-n+m} + \sum_{k=0}^{n-m} c_k y_{k+m} = \lambda y_m
 \]
-Nyní zkusíme uhodnout $y_m$. Vidíme, že kdybychom to, co je v indexu přesunuli do mocniny, hezky by se krátilo. 
+Nyní zkusíme uhodnout $y_m$. Vidíme, že kdybychom to, co je v indexu přesunuli do mocniny, hezky by se krátilo.
 Zkusme tedy $y_m = \alpha^m$ přičemž podmínka na $\alpha$ vypadne z toho, že $y$ má být vlastní vektor:
 \[
-\sum_{k=0}^{n-m} c_k \alpha^{k+m} + \sum_{k=n-m+1}^{n} c_k \alpha^{k-n+m} = \lambda \alpha^m
+\sum_{k=0}^{n-m} c_k \alpha^{k+m} + \sum_{k=n-m+1}^{n-1} c_k \alpha^{k-n+m} = \lambda \alpha^m
 \]
 \[
-\sum_{k=0}^{n-m} c_k \alpha^{k} + \alpha^{-n}\sum_{k=n-m+1}^{n} c_k \alpha^{k} = \lambda
+\sum_{k=0}^{n-m} c_k \alpha^{k} + \alpha^{-n}\sum_{k=n-m+1}^{n-1} c_k \alpha^{k} = \lambda
 \]
 \[
-\sum_{k=0}^{n} c_k \alpha^{k} + \underbrace{(1-\alpha^{-n})\sum_{k=n-m+1}^{n} c_k \alpha^{k}}_
+\sum_{k=0}^{n-1} c_k \alpha^{k} + \underbrace{(1-\alpha^{-n})\sum_{k=n-m+1}^{n-1} c_k \alpha^{k}}_
 {\text{pouze toto závisí na $m$}} = \lambda \quad\forall m.
 \]
-Poslední člen má být konstantní $\forall m$, z čehož plyne, že závorka před sumou musí být rovna 0. Tedy $\alpha$ můžeme volit jako primitivní kořen z jedničky ($=\omega$). Otázkou je, zda máme dost LN vlastních vektorů pro více vlastních čísel - vidíme však, že výše zmíněné podmínce odpovídají volby $\alpha = \omega^0, \omega, \omega^2, ... \omega^n-1$, tzn. vlastní vektory vypadají:
+Poslední člen má být konstantní $\forall m$, z čehož plyne, že závorka před sumou musí být rovna 0. Tedy $\alpha$ můžeme volit jako primitivní kořen z jedničky ($=\omega$). Otázkou je, zda máme dost LN vlastních vektorů pro více vlastních čísel - vidíme však, že výše zmíněné podmínce odpovídají volby $\alpha = \omega^0, \omega, \omega^2, ... \omega^{n-1}$, tzn. vlastní vektory vypadají:
 \[
 \begin{pmatrix}
   1 \\ 1 \\ 1 \\ \vdots \\ 1
@@ -61,9 +61,9 @@ Poslední člen má být konstantní $\forall m$, z čehož plyne, že závorka 
   1 \\ \omega \\ \omega^2 \\ \vdots \\ \omega^{n-1}
 \end{pmatrix},
 \begin{pmatrix}
-  1 \\ \omega^2 \\ \omega^4 \\ \vdots \\ \omega^{n-1}
+  1 \\ \omega^2 \\ \omega^4 \\ \vdots \\ \omega^{n-2}
 \end{pmatrix}
-\] 
+\]
 
 Další vlastní čísla (nejvýše $n$) získáme dosazením mocnin $\alpha$. Dodatkem budiž, že po dosazení $\alpha$ představuje poslední rovnice vlastně Fourierovu transformaci posloupnosti $(c_i)_{i=0}^{n-1}$.
 

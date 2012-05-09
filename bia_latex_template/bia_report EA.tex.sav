@@ -1,0 +1,152 @@
+\documentclass[journal]{IEEEtrancz}
+% zvolte kodovani
+\usepackage[utf8]{inputenc} % linux/unix
+%\usepackage[latin2]{inputenc}
+%\usepackage[cp1250]{inputenc} % Windows
+\usepackage[czech]{babel}
+\usepackage{graphicx}
+
+\newcommand{\Cpp}{C\raisebox{0.15ex}[0ex][0ex]{++}}
+
+\begin{document}
+
+\title{Užití GO pro optimalizaci designu molekul ve 2D}
+\author{Ladislav Horký}
+
+\maketitle
+
+\begin{abstrakt}
+Cílem práce bylo naprogramovat algoritmus genetické optimalizace pro minimalizaci napětí vazeb v 2D molekule s pevně zadanými meziatomárními vzdálenostmi některých atomů. Pro zjednodušení výpočtů byly pozice atomů reprezentovány pouze na celočíselné mřížce, vzdálenosti byly desetinné. Jako testovací molekuly byly zvoleny 22-atomová podlouhlá hexagonální mříž a 49-atomová plně propojená molekula. Zatímco u sítě se často projevovaly typické jevy jako překroucení a zaseknutí se v LO, plně propojená molekula potřebovala k dosažení stavu blízkému globálnímu optimu stabilně zhruba 400-600 generací.
+
+%Zde uvést krátky odstavec s abstraktem. V abstraktu stručně shrnuto o čem článek je.
+%Čtenář je motivován, proč by měl článek číst, poslední věta zpravidla.
+%shrnuje dosažené výsledky.
+\end{abstrakt}
+
+\IEEEpeerreviewmaketitle
+
+\section{Zadání}
+Implementovat v \Cpp  genetický algoritmus pro optimalizaci napětí v 2D molekule způsobené nedodržením meziatomárních vazeb (nemusí být zadané mezi všemi atomy). Zaměřit se na operátory mutace a křížení a experimentovat s nimi.
+
+%Několika větami naformulované zadání práce tak, jak jste je dohodli se cvičicím.
+
+\section{Popis algoritmu}
+Zde popíšeme stavební kameny algoritmu.
+
+\subsection{Reprezentace jedince}
+Molekula o $n$ atomech je reprezentována jako $2n$-složkový vektor typu signed int (32 bitů), obsahující pozice jednotlivých atomů na celočíselné mřížce -- jedná se tedy o celočíselnou optimalizaci. Složky vektoru jsou řazeny po celých atomech,  $(x_1,y_1,x_2,y_2,...,x_n,y_n)$.
+
+\subsection{Selekce}
+Pro větší modularitu programu je selekce jedinců pro křížení řešena odděleně pomocí mating pool. Vzhledem k tomu, že pro křížení jsou potřeba pouze dva rodiče, je velikost mating pool dvojnásobkem velikosti potomstva. V programu je mating pool reprezentován jednoduše polem ukazatelů do populace.
+
+Jako selekční algoritmus byl zvolen 2-tournament: vybereme náhodně dva jedince z populace a toho s lepší fitness dáme do mating pool. Výhoda tohoto postupu oproti ruletovému kolu je, že se jedná o selekci založenou pouze na pořadí jedinců (podle fitness) a je tedy méně citlivá na nevhodné rozdělení fitness v populaci. Navíc, i když je založená na pořadí, nepotřebuje žádné třídění a je teoreticky velmi dobře paralelizovatelná.
+
+\subsection{Reprodukce}
+Nový potomek vznikne vždy z dvojice jedinců z mating pool pomocí $k$-bodového křížení, přičemž možné body křížení jsou omezeny pouze na celé atomy -- nemůže se tedy stát že potomek bude mít $x_1$ z prvního rodiče a $y_1$ z druhého. V programu je skutečný počet bodů křížení náhodný, a to z intervalu $[1,k]$, kde $k$ je stanovená horní hranice. Dále je možno u křížení nastavit míru parazitismu. Místo druhého rodiče z mating pool je pak pro křížení vygenerován náhodný jedinec, jehož žádná souřadnice však v absolutní hodnotě nepřesáhne maximum absolutních hodnot souřadnic prvního rodiče.
+
+\subsection{Mutace}
+Po vytvoření potomků křížením jsou tito s danou pravděpodobností zmutováni. Nejprve je vygenerován náhodný bod s rozdělením $N_2(\mathbf{0},\sigma^2)$, kde $\sigma$ je zvolená konstanta. Tento bod je pak přičten k náhodnému počtu bodů (opět z intervalu $[1,k]$, kde $k$ je zvolená konstanta).
+
+Součástí mutace je i následné vycentrování všech potomků, aby jejich těžiště leželo na souřadnicích $(0,0)$, a následné náhodné natočení (opět všech) potomků o náhodný úhel s normálním rozdělením. Diskuse těchto kroků viz dále.
+
+\subsection{Ohodnocení}
+Výpočet fitness u potomků je prováděn následovně: vzdálenosti atomů v molekule jsou zadány pomocí symetrické nezáporné matice, kde $A_{i,j}$ udává vzdálenost $i$-tého a $j$-tého atomu. Pokud je prvek matice nulový, znamená to, že na vzdálenosti daných atomů nezáleží. Fitness jedince je pak dána sumou rozdílů předepsaných a skutečných vzdáleností mezi atomy (pouze tam, kde je $A_{i,j}$ nenulové).
+
+V průběhu ohodnocení je prováděn i základní niching tak, že z jedinců, kteří se alespoň v jedné souřadnici neliší o více než zvolenou konstantu, je ponechán pouze jediný (ostatním je násobně zvýšena fitness).
+
+\subsection{Vytvoření nové populace}
+Po ohodnocení potomků vybereme nejprve ze staré populace nastavený počet elitních jedinců s nejnižší fitness. Ti jsou poté doplněni do počtu původní populace nejlepšími jedinci z potomstva.
+
+\section{Implementační poznámky}
+Program je napsán \Cpp  za vydatného použití šablon. Hlavním objektem je \textit{populace}, s metodami \textit{Create} a \textit{GetNextGeneration}, které obstarávají celý běh algoritmu. Způsob reprodukce, mutace, ohodnocení, selekce a míšení staré a nové populace se \textit{populaci} předávají jako šablonové parametry a konkrétní algoritmus (nejen) genetické optimalizace je tak možné poskládat z velmi jednoduchých stavebních bloků.
+
+\section{Experimentální výsledky}
+Provedl jsem měření rychlosti konvergence u 22- i 49-atomové molekuly, u 49-atomové molekuly byl navíc pozorovnám vliv vycentrování a otočení jedince na průběh optimalizace. Všechny experimenty měly stejné parametry populace, a to 60 jedinců v populaci a 1500 v potomstvu.
+
+22-atomová molekula měla tvar podlouhlé pravidelné hexagonální sítě s hranou délky 200. 49-atomová molekula měla tvar smajlíka nakresleného na ortogonální mřížce s hranou 100, jeho průměr byl 1500. Tato molekula byla na rozdíl od první zcela propojená, což zaručovalo existenci pouze jednoho (až na natočení) globálního optima.
+\begin{figure}[h]
+        \begin{minipage}[l]{0.22\textwidth}
+            \includegraphics[width = 80pt]{globopt.png}
+            \caption{22-atomová}
+        \end{minipage}
+        \begin{minipage}[r]{0.22\textwidth}
+            \includegraphics[width = 80pt]{smajl.png}
+            \caption{49-atomová}
+        \end{minipage}
+\end{figure}
+
+\subsection{Rychlost konvergence}
+Měření bylo prováděno na 100 bězích algoritmu. Maximální počet bodů křížení byl u obou molekul nastaven na 20, míra parazitismu na 10\% a počet elitních jedinců na 3. Rozptyl mutace, míra mutace a počet bodů mutace byly u 49-atomové molekuly nastaveny na 20,30\%,5, u 22-atomové pak na 30,40\%,10.
+
+Nejlepší případy uvádí tabulka \ref{tab:besconv}. Konvergenci algoritmu jsem definoval jako okamžik, kdy nebyl během posledních 20 (resp. 100 v případě 22-atomové molekuly) generacích nalezen lepší jedinec.
+
+\begin{table}[h]
+  \centering
+  \caption{Nejlepší výsledky podle fitness}
+  \begin{tabular}{|c|c|c|c|}
+  \hline
+   \# atomů & fitness & \# generací & čas \\
+  \hline
+  \hline
+  22 & 61.3 & 2635 & 77.2s\\
+  49 & 754.7 & 547 & 69.7s\\
+  \hline
+  \end{tabular}
+  \label{tab:besconv}
+\end{table}
+
+Průměrné případy se směrodatnou odchylkou jsou uvedeny v tabulce 
+
+\begin{table}[h]
+  \centering
+  \caption{Průměrné výsledky se směrodatnou odchylkou}
+  \begin{tabular}{|c|c|c|c|}
+  \hline
+   \# atomů & fitness & \# generací & čas \\
+   & \multicolumn{3}{c}{směrodatná odchylka}\\
+  \hline
+  \hline
+  \multirow{2}{*}{22} & 3290 & 1058 & 36s\\
+                      & 4350 & 868 & 32.3s\\
+  \multirow{2}{*}{49} & 11623 & 547 & 69.7s\\
+                      & 19287
+  \hline
+  \end{tabular}
+  \label{tab:besconv}
+\end{table}
+
+
+
+
+\section{Diskuse výsledků}
+Z každé kategorie bylo pro ukázku vybráno 5 nejlepších sítí:
+
+\begin{table}[h]
+  \centering
+  \caption{Kategorie podle trénovací chyby}
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+  \hline
+   &skryté & trén. & \textbf{trén.} & val & val.+trén. & celková \\
+  \#  &vrstvy & funkce & \textbf{chyba} & chyba & klas. chyba & klas. chyba \\
+  \hline
+  \hline
+  1 & 2  &  lm  &  0.093  &  0.117  &  6 & 52 \\
+  2 & 1  &  lm  &  0.096  &  0.143  &  7 & 57 \\
+  3 & 3  &  rp  &  0.098  &  0.091  &  5 & 49 \\
+  4 & 1  &  rp  &  0.102  &  0.124  & 10 & 51\\
+  5 & 2  &  rp  &  0.105  &  0.096  &  9 & 47\\
+  \hline
+  \end{tabular}
+  \label{tab:tperf}
+\end{table}
+
+
+
+\subsection{Kam dál?}
+Vítězná síť dosáhla 84\% úspěšnosti, což je stejně jako referenční algoritmus CLIP3 na webu UCI, bohužel však tohoto výsledku bylo dosaženo evidentně čistě náhodou. Další pokusy by tedy mohly směřovat k jeho dosažení systematickým způsobem. Zřejmě by bylo vhodné (i díky časové náročnosti) experimentovat s metodami \textbf{rp}, či \textbf{lm} a možná místo klasické dopředné sítě použít nějakou, která více připomíná systém pravidel, než aproximátor funkce (na systému pravidel funguje právě CLIP3).
+
+
+\section{Závěr}
+Bylo sice dosaženo úspěšnosti klasifikace 84\% dosažené taktéž referenčním algoritmem udaným spolu s daty, díky špatnému charakteru dat však nebyla příliš možnost analyzovat chování konkrétního učícího algoritmu ani vliv architektury sítě na učení a experimenty se zaměřily na to z dat vůbec něco dostat. Nicméně tato práce by mohla být posloužit jako první krok k podrobnějšímu (a nyní informovanějšímu) průzkumu daných dat pomocí NS se zaměřením nejspíše na RPROP metodu.
+
+\end{document}

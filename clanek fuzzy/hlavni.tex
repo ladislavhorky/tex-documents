@@ -13,12 +13,45 @@
 \newcommand{\beI}{\begin{itemize}}
 \newcommand{\enI}{\end{itemize}}
 
+
+
 \begin{document}
+\abstract{In this paper we describe parallelization of Fuzzy Logic 3D image filters on GPU. We also discuss usage of Forgetful sort as a suitable selection algorithm for median-based filters. Experimental application was written using NVIDIA CUDA parallelization model and shows, that processing of 3D images can be brought to real-time. Achieved speedup on testing SPECT 3D image against single-thread CPU ranged from ... to ...}
+
+\section{Introduction}
+Since 2006 General Purpose computation on Graphic Processing Units (GPGPU) established itself as a powerful tool for solving computationally intensive tasks from fields of numerical simulations, physical simulations and also image processing. 
+ 
+ -- karty od nvidia, jejich vývoj s návazností na jednodušší programování
+ 
+ -- 3D image processing jako výpočetně náročný úkol (srovnání s 2D?)
+ -- medicínské aplikace, návaznost na fuzzy sítě -- nutnost zrychlení výpočtů
+ -- zmínit NPP (jen 2D, bez templates)
+ 
+ -- filtry vyžadující třídící algoritmy x morfologické (straightforward vs hard..)
+ -- problémy klasických paralelizovaných algoritmů (radix sort, gpu quicksort, bitonic sort?)
+ 
+ -- všude odkazy na literaturu
+
+In this paper we focus on NVIDIA GPUs  CUDA GPUs evolved from bare vector processors to
+
+\section{Fuzzy approach}
+ -- proč fuzzy, vlastnosti, fuzzy logic functions, načnout okolí
+ 
+ \subsection{Image representation}
+  -- 3D matice
+  
+ \subsection{Filters}
+ -- úplný popis filtrů
+ 
+\section{Implementation on GPU}
+
+
+NPP -- stále bez templates
 
 \beI
     \item properties of LA sqrt -- just description
-    \item local image processing -- neighborhood 
-    \item 3D image is more 
+    \item local image processing -- neighborhood
+    \item 3D image is more
 \enI
 
 \begin{itemize}
