@@ -1,0 +1,8 @@
+Reziduální svaz
+BL-algebra
+
+stále je to málo na konstrukci filtrù -- PROè??
+nelze nízká citlivost - to až se sqrt()
+
+MV-algebra
+    -- neg neg x = x

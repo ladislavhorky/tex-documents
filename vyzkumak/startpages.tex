@@ -3,28 +3,24 @@
 \newcommand{\fjfi}{Fakulta Jaderná a Fyzikálně Inženýrská}
 \newcommand{\km}{Katedra matematiky}
 \newcommand{\obor}{Inženýrská Informatika}
-\newcommand{\zamereni}{Softwarové Inženýrství a Matematická Informatika}
+\newcommand{\zamereni}{Matematická Informatika}
 
-\newcommand{\nazevcz}{Paralelní implementace fuzzy filtrů ve zpracování obrazu na GPU}
-\newcommand{\nazeven}{Parallel Implementation of Fuzzy Filters in Image Processing on GPU}
+\newcommand{\nazevcz}{NAZEV}
+\newcommand{\nazeven}{NAME}
 \newcommand{\autor}{Ladislav Horký}
-\newcommand{\rok}{2011}
-\newcommand{\vedouci}{Ing. Tomáš Oberhuber Ph.D.}
+\newcommand{\rok}{2012}
+\newcommand{\vedouci}{doc. Ing. Jaromír Kukal Ph.D.}
 
-\newcommand{\pracovisteVed}{Katedra matematiky \\
+\newcommand{\pracovisteVed}{Katedra softwarového inženýrství \\
     České Vysoké Učení Technické v~Praze}
-\newcommand{\konzultant}{doc. Ing. Jaromír Kukal Ph.D.}
-\newcommand{\pracovisteKonz}{Katedra softwarového inženýrství \\
+\newcommand{\konzultant}{Ing. Tomáš Oberhuber Ph.D.}
+\newcommand{\pracovisteKonz}{Katedra matematiky \\
     České Vysoké Učení Technické v~Praze}
 
-\newcommand{\klicova}{Fuzzy logika, zpracování obrazu, robustní filtry, GPGPU, CUDA}
+\newcommand{\klicova}{Heuristické algoritmy, GPU, CUDA}
 \newcommand{\keyword}{Fuzzy Logic, image processing, robust filters, GPGPU, CUDA}
-\newcommand{\abstrCZ}{
-
-    Cílem práce bylo zjistit možnosti urychlení filtrace 3D medicínských dat na GPU u obrazových filtrů postavených na fuzzy logice. Nejprve bylo provedeno zobecnění použité teorie do 3D a následná implementace na CPU v jazyce \Cpp ~při použití nejlepších dostupných algoritmů. Implementace na GPU byla provedena v prostředí NVIDIA CUDA C a použité algoritmy a optimalizace jsou až na jeden původní. Hodnoty urychlení jsou na celé škále 2,3krát (kde jsme naráželi na pro hardware nevhodné rozměry zpracovávaných dat) až 60krát a u jednodušších filtrů tak došlo ke zkrácení doby výpočtu na testovacích datech na jednotky ms. Navíc byla provedena teoretická diskuse schopnosti filtrů medián, BES, H.-L. medián a WBES odstraňovat kontaminovaný gaussovský šum i s praktickými příklady.}
-\newcommand{\abstrEN}{
-
-    The aim of the thesis was to determine the possibility of speeding up 3D medical image processing on GPU using filters based on Fuzzy logic. First, generalization of the theory into 3D and subsequent implementation on CPU using \Cpp ~language and the best possible algorithms was carried out. Implementation on GPU was made within the NVIDIA CUDA C enviroment with all but one used algoritms and optimizations being original. The gained speedup ranges from nearly 60 times down to 2,3 times (where most difficulties with input data dimensions occured) and the total duration of computation dropped for some filters below 10 ms. As a bonus, a theoretical discussion on median, BES, H.-L. median and WBES capability of suppressing contaminated gaussian noise together with practical expamples were carried out.}
+\newcommand{\abstrCZ}{bla}
+\newcommand{\abstrEN}{blah}
 
 %%% zde zacina kresleni dokumentu
 
@@ -54,7 +50,7 @@
 	\par}
 
 	\vspace{30mm}
-	{\Large BAKALÁŘSKÁ PRÁCE}
+	{\Large VÝZKUMNÝ ÚKOL}
 
 \end{center}
 
@@ -67,7 +63,7 @@ Rok: & \rok
 \end{tabular}
 }
 
-% zadání bakalářské práve
+% zadání VÚ
 \newpage
 \thispagestyle{empty} Před svázáním místo téhle strany \fbox{vložíte zedání práce} s podpisem
 děkana (bude to jediný oboustranný list ve Vaší práci) !!!!
@@ -82,7 +78,7 @@ děkana (bude to jediný oboustranný list ve Vaší práci) !!!!
 {\bf Prohlášení}
 
 \vspace{0.5cm}
-Prohlašuji, že jsem svou bakalářskou práci vypracoval samostatně a použil jsem pouze podklady
+Prohlašuji, že jsem svůj výzkumný úkol vypracoval samostatně a použil jsem pouze podklady
 (literaturu, projekty, SW atd.) uvedené v přiloženém seznamu.
 
 \vspace{5mm}V Praze dne ....................\hfill

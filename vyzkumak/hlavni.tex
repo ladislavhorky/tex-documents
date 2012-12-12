@@ -30,7 +30,7 @@
 
 \hypersetup{
 	pdfauthor={Ladislav Horký},
-	pdftitle={Paralelní implementace fuzzy filtrů ve zpracování obrazu na GPU}
+	pdftitle={NÁZEV}
 }
 
 %% Nastavení zrcadla sazby
@@ -153,95 +153,19 @@
         \addcontentsline{toc}{chapter}{Úvod}
         \input{src/0Uvod/uvod.tex}
 
-    \chapter
-    {Fuzzy logika}
-        % Lukasiewiczova algebra s odmocniou
-            % Konstrukce matematického modelu
-                % Svaz
-                % Lukasiewiczova algebra
-                % Lukasiewiczova algebra s odmocninou
-            % Fuzzy-logická funkce
-            % Používané operátory
-        % Citlivost
-            % Přesnost celočíselné aritmetiky
-        % Reprezentace obrazových dat
-            % Maska
-        % Filtry
-            % Typologie filtrů
-                % Morfologické
-                % Statistické
-            % Citlivost filtrů
-            % Porovnání s lineárními filtry
 
-        \input{src/1Fuzzy/fuzzy.tex}
-
-    \chapter{Implementace na CPU}\label{cpu impl}
-        % Celočíselná aritmetika
-            % Přesnost
-        % Práce s 3D obrazovými daty
-            % Načítání, ukládání (lehce k .hdr, .img)
-            % Uchování dat v paměti (řešení okrajů...)
-        % Masky, strukturní elementy
-        % Implementace filtrů
-            % Quickselect
-
-         \input{src/7Cpu/cpu.tex}
-
-    \chapter{Výpočty na GPU}\label{gpu úvod}
-        % Vývoj GPU
-        % Programovací prostředí
-            % CUDA
-        % Architektura GPU (NVIDIA)
-            % Hierarchie paměti
-            % Hierarchie paralelizace
-
-        \input{src/2Gpu/gpu.tex}
-
-    \chapter{Implementace v CUDA}
-        % Kernel
-        % Paměťové optimalizace
-        % Instrukční optimalizace
-        % ??
-
-        \input{src/4Implementace/implementace.tex}
-
-    \chapter{Výsledky}
-        % volba masky
-        % Testovací data
-        % Testovací sestava
-        % Urychlení vůči CPU
-
-        \input{src/5Vysledky/vysledky.tex}
-
-    \chapter*{Závěr}
-     \addcontentsline{toc}{chapter}{Závěr}
-         \input{src/6Zaver/zaver.tex}
+    %\chapter*{Závěr}
+    % \addcontentsline{toc}{chapter}{Závěr}
+    %    \input{src/6Zaver/zaver.tex}
 
     % APENDIX
 
-    \appendix
+    %\appendix
 
-    \input{src/8Appendix/app.tex}
+    %\input{src/8Appendix/app.tex}
 
     \addcontentsline{toc}{chapter}{Literatura}
     \include{src/bibliography}
-
-    \newpage
-    \chapter*{Errata}
-
-    Český abstrakt, 6. řádek:
-
-    ...celé škále 2,3krát \underline{(kde jsme naráželi na pro hardware nevhodné rozměry} \underline{zpracovávaných dat)} až 60krát...
-    \vspace{0.5cm}
-
-    Sekce 1.5.1, 2. řádek:
-
-    ...jaké frekvence se \underline{ve} výsledném obraze zachovají...
-     \vspace{0.5cm}
-
-    Strana 16, poslední odstavec, 5. řádek:
-
-    ...a prvky mezi nimi jsou také velikostně mezi pivoty.
 
 
 
