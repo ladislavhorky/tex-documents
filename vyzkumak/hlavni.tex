@@ -2,7 +2,7 @@
 \documentclass[oneside,11pt,a4paper]{report}
 
 \newif\ifrelease % new boolean variable release. True = include some fancy content
-\releasetrue % and set it
+\releasefalse % and set it
 
 \usepackage[czech]{babel}
 \usepackage[utf8]{inputenc}
@@ -30,7 +30,7 @@
 
 \hypersetup{
 	pdfauthor={Ladislav Horký},
-	pdftitle={NÁZEV}
+	pdftitle={Celočíselné optimalizační heuristiky a jejich paralelizace}
 }
 
 %% Nastavení zrcadla sazby
@@ -46,8 +46,8 @@
 %\setlength\evensidemargin{(\paperwidth-\textwidth)/2 - 1in}
 %\setlength\topmargin{(\paperheight-\textheight-\headheight-\headsep-\footskip)/2 - 1in}
 
-%\parindent=0pt % odsazení 1. řádku odstavce
-%\parskip=4pt   % mezera mezi odstavci
+\parindent=6pt % odsazení 1. řádku odstavce
+\parskip=4pt   % mezera mezi odstavci
 
 \ifrelease
 	\hypersetup{pdfborder={0 0 0}} % no borders around links
@@ -64,9 +64,9 @@
 
 % Vlastní příkazy:==========================================
 \newif\ifshownotes % zobraz poznámky level 1
-\shownotesfalse
+\shownotestrue
 \newif\ifshownotesadd % zobraz poznámky level 2
-\shownotesaddfalse
+\shownotesaddtrue
 
 \newcommand{\LAs}{\L A_{sqrt}}
 \newcommand{\rl}{\textup{(}}
@@ -134,7 +134,9 @@
 \ifundefined{uv}%
         \gdef\uv#1{\bq #1\eq}
 \fi
-\parindent=0pt
+
+\DeclareGraphicsExtensions{.pdf}
+
 % Dělení slov:=============================================
 \hyphenation{pře-klá-da-jí-cí}
 
@@ -153,6 +155,14 @@
         \addcontentsline{toc}{chapter}{Úvod}
         \input{src/0Uvod/uvod.tex}
 
+    \chapter{Přehled optimalizačních algoritmů}
+        \input{src/1Heur/heuristiky.tex}
+
+    \chapter{Programování na GPU}
+        \input{src/2GPU/gpu.tex}
+
+    \chapter{Model pro optimalizační algoritmy}
+        \input{src/3Model/model.tex}
 
     %\chapter*{Závěr}
     % \addcontentsline{toc}{chapter}{Závěr}

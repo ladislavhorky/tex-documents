@@ -1,0 +1,47 @@
+% -*-coding: utf-8 -*-
+
+Pro paralelizaci na GPU jsme použili známé prostředí NVIDIA CUDA z něhož popíšeme jen prvky, na které je nutné brát ohled při konstrukci našeho modelu optimalizačních algoritmů. Podrobný popis CUDA lze nalézt v \cite{CUDA programming g.}.
+
+\section{Úvod}
+
+CUDA bylo původně rozšíření jazyka C, dnes již poskytuje takřka plnou podporu pro \Cpp. To se projevilo zejména v přehlednosti kódu, kdy dříve nebylo možné napsat plně optimalizovaný kód pro GPU tak, aby zároveň zůstal čitelný. Díky tomu je dnes CUDA pružný, vysokoúrovňový nástroj dostupný široké programátorské veřejnosti. \note{není to moc reklama?}
+
+\subsection{Paralelní model}
+
+Základní výpočetní jednotkou na GPU je \emph{vlákn}o s unikátním ID, podle něhož je možno výpočty směrovat. Vlákna se skládají do \emph{bloků}, které fyzicky běží na části GPU nazývané Streaming Multiprocesor (SM nebo SMX). Uvnitř bloku je možné vlákna manuálně synchronizovat, menší skupinky (tzv. \emph{warpy}) po 32 nebo 48 vláknech jsou synchronizované implicitně. Vzhledem k tomu, že SM jsou fyzicky nezávislé, výpočty mezi bloky se synchronizují až ukončením výpočtu (lze i jinak, ale časová výhodnost je zhruba stejná). Maximální počet vláken v jednom bloku je v současnosti 1024.
+
+Bloky se dále skládají do \emph{gridu}, maximální velikost gridu je pro naše účely nezajímavá. Celý grid je možné z CPU spustit pomocí \emph{kernelu}, což je v zásadě obyčejná funkce bez návratové hodnoty, jíž navíc jako speciální parametry předáváme počet bloků v gridu a počet vláken v bloku. Kernelu je možné předat parametry jako normální funkci, ty jsou pak automaticky odeslány na GPU.
+
+\subsection{Paměťový model}
+
+Současné GPU mají několik úrovní pamětí a některé přístupy do paměti jsou dnes dokonce cacheované. I když pomineme obecná omezení přístupu do paměti pro paralelní program (dead-lock, race-condition), stále musí programátor brát ohled na daleko více omezení než při psaní kódu pro CPU. Následují popisy nejdůležitějších druhů pamětí spojených s GPU zhruba seřazených podle rychlosti od nejpomalejší.
+
+\subsubsection{Paměť procesoru (RAM)}
+
+Sice se nejedná o paměť přímo na GPU, ale pokud si chceme jen přečíst výsledek, komunikace mezi GPU a CPU bude nutná. Vzhledem k tomu, že komunikace probíhá po sběrnici PCI-express, je řádově pomalejší než jakákoliv komunikace uvnitř zařízení. Pro rychlý běh je tedy nutné omezit přenosy dat mezi CPU a GPU na minimum a data přenášet po co největších blocích. Přenos dat vyvolá i spuštění kernelu z CPU, časté spouštění malých kernelů je tudíž také nevýhodné.
+
+\subsubsection{Globální paměť}
+
+Jedná se o GPU-RAM, která není součástí GPU čipu. Na moderních GPU je sice částečně cacheovaná, nicméně představu o práci cache nám dá až profiler. Proto je dobré dodržovat i při přístupu do této paměti některá omezení.
+
+Nejefektivnějšího přístupu do globální paměti se dosáhne pomocí sloučených přístupů, tedy pokud vlákna s blízkými ID přistupují na blízké adresy v paměti. Protože čtení i zápis probíhá po větších blocích, umí GPU tyto blízké přístupy sloučit do menšího počtu instrukcí čtení, či zápisu.
+
+V globální paměť je přístupná pro všechna vlákna a data v ní zůstávají po celou dobu běhu programu. Ve stejné paměti sídlí i lokální paměť, která je pro každé vlákno soukromá a ukládají se do ní automaticky např. velká pole používaná uvnitř vlákna. Použití této paměti je pro pomalost lépe se vyhnout -- například používáním sdílené paměti.
+
+\subsubsection{Texturová a konstantní paměť}
+
+Toto jsou v zásadě dvě manuální cache a je možné z nich pouze číst. Bohužel, tyto paměti jsou obsluhovatelné pouze z CPU. Navíc, ukazatele do nich musí být deklarovány jako globální proměnné, což spolehlivě rozbije sebelepší objektový model. Proto jsme se po zkušenostech z minulé práce \note{citovat bakalářku} rozhodli je nepoužívat.
+
+\subsubsection{Sdílená paměť}
+
+Jedná se o paměť sdílenou pro celý blok, z čehož také vyplývá životnost dat vázaná na životnost bloku. Vzhledem k tomu, že je fyzicky umístěná přímo u SM, je velmi rychlá. Pro paralelní přístupy je rozdělená do několika bank (16/32) a každá banka je obsluhována samostatně. Při alokaci pole v této paměti budou pravděpodobně $(k*32)$-té prvky pole v jedné bance, proto je dobré vyhnout se přístupu se střídou 32 (a násobky) -- pak budou všechna vlákna přistupovat do stejné banky, což přístup řádově zpomalí.
+
+\subsubsection{Registry}
+
+Nejrychlejší paměť, jsou stejné jako registry na CPU. V současnosti je již počet registrů na SM tak velký, že na něj prakticky nemusíme brát ohled, nicméně při maximálním vytěžování GPU může být snížení počtu použitých registrů dobrou optimalizací (na jeden SM se pak vejde více bloků současně).
+
+\section{Návrh kódu pro GPU}
+
+Zde probereme Ideální kód pro paralelizaci na GPU je vektorový program (např. filtrace obrazu) -- skládá se z malých zcela datově nezávislých částí s nulovou nebo malou potřebou synchronizace. Je to dáno tím, že GPU je 
+
+synchronizace, paměť, latence (méně kontrolní logiky), vektorovost, větvení (více stejné práce) komunikace

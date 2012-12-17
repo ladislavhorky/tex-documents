@@ -1,0 +1,40 @@
+% -*-coding: utf-8 -*-
+
+V této kapitole popíšeme několik vybraných optimalizačních algoritmů. Zdaleka nejde o průřez všemi typy algoritmů \footnote{obsáhlejší přehledy lze nalézt například v \cite[p.~23]{GO ebook}, \cite{wiki metaheur}} ale alespoň získáme představu s čím se budeme muset při hledání obecného formalismu potýkat. Na konci zmíníme obecné principy, myšlenky a problémy, které se objevují napříč všemi algoritmy a které bychom taktéž chtěli v našem modelu pokrýt.
+
+\section{Základní pojmy}
+
+\par{\textbf{Účelová funkce (fitness)} je funkce, jejíž hodnotu se algoritmus snaží optimalizovat. Optimalizaci lze vždy formulovat jako minimalizaci.}
+
+\par{\textbf{Kandidátní řešení (jedinec)} je struktura data, z nichž je možné spočíst hodnotu účelové funkce. Manipulací s těmito daty se algoritmus snaží najít nejlepší možné řešení.}
+
+\par{\textbf{Stavový prostor} je prostor všech jedinců.}
+
+\par{\textbf{Populace} je soubor jedinců s nimiž algoritmus aktuálně pracuje.}
+
+%\par{Metaheuristika je třída algoritmů popisující  } 
+
+\section{Algoritmy}
+
+\note{dát se i základní RS a Hill Climbing? ... když ano, tak citovat, nebo jsou to obecně známé věci?}
+
+\subsection{Simulované žíhání a zrychlené simulované žíhání}
+
+Simulované žíhání (SA -- Simulated Annealing) \cite{SA Hajek}, \cite{SA Tsitsiklis} je optimalizační technika založená na analogii s chladnutím kovu. Při chladnutí se atomy snaží zaujmout pozici s co nejnižší energií; když je teplota vysoká, Brownův pohyb je intenzivní a atomy se často dostávají i do stavů s vyšší energií než měly dříve, což jim umožňuje uniknout z lokálních minim energie. Naproti tomu při nízké teplotě se atomy pohybují již téměř výhradně do stavů s nižší energií. Správnou rychlostí ochlazování (cooling schedule) Pak můžeme dosáhnout ideálně homogenního krystalu, nebo alespoň velkých zrn.
+
+Nového jedince pomocí algoritmu SA získáme následujícím způsobem \cite[p.~1153]{SA survey}:
+\begin{enumerate}
+  \item $x_{new} \sim N(x_i, \sigma^2)$, $\sigma$ pevně zvolené
+  \item Pokud $E(x_{new}) < E(x_i) \Rightarrow x_{i+1} \leftarrow x_{new}$,
+  \item jinak $x_{i+1} \leftarrow x_{new}$ s pravděpodobností $exp(-\frac{E(x_{new}) - E(x_i)}{T_i})$,
+    \newline kde $T_i = \frac{T_0}{ln(i)}$, $i$ je krok.
+\end{enumerate}
+
+\note{různé prameny uvádějí různé přístupy: např. u \cite{VFSA} je mutace i pravd. příjmu parametrizovaná teplotou -- takže je to vlastně quantum SA a důkazy konvergence nejsou vedeny přes přijímací pravd, ale přes mutaci. Na druhou stranu, důkazy v Hájkovi a Tsitsiklisovi jsou vedeny přes přijímací pravd. a předpoklady o okolí jsou poměrně volné...}
+
+V \cite{SA Hajek}, \cite{SA Tsitsiklis} je dokázáno, že pro dostatečně vysoké $T_0$, při daném postupu ochlazování $x_i \xrightarrow{i \to +\infty} x_{opt}$ podle pravděpodobnosti. Zastavení algoritmu určujeme volbou cílové teploty (běžně i řádu $10^{-4}$) z čehož vyplývá okamžitá nevýhoda SA a tou je v praxi příliš pomalý pokles teploty.
+
+\note{článek od Szu nemůžu sehnat.... na Esevieru jako jediný nemá pdf...}
+
+\subsection{Genetická optimalizace}
+

@@ -1,0 +1,5 @@
+% -*-coding: utf-8 -*-
+
+Heuristické algoritmy jsou silným a v praxi mnohdy i jedniným nástrojem k řešení optimalizačních problémů. Když složitost problému roste, náročnost algoritmů však často stoupá nad únosné meze (jako např. při učení neuronových sítí) a my jsme nuceni buď vymyslet lepší algoritmus, zjednodušit problém, nebo dát stávajícímu algoritmu více výpočetních prostředků. Zatímco první dvě možnosti jsou buď netriviální nebo nežádoucí, třetí je v praxi celkem dobře realizovatelná, byť kvůli exponenciální povaze problémů přináší jen malé zlepšení.
+
+V této práci se zaměříme na urychlování heuristik pomocí paralelizace na GPU v prostředí NVIDIA CUDA \note{citate CUDA overview}. Na GPU bylo již úspěšně implementováno množství heuristických algoritmů \note{citace PSO, najít další}, naším cílem však je vytvořit univerzální paralelizovatelný model ve kterém 

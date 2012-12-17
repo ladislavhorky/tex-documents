@@ -14,16 +14,10 @@
         \textsc{Hajek}, B., A tutorial survey of theory and applications of simulated annealing, \textit{1985 24th IEEE Conference on Decision and Control}, Vol. 24, pp.755-760, 1985, Dostupné z: DOI 10.1109/CDC.1985.268599
 
     \bibitem{GO ebook}
-        \textsc{Weise}, T. \textit{Global Optimization Algorithms - Theory and Application} [online], ver. 26.6.2009 [cit. 28.2.2012], Dostupné z: \texttt{www.it-weise.de}
-
+        \textsc{Weise}, T. \textit{Global Optimization Algorithms - Theory and Application} [online], ver. 26.6.2009 [cit. 28.2.2012], Dostupné z: www.it-weise.de
+        
     \bibitem{wiki metaheur}
-        Wikipedia: Metaheuristic [online], \textit{Wikipedia} [cit. 15.12.2012], 2012, Dostupné z: \texttt{http://en.wikipedia.org/wiki/Metaheuristic}
-
-    \bibitem{cuckoo}
-        \textsc{Yang}, X.-S., \textsc{Deb}, S., Cuckoo search via Levy flights, \textit{Proc. of World Congress on Nature \& Biologically Inspired Computing (NaBIC 2009)}, December 2009, India. IEEE Publications, USA, Pages 210-214 (2009).
-
-    \bibitem{DE Storn}
-        \textsc{Storn}, R., \textsc{Price}, K.,. 1997. Differential Evolution – A Simple and Efficient Heuristic for Global Optimization over Continuous Spaces, \textit{J. of Global Optimization}, Vol. 11, 1997, Pages 341-359. Dostupné z: DOI 10.1023/A:1008202821328
+        Wikipedia: Metaheuristic [online]
 
     \bibitem{Numerical Recipes}
         \textsc{Press}, W.H., \textsc{Flannery}, B.P, \textsc{Teukolsky}, S.A., \textsc{Vettering}, W.T.,
@@ -31,7 +25,8 @@
         URL: {\tt http://www.nrbook.com/a/bookcpdf.php} [citováno 15.6.2011]
 
     \bibitem{CUDA programming g.}
-        NVIDIA, 2012, \textit{NVIDIA CUDA C Programming Guide 5.0} , Design Guide [online], October 2012 [cit. 15.12.2012], Dostupné z: \texttt{http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html} (Tato nebo novější verze)
+        \textit{NVIDIA CUDA C Programming Guide 3.2} [online]. Poslední revize 22.10.2010.
+        URL: {\tt http://developer.download.nvidia.com/compute/cuda/3\_2/toolkit/docs/} {\tt CUDA\_C\_Programming\_Guide.pdf} [citováno 18.6.2011]
 
     \bibitem{CUDA best practices}
         \textit{NVIDIA CUDA C Best Practices Guide 3.2} [online]. Poslední revize 20.8.2010.

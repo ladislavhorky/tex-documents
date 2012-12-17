@@ -1,0 +1,13 @@
+\backcite {GO ebook}{{1}{(document)}{Doc-Start}}
+\backcite {SA Hajek}{{2}{1.2.1}{subsection.1.2.1}}
+\backcite {SA Tsitsiklis}{{2}{1.2.1}{subsection.1.2.1}}
+\backcite {GO ebook}{{2}{1}{Hfootnote.1}}
+\backcite {wiki metaheur}{{2}{1}{Hfootnote.1}}
+\backcite {SA survey}{{3}{1.2.1}{subsection.1.2.1}}
+\backcite {VFSA}{{3}{1.2.1}{Item.3}}
+\backcite {SA Hajek}{{3}{1.2.1}{Item.3}}
+\backcite {SA Tsitsiklis}{{3}{1.2.1}{Item.3}}
+\backcite {GO ebook}{{3}{1.2.2}{subsection.1.2.2}}
+\backcite {DE Storn}{{3}{1.2.3}{subsection.1.2.3}}
+\backcite {cuckoo}{{4}{1.3.2}{subsection.1.3.2}}
+\backcite {CUDA programming g.}{{6}{2}{chapter.2}}
