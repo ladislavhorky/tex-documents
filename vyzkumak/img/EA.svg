@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="EA.pdf">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="398.41393"
+     inkscape:cy="887.26541"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:snap-grids="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="716"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2985" />
+    <sodipodi:guide
+       position="0,0"
+       orientation="0,744.09448"
+       id="guide4036" />
+    <sodipodi:guide
+       position="720,20"
+       orientation="-1052.3622,0"
+       id="guide4038" />
+    <sodipodi:guide
+       position="744.09448,1052.3622"
+       orientation="0,-744.09448"
+       id="guide4040" />
+    <sodipodi:guide
+       position="0,1052.3622"
+       orientation="1052.3622,0"
+       id="guide4042" />
+    <sodipodi:guide
+       position="780,40"
+       orientation="0,744.09448"
+       id="guide4044" />
+    <sodipodi:guide
+       position="700,60"
+       orientation="-1052.3622,0"
+       id="guide4046" />
+    <sodipodi:guide
+       position="744.09448,1052.3622"
+       orientation="0,-744.09448"
+       id="guide4048" />
+    <sodipodi:guide
+       position="0,1052.3622"
+       orientation="1052.3622,0"
+       id="guide4050" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#96c8ff;stroke:#000000;stroke-opacity:1;fill-opacity:1"
+       id="rect2987"
+       width="120"
+       height="150"
+       x="20"
+       y="22.362183" />
+    <rect
+       style="fill:#96c8ff;fill-opacity:1;stroke:#000000;stroke-width:0.86602539;stroke-opacity:1"
+       id="rect3757"
+       width="40"
+       height="30"
+       x="230"
+       y="27.362183" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="80"
+       y="92.362183"
+       id="text3759"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3761"
+         x="80"
+         y="92.362183"
+         style="font-size:22px;text-align:center;text-anchor:middle">Populace</tspan><tspan
+         sodipodi:role="line"
+         x="80"
+         y="119.86218"
+         id="tspan3763"
+         style="font-size:22px;text-align:center;text-anchor:middle;font-style:oblique;-inkscape-font-specification:Sans Oblique">P</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="250"
+       y="47.362183"
+       id="text3765"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3767"
+         x="250"
+         y="47.362183"
+         style="font-size:22px;text-align:center;text-anchor:middle">x</tspan></text>
+    <rect
+       style="fill:#96c8ff;fill-opacity:1;stroke:#000000;stroke-width:0.86602539;stroke-opacity:1"
+       id="rect3757-1"
+       width="40"
+       height="30"
+       x="230"
+       y="107.36218" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="250"
+       y="127.36218"
+       id="text3765-7"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3767-4"
+         x="250"
+         y="127.36218"
+         style="font-size:22px;text-align:center;text-anchor:middle">y</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 140,42.362183 80,0 0,-10 10,10 -10,10 0,-10"
+       id="path3795"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 140,122.36218 80,0 0,-9.99999 10,9.99999 -10,10 0,-10"
+       id="path3795-0"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="180"
+       y="37.362183"
+       id="text3815"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3817"
+         x="180"
+         y="37.362183"
+         style="font-size:16px;text-align:center;text-anchor:middle">Selekce</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="180"
+       y="117.36218"
+       id="text3815-9"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3817-4"
+         x="180"
+         y="117.36218"
+         style="font-size:16px;text-align:center;text-anchor:middle">Selekce</tspan></text>
+    <rect
+       style="fill:#96c8ff;fill-opacity:1;stroke:#000000;stroke-width:0.86602539;stroke-opacity:1"
+       id="rect3757-8"
+       width="40"
+       height="30"
+       x="360"
+       y="67.362183" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="380"
+       y="87.362183"
+       id="text3765-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="380"
+         y="87.362183"
+         style="font-size:22px;text-align:center;text-anchor:middle"
+         id="tspan3882">z</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 270,42.362183 20,40 60,0 0,-10 10,10 -10,9.999997 0,-9.999997 -60,0 -20,39.999997"
+       id="path3886"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="320"
+       y="77.362183"
+       id="text3815-5"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3817-1"
+         x="320"
+         y="77.362183"
+         style="font-size:16px;text-align:center;text-anchor:middle">Křížení</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="435"
+       y="77.362183"
+       id="text3815-5-5"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3817-1-2"
+         x="435"
+         y="77.362183"
+         style="font-size:16px;text-align:center;text-anchor:middle">Mutace</tspan><tspan
+         sodipodi:role="line"
+         x="435"
+         y="97.362183"
+         style="font-size:16px;text-align:center;text-anchor:middle"
+         id="tspan3954" /></text>
+    <rect
+       style="fill:#96c8ff;fill-opacity:1;stroke:#000000;stroke-width:1.06066012;stroke-opacity:1"
+       id="rect3757-8-7"
+       width="60"
+       height="30"
+       x="480"
+       y="67.362183" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="510"
+       y="87.362183"
+       id="text3765-2-6"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="510"
+         y="87.362183"
+         style="font-size:22px;text-align:center;text-anchor:middle"
+         id="tspan3882-1">x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan3980">new</tspan></tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 400,82.362183 70,0 0,-10 10,10 -10,9.999997 0,-9.999997"
+       id="path3982"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccc" />
+    <rect
+       style="fill:#96c8ff;fill-opacity:1;stroke:#000000;stroke-opacity:1"
+       id="rect2987-4"
+       width="120"
+       height="150"
+       x="580"
+       y="22.362183" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="640"
+       y="92.362183"
+       id="text3759-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3761-3"
+         x="640"
+         y="92.362183"
+         style="font-size:22px;text-align:center;text-anchor:middle">Potomstvo</tspan><tspan
+         sodipodi:role="line"
+         x="640"
+         y="119.92831"
+         id="tspan3763-2"
+         style="font-size:22px;font-style:oblique;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique">Q</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 540,82.362183 30,0 0,-10 10,10 -10,9.999997 0,-9.999997"
+       id="path4011"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 580,162.36218 -430,0 0,-10 -10,10 10,10 0,-10"
+       id="path4013"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="420"
+       y="152.36218"
+       id="text3815-5-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3817-1-1"
+         x="420"
+         y="152.36218"
+         style="font-size:16px;text-align:center;text-anchor:middle">Nová generace</tspan></text>
+  </g>
+</svg>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="OAschema.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="262.09818"
+     inkscape:cy="958.37058"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:snap-grids="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="716"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:snap-bbox="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2985" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#96ffac;fill-opacity:1;stroke:#000000;stroke-width:1.10782337;stroke-opacity:1"
+       id="rect2987"
+       width="120"
+       height="90"
+       x="30"
+       y="22.362183" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="90"
+       y="72.362183"
+       id="text3757"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3759"
+         x="90"
+         y="72.362183"
+         style="font-size:20px;text-align:center;text-anchor:middle">Inicializace</tspan></text>
+    <rect
+       style="fill:#96ffac;fill-opacity:1;stroke:#000000;stroke-width:1.6922282;stroke-opacity:1"
+       id="rect2987-1"
+       width="280"
+       height="90"
+       x="180"
+       y="22.362183" />
+    <rect
+       style="fill:#18ff49;fill-opacity:1;stroke:#000000;stroke-width:0.82572281;stroke-opacity:1"
+       id="rect2987-7"
+       width="120"
+       height="50"
+       x="190"
+       y="52.362183" />
+    <rect
+       style="fill:#18ff49;fill-opacity:1;stroke:#000000;stroke-width:0.82572281;stroke-opacity:1"
+       id="rect2987-7-0"
+       width="120"
+       height="50"
+       x="330"
+       y="52.362183" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="320"
+       y="42.362183"
+       id="text3757-9"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3759-4"
+         x="320"
+         y="42.362183"
+         style="font-size:20px;text-align:center;text-anchor:middle">Reprodukce</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="250"
+       y="82.362183"
+       id="text3757-8"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="250"
+         y="82.362183"
+         style="font-size:20px;text-align:center;text-anchor:middle"
+         id="tspan3872">Selekce</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="390"
+       y="82.362183"
+       id="text3757-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3759-45"
+         x="390"
+         y="82.362183"
+         style="font-size:20px;text-align:center;text-anchor:middle">Křížení</tspan></text>
+    <rect
+       style="fill:#96ffac;fill-opacity:1;stroke:#000000;stroke-width:1.10782337;stroke-opacity:1"
+       id="rect2987-5"
+       width="120"
+       height="90"
+       x="480"
+       y="22.362183" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="540"
+       y="72.362183"
+       id="text3757-1"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="540"
+         y="72.362183"
+         style="font-size:20px;text-align:center;text-anchor:middle"
+         id="tspan3919">Mutace</tspan></text>
+    <rect
+       style="fill:#96ffac;fill-opacity:1;stroke:#000000;stroke-width:0.9770084;stroke-opacity:1"
+       id="rect2987-11"
+       width="120"
+       height="70"
+       x="550"
+       y="142.36218" />
+    <rect
+       style="fill:#96ffac;fill-opacity:1;stroke:#000000;stroke-width:0.9770084;stroke-opacity:1"
+       id="rect2987-52"
+       width="120"
+       height="70"
+       x="400"
+       y="142.36218" />
+    <rect
+       style="fill:#96ffac;fill-opacity:1;stroke:#000000;stroke-width:0.9770084;stroke-opacity:1"
+       id="rect2987-76"
+       width="120"
+       height="70"
+       x="250"
+       y="142.36218" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="610"
+       y="182.36218"
+       id="text3757-14"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3759-2"
+         x="610"
+         y="182.36218"
+         style="font-size:20px;text-align:center;text-anchor:middle">Ohodnocení</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="460"
+       y="182.36218"
+       id="text3757-3"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3759-22"
+         x="460"
+         y="182.36218"
+         style="font-size:20px;text-align:center;text-anchor:middle">Sjednocení</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="310"
+       y="182.36218"
+       id="text3757-16"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3759-8"
+         x="310"
+         y="182.36218"
+         style="font-size:20px;text-align:center;text-anchor:middle">Archivace</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 150,67.362183 20,0 0,-10 10,10 -10,10 0,-10"
+       id="path3994"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 460,72.362183 10,0 0,-10 10,10 -10,10 0,-5 0,-5"
+       id="path3996"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 580,112.36218 0,20 10,0 -10,10 -10,-10 10,0"
+       id="path3998"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 550,177.36218 -20,0 0,-10 -10,10 10,10 0,-10"
+       id="path4000"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 400,177.36218 -20,0 0,-10 -10,10 10,10 0,-10"
+       id="path4002"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 310,77.362183 10,0 0,-10 10,10 -10,10 0,-10"
+       id="path4006"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:#96ffac;fill-opacity:1;stroke:#000000;stroke-width:0.9770084;stroke-opacity:1"
+       id="rect2987-76-1"
+       width="120"
+       height="70"
+       x="100"
+       y="142.36218" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="160"
+       y="172.36218"
+       id="text3757-7"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="160"
+         y="172.36218"
+         style="font-size:20px;text-align:center;text-anchor:middle"
+         id="tspan3053">Koncová</tspan><tspan
+         sodipodi:role="line"
+         x="160"
+         y="197.36218"
+         style="font-size:20px;text-align:center;text-anchor:middle"
+         id="tspan3057">podmínka</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 250,177.36218 -20,0 0,-10 -10,10 10,10 0,-10"
+       id="path4002-9"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 200,142.36218 0,-20 -10,0 10,-10 10,10 -10,0"
+       id="path3998-4"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>
