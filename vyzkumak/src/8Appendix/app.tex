@@ -1,0 +1,264 @@
+\chapter{Naměřené výsledky}
+
+Následující tabulky obsahují časy, směrodatné odchylky a spočtená zrychlení pro všechny konfigurace a obě měřené účelové funkce.
+
+\section{Sférická funkce}
+
+\begin{table}[h!]
+    \begin{center}
+    \begin{tabular}{ccccccc}
+      \toprule
+      \midrule
+      \multirow{3}{*}{CPU/GPU} & počet par. & \multicolumn{5}{c}{velikost populace} \\
+      & populací & \multicolumn{5}{c}{(čas na 100 gen. [ms] a $\sigma$ [\%])} \\
+      & & 32 & 64 & 128 & 256 & 512 \\
+      \midrule
+      \multirow{2}{*}{CPU} & \multirow{2}{*}{1}
+&5,2&2,74&5,45&10,86&21,8\\
+&&1,57&24,6&1,33&1,8&11,11\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1}
+&1,85&2,49&1,86&2,17&3,16\\
+&&25,12&15,41&21,5&11,2&0,28\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{10}
+&2,08&1,82&2,24&3,01&5,66\\
+&&15,42&18,06&3,37&0,54&0,23\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{100}
+&3,6&4,98&8,22&14,14&38,29\\
+&&0,21&0,19&0,18&0,15&0,1\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1000}
+&28,83&38,23&63,91&119,98&363,8\\
+&&0,07&0,05&0,11&0,07&0,06\\
+\midrule
+      & & \multicolumn{5}{c}{spočtená zrychlení vůči CPU} \\
+\midrule
+      GPU & 1
+&2,82&1,1&2,93&5&6,9\\
+GPU & 10
+&25,05&15,07&24,29&36,03&38,54\\
+GPU & 100
+&144,25&55,03&66,31&76,83&56,94\\
+GPU & 1000
+&180,36&71,66&85,24&90,53&59,93\\
+      \midrule
+      \bottomrule
+    \end{tabular}
+    \caption{Výsledky pro RS}
+    \end{center}
+\end{table}
+\clearpage
+
+\begin{table}[t]
+    \begin{center}
+    \begin{tabular}{ccccccc}
+      \toprule
+      \midrule
+      \multirow{3}{*}{CPU/GPU} & počet par. & \multicolumn{5}{c}{velikost populace} \\
+      & populací & \multicolumn{5}{c}{(čas na 100 gen. [ms] a $\sigma$ [\%])} \\
+      & & 32 & 64 & 128 & 256 & 512 \\
+      \midrule
+      \multirow{2}{*}{CPU} & \multirow{2}{*}{1}
+&11,3&22,83&45,87&92,77&186,73\\
+&&17,21&1,58&1,64&1,45&1,71\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1}
+&5,76&6,3&7,59&9,64&13,62\\
+&&1,91&0,74&0,3&0,15&0,09\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{10}
+&6,36&7,34&9,99&14,31&23,98\\
+&&1,37&0,57&0,15&0,08&0,06\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{100}
+&16,17&24,42&43,76&82,01&165,59\\
+&&0,29&0,06&0,07&0,12&0,07\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1000}
+&128,16&196,95&369,26&730&1546,6\\
+&&0,09&0,08&0,05&0,03&0,03\\
+\midrule
+      & & \multicolumn{5}{c}{spočtená zrychlení vůči CPU} \\
+\midrule
+      GPU & 1
+&1,96&3,62&6,04&9,62&13,71\\
+GPU & 10
+&17,76&31,09&45,89&64,84&77,87\\
+GPU & 100
+&69,84&93,48&104,82&113,11&112,77\\
+GPU & 1000
+&88,14&115,91&124,21&127,08&120,73\\
+\midrule
+      \bottomrule
+    \end{tabular}
+    \caption{Výsledky pro GO}
+    \end{center}
+\end{table}
+\begin{table}[b]
+    \begin{center}
+    \begin{tabular}{ccccccc}
+      \toprule
+      \midrule
+      \multirow{3}{*}{CPU/GPU} & počet par. & \multicolumn{5}{c}{velikost populace} \\
+      & populací & \multicolumn{5}{c}{(čas na 100 gen. [ms] a $\sigma$ [\%])} \\
+      & & 32 & 64 & 128 & 256 & 512 \\
+      \midrule
+      \multirow{2}{*}{CPU} & \multirow{2}{*}{1}
+&5,1&10,09&20,18&40,26&80,36\\
+&&38,07&0,83&0,64&1,61&1,13\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1}
+&3,97&4,01&4,14&4,96&6,59\\
+&&6,17&5,56&2,7&1,77&0,16\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{10}
+&4,06&4,27&5,06&6,45&12,27\\
+&&4,8&3,82&2&0,17&0,26\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{100}
+&8,49&11,89&17,66&31,9&85,26\\
+&&0,15&0,33&0,14&0,24&0,14\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1000}
+&70,64&84,6&134,22&265,86&798,02\\
+&&0,1&0,25&0,14&0,09&0,04\\
+\midrule
+      & & \multicolumn{5}{c}{spočtená zrychlení vůči CPU} \\
+\midrule
+      GPU & 1
+&1,28&2,51&4,87&8,12&12,2\\
+GPU & 10
+&12,55&23,64&39,91&62,45&65,51\\
+GPU & 100
+&60,05&84,88&114,24&126,19&94,26\\
+GPU & 1000
+&72,17&119,26&150,32&151,42&100,7\\
+\midrule
+      \bottomrule
+    \end{tabular}
+    \caption{Výsledky pro SA}
+    \end{center}
+\end{table}
+\clearpage
+
+\section{Problém sudoku}
+\begin{table}[h]
+    \begin{center}
+    \begin{tabular}{ccccccc}
+      \toprule
+      \midrule
+      \multirow{3}{*}{CPU/GPU} & počet par. & \multicolumn{5}{c}{velikost populace} \\
+      & populací & \multicolumn{5}{c}{(čas na 100 gen. [ms] a $\sigma$ [\%])} \\
+      & & 32 & 64 & 128 & 256 & 512 \\
+      \midrule
+      \multirow{2}{*}{CPU} & \multirow{2}{*}{1}
+&84,77&168,94&337,82&677,36&1353,6\\
+&&2,9&1,46&1,45&1,35&2,44\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1}
+&12,4&12,84&13,17&14,28&19,55\\
+&&0,08&0,38&0,37&0,41&0,23\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{10}
+&12,59&13,56&14,45&19,44&39,69\\
+&&0,03&0,13&0,28&0,04&0,03\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{100}
+&27,06&37,5&71,09&137,56&294,32\\
+&&0,21&0,14&0,17&0,07&0,04\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1000}
+&242,97&321,64&633,53&1269,9&2797,9\\
+&&0,04&0,05&0,03&0,02&0,02\\
+\midrule
+      & & \multicolumn{5}{c}{spočtená zrychlení vůči CPU} \\
+\midrule
+      GPU & 1
+&6,84&13,15&25,65&47,44&69,24\\
+GPU & 10
+&67,3&124,54&233,75&348,38&341,07\\
+GPU & 100
+&313,22&450,57&475,21&492,4&459,91\\
+GPU & 1000
+&348,88&525,25&533,23&533,41&483,79\\
+\midrule
+      \bottomrule
+    \end{tabular}
+    \caption{Výsledky pro RS}
+    \end{center}
+\end{table}
+\clearpage
+
+%GOsud
+\begin{table}[c]
+    \begin{center}
+    \begin{tabular}{ccccccc}
+      \toprule
+      \midrule
+      \multirow{3}{*}{CPU/GPU} & počet par. & \multicolumn{5}{c}{velikost populace} \\
+      & populací & \multicolumn{5}{c}{(čas na 100 gen. [ms] a $\sigma$ [\%])} \\
+      & & 32 & 64 & 128 & 256 & 512 \\
+      \midrule
+      \multirow{2}{*}{CPU} & \multirow{2}{*}{1}
+&262,51&527,28&1055,6&2109,6&4216,4\\
+&&0,93&1,06&0,95&0,97&2,81\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1}
+&39,68&41,34&41,74&48,29&78,25\\
+&&0,1&0,11&0,07&0,07&0,03\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{10}
+&41,86&44,73&50,45&73,6&156,83\\
+&&0,05&0,06&0,07&0,05&0,03\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{100}
+&101,72&152,8&286,62&544,51&1150,9\\
+&&0,04&0,03&0,06&0,04&0,03\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1000}
+&882,84&1305,8&2483,2&4975,3&10826\\
+&&0,02&0,02&0,03&0,04&0,02\\
+\midrule
+      & & \multicolumn{5}{c}{spočtená zrychlení vůči CPU} \\
+\midrule
+      GPU & 1
+&6,62&12,75&25,29&43,68&53,89\\
+GPU & 10
+&62,72&117,89&209,23&286,65&268,85\\
+GPU & 100
+&258,06&345,08&368,31&387,43&366,36\\
+GPU & 1000
+&297,35&403,8&425,11&424,02&389,48\\
+\midrule
+      \bottomrule
+    \end{tabular}
+    \caption{Výsledky pro GO}
+    \end{center}
+\end{table}
+\nopagebreak
+%SAsud
+\begin{table}[b]
+    \begin{center}
+    \begin{tabular}{ccccccc}
+      \toprule
+      \midrule
+      \multirow{3}{*}{CPU/GPU} & počet par. & \multicolumn{5}{c}{velikost populace} \\
+      & populací & \multicolumn{5}{c}{(čas na 100 gen. [ms] a $\sigma$ [\%])} \\
+      & & 32 & 64 & 128 & 256 & 512 \\
+      \midrule
+      \multirow{2}{*}{CPU} & \multirow{2}{*}{1}
+&138,03&275,92&552,22&1102,1&2207,8\\
+&&1,44&1,49&0,49&0,58&0,58\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1}
+&27,83&27,76&28,03&29,42&33,7\\
+&&0,31&0,35&0,37&0,26&0,23\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{10}
+&28,07&28,59&29,99&35,09&64,91\\
+&&0,19&0,37&0,15&0,2&0,14\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{100}
+&63,42&76,54&117,65&215,43&490,84\\
+&&0,21&0,11&0,11&0,06&0,04\vspace{1.5mm}\\
+\multirow{2}{*}{GPU} & \multirow{2}{*}{1000}
+&563,76&656,89&979,02&1947,2&4653,4\\
+&&0,03&0,02&0,01&0,01&0,01\\
+\midrule
+      & & \multicolumn{5}{c}{spočtená zrychlení vůči CPU} \\
+\midrule
+      GPU & 1
+&4,96&9,94&19,7&37,46&65,51\\
+GPU & 10
+&49,17&96,51&184,16&314,1&340,13\\
+GPU & 100
+&217,63&360,5&469,38&511,57&449,8\\
+GPU & 1000
+&244,84&420,04&564,06&566&474,44\\
+\midrule
+      \bottomrule
+    \end{tabular}
+    \caption{Výsledky pro SA}
+    \end{center}
+\end{table}
+
+

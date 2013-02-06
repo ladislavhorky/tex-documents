@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="GO.pdf">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="394.65056"
+     inkscape:cy="593.46371"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1-9"
+     showgrid="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="716"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3062" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="layer1-9"
+       inkscape:label="Layer 1"
+       transform="translate(52.836011,584.32323)">
+      <rect
+         y="-541.96106"
+         x="117.16399"
+         height="59.999989"
+         width="390"
+         id="rect2987-4"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.81649643;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         transform="translate(20.108236,-340.57214)"
+         inkscape:label="Layer 1"
+         id="layer1-4-5-5-8">
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="287.05576"
+           y="-181.3889"
+           id="text3759-8-1-2-8"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             x="287.05576"
+             y="-181.3889"
+             style="font-size:20px;font-style:normal;font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Bold Oblique"
+             id="tspan3088">basicAlgorithm</tspan></text>
+      </g>
+      <rect
+         y="-511.96103"
+         x="117.16399"
+         height="29.999981"
+         width="120"
+         id="rect2987-5-1-4"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         transform="translate(-49.891764,-310.57214)"
+         inkscape:label="Layer 1"
+         id="layer1-4-5-5-5">
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="227.05576"
+           y="-181.3889"
+           id="text3759-8-1-2-5"
+           sodipodi:linespacing="125%"><tspan
+             id="tspan3874-1-6-1"
+             sodipodi:role="line"
+             x="227.05576"
+             y="-181.3889"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique">Inicializace</tspan></text>
+      </g>
+      <rect
+         y="-511.96103"
+         x="237.16399"
+         height="29.999981"
+         width="270"
+         id="rect2987-5-1-4-7"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         transform="translate(50.108242,-270.57213)"
+         inkscape:label="Layer 1"
+         id="layer1-4-5-5-5-1">
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="317.05576"
+           y="-221.3889"
+           id="text3759-8-1-2-5-1"
+           sodipodi:linespacing="125%"><tspan
+             id="tspan3874-1-6-1-5"
+             sodipodi:role="line"
+             x="317.05576"
+             y="-221.3889"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique">Smyčka algoritmu</tspan></text>
+      </g>
+      <rect
+         y="-411.96106"
+         x="-42.836037"
+         height="70.000015"
+         width="200"
+         id="rect2987-5-1-2"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.93541431;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         transform="translate(-189.89179,-220.57213)"
+         inkscape:label="Layer 1"
+         id="layer1-4-5-5-7">
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="247.05576"
+           y="-171.3889"
+           id="text3759-8-1-2-6"
+           sodipodi:linespacing="125%"><tspan
+             id="tspan3874-1-6-14"
+             sodipodi:role="line"
+             x="247.05576"
+             y="-171.3889"
+             style="font-size:20px;font-style:oblique;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique">inicializace</tspan><tspan
+             sodipodi:role="line"
+             x="247.05576"
+             y="-146.44902"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3173"><tspan
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+   id="tspan3177">populační wrapper</tspan>:</tspan><tspan
+             sodipodi:role="line"
+             x="247.05576"
+             y="-126.46246"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3175">masterMethod</tspan></text>
+      </g>
+      <rect
+         y="-151.96104"
+         x="567.164"
+         height="70.000015"
+         width="239.99998"
+         id="rect2987-5-1-2-2"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.83665997;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         transform="translate(440.10821,39.42785)"
+         inkscape:label="Layer 1"
+         id="layer1-4-5-5-7-3">
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="247.05576"
+           y="-171.3889"
+           id="text3759-8-1-2-6-2"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             x="249.82919"
+             y="-171.3889"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3175-8"><tspan
+               id="tspan3223"
+               style="font-size:20px;font-style:normal;font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Bold Oblique">archivační </tspan><tspan
+               style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+               id="tspan3217">wrapper pro </tspan></tspan><tspan
+             sodipodi:role="line"
+             x="249.82919"
+             y="-146.3889"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3225"><tspan
+   id="tspan3521"
+   style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"><tspan
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+   id="tspan3519">potomstvo</tspan>: </tspan></tspan><tspan
+             sodipodi:role="line"
+             x="247.05576"
+             y="-126.40234"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3524">masterMethod, archiveProvider</tspan></text>
+      </g>
+      <rect
+         y="-311.96109"
+         x="-142.83603"
+         height="70.000046"
+         width="200"
+         id="rect2987-5-1-2-5"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.76376277;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3759-8-1-2-6-6"
+         y="-291.96106"
+         x="-42.836052"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           id="tspan3173-8"
+           style="font-size:20px;font-style:normal;font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Bold Oblique"
+           y="-291.96106"
+           x="-40.062614"
+           sodipodi:role="line">náhodná inicializace </tspan><tspan
+           id="tspan3175-2"
+           style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-266.96106"
+           x="-40.894646"
+           sodipodi:role="line"><tspan
+   id="tspan3513"
+   style="font-size:20px;font-style:normal;font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Bold Oblique">v mezích: </tspan>slaveMethod, </tspan><tspan
+           style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-246.97449"
+           x="-42.836052"
+           sodipodi:role="line"
+           id="tspan3515">stochasticMethod</tspan></text>
+      <rect
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.79056942;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect2987-5-1-2-7"
+         width="160"
+         height="50.000011"
+         x="67.163956"
+         y="-311.96106" />
+      <g
+         id="layer1-4-5-5-7-9"
+         inkscape:label="Layer 1"
+         transform="translate(-99.891772,-120.57213)">
+        <text
+           sodipodi:linespacing="125%"
+           id="text3759-8-1-2-6-5"
+           y="-171.3889"
+           x="247.05576"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           xml:space="preserve"><tspan
+             id="tspan3173-3"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-171.3889"
+             x="247.05576"
+             sodipodi:role="line"><tspan
+   id="tspan3177-1"
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique">sférická funkce</tspan>:</tspan><tspan
+             id="tspan3175-23"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-151.40234"
+             x="247.05576"
+             sodipodi:role="line">slaveMethod</tspan></text>
+      </g>
+      <rect
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.912871;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect2987-5-1-2-7-3"
+         width="99.999985"
+         height="80.000015"
+         x="627.164"
+         y="-51.961071" />
+      <g
+         id="layer1-4-5-5-7-9-4"
+         inkscape:label="Layer 1"
+         transform="translate(430.10821,139.42781)">
+        <text
+           sodipodi:linespacing="125%"
+           id="text3759-8-1-2-6-5-1"
+           y="-171.3889"
+           x="247.05576"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           xml:space="preserve"><tspan
+             style="font-size:20px;font-style:oblique;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-171.3889"
+             x="247.05576"
+             sodipodi:role="line"
+             id="tspan3874-1-6-14-4-1">archivace</tspan><tspan
+             id="tspan3173-3-3"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-146.44902"
+             x="247.05576"
+             sodipodi:role="line"><tspan
+   id="tspan3335"
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique">archivace</tspan>:</tspan><tspan
+             id="tspan3175-23-7"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-126.46246"
+             x="247.05576"
+             sodipodi:role="line">slaveMethod</tspan></text>
+      </g>
+      <rect
+         y="-411.96106"
+         x="297.164"
+         height="70.000015"
+         width="220"
+         id="rect2987-5-1-2-2-4"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.80104095;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3759-8-1-2-6-2-7"
+         y="-391.96106"
+         x="407.164"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:20px;font-style:oblique;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-391.96106"
+           x="407.164"
+           sodipodi:role="line"
+           id="tspan3874-1-6-14-2-7">reprodukce</tspan><tspan
+           id="tspan3175-8-9"
+           style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-367.02118"
+           x="409.93744"
+           sodipodi:role="line"><tspan
+   id="tspan3412"
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique">klasická reprodukce</tspan>: </tspan><tspan
+           id="tspan3225-9"
+           style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-347.03461"
+           x="407.164"
+           sodipodi:role="line">masterMethod, mateProvider</tspan></text>
+      <rect
+         y="-311.961"
+         x="247.16399"
+         height="69.999985"
+         width="140"
+         id="rect2987-5-1-2-7-3-8"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:1.01036298;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         transform="translate(70.108216,-120.57211)"
+         inkscape:label="Layer 1"
+         id="layer1-4-5-5-7-9-4-6">
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="247.05576"
+           y="-171.3889"
+           id="text3759-8-1-2-6-5-1-5"
+           sodipodi:linespacing="125%"><tspan
+             id="tspan3874-1-6-14-4-1-0"
+             sodipodi:role="line"
+             x="247.05576"
+             y="-171.3889"
+             style="font-size:20px;font-style:oblique;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique">selekce</tspan><tspan
+             sodipodi:role="line"
+             x="247.05576"
+             y="-146.44902"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3173-3-3-2"><tspan
+   id="tspan3450"
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique">2-tournament</tspan>:</tspan><tspan
+             sodipodi:role="line"
+             x="247.05576"
+             y="-126.46246"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3175-23-7-6">slaveMethod</tspan></text>
+      </g>
+      <rect
+         y="-311.96103"
+         x="397.164"
+         height="70"
+         width="220"
+         id="rect2987-5-1-2-7-3-8-0"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:1.2665571;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         transform="translate(260.10822,-120.57214)"
+         inkscape:label="Layer 1"
+         id="layer1-4-5-5-7-9-4-6-2">
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="247.05576"
+           y="-171.3889"
+           id="text3759-8-1-2-6-5-1-5-4"
+           sodipodi:linespacing="125%"><tspan
+             id="tspan3874-1-6-14-4-1-0-8"
+             sodipodi:role="line"
+             x="247.05576"
+             y="-171.3889"
+             style="font-size:20px;font-style:oblique;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique">křížení</tspan><tspan
+             sodipodi:role="line"
+             x="247.05576"
+             y="-146.44902"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3173-3-3-2-6"><tspan
+   id="tspan3488"
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique">jednobodové křížení</tspan>:</tspan><tspan
+             sodipodi:role="line"
+             x="247.05576"
+             y="-126.46246"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3175-23-7-6-0">slaveMethod, arityProvider</tspan></text>
+      </g>
+      <rect
+         y="-151.96104"
+         x="-82.836014"
+         height="100.00002"
+         width="180"
+         id="rect2987-5-1-2-2-4-4"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.86602533;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3759-8-1-2-6-2-7-6"
+         y="-131.96104"
+         x="7.1639948"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:20px;font-style:oblique;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-131.96104"
+           x="7.1639948"
+           sodipodi:role="line"
+           id="tspan3874-1-6-14-2-7-0">mutace</tspan><tspan
+           id="tspan3175-8-9-6"
+           style="font-size:20px;font-style:normal;font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Bold Oblique"
+           y="-107.02116"
+           x="9.9374323"
+           sodipodi:role="line">mutační wrapper </tspan><tspan
+           style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-82.021156"
+           x="9.105401"
+           sodipodi:role="line"
+           id="tspan3608"><tspan
+   style="font-size:20px;font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+   id="tspan3610">pro potomstvo</tspan>: </tspan><tspan
+           id="tspan3225-9-1"
+           style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-62.034603"
+           x="7.1639948"
+           sodipodi:role="line">masterMethod</tspan></text>
+      <rect
+         y="-151.96103"
+         x="297.16397"
+         height="70.000015"
+         width="240"
+         id="rect2987-5-1-2-2-4-8"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.83665997;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3759-8-1-2-6-2-7-4"
+         y="-131.96103"
+         x="417.16403"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:20px;font-style:oblique;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-131.96103"
+           x="417.16403"
+           sodipodi:role="line"
+           id="tspan3874-1-6-14-2-7-9">sjednocení</tspan><tspan
+           id="tspan3175-8-9-63"
+           style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-107.02115"
+           x="419.93747"
+           sodipodi:role="line"><tspan
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+   id="tspan3647">sjednocení nahrazením</tspan>: </tspan><tspan
+           id="tspan3225-9-8"
+           style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+           y="-87.034592"
+           x="417.16403"
+           sodipodi:role="line">masterMethod, sortResourceProvider</tspan></text>
+      <rect
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.99215657;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect2987-5-1-2-7-8"
+         width="140"
+         height="90"
+         x="-182.836"
+         y="-21.961033" />
+      <g
+         id="layer1-4-5-5-7-9-2"
+         inkscape:label="Layer 1"
+         transform="translate(-359.89173,169.42787)">
+        <text
+           sodipodi:linespacing="125%"
+           id="text3759-8-1-2-6-5-9"
+           y="-171.3889"
+           x="247.05576"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           xml:space="preserve"><tspan
+             id="tspan3173-3-1"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-171.3889"
+             x="249.82919"
+             sodipodi:role="line"><tspan
+               style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+               id="tspan3682">gaussovská </tspan></tspan><tspan
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-146.3889"
+             x="247.05576"
+             sodipodi:role="line"
+             id="tspan4650"><tspan
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+   id="tspan4652">mutace</tspan>:</tspan><tspan
+             id="tspan3175-23-5"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-126.40234"
+             x="248.99716"
+             sodipodi:role="line">slaveMethod, </tspan><tspan
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-108.90234"
+             x="247.05576"
+             sodipodi:role="line"
+             id="tspan4654">stochasticMethod</tspan></text>
+      </g>
+      <rect
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.83852553;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect2987-5-1-2-7-8-9"
+         width="180"
+         height="50.000011"
+         x="307.16394"
+         y="-21.96106" />
+      <rect
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.625;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect2987-5-1-2-7-8-9-3"
+         width="100"
+         height="50.000011"
+         x="497.164"
+         y="-21.961048" />
+      <g
+         id="layer1-4-5-5-7-9-2-8-6"
+         inkscape:label="Layer 1"
+         transform="translate(300.10819,169.42788)">
+        <text
+           sodipodi:linespacing="125%"
+           id="text3759-8-1-2-6-5-9-4-1"
+           y="-171.3889"
+           x="247.05576"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           xml:space="preserve"><tspan
+             id="tspan3173-3-1-0-5"
+             style="font-size:20px;font-style:normal;font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Bold Oblique"
+             y="-171.3889"
+             x="247.05576"
+             sodipodi:role="line">přesun:</tspan><tspan
+             id="tspan3175-23-5-6-2"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-151.40234"
+             x="247.05576"
+             sodipodi:role="line">slaveMethod</tspan></text>
+      </g>
+      <g
+         id="layer1-4-5-5-7-9-2-8-6-0"
+         inkscape:label="Layer 1"
+         transform="translate(150.10818,169.42788)">
+        <text
+           sodipodi:linespacing="125%"
+           id="text3759-8-1-2-6-5-9-4-1-9"
+           y="-171.3889"
+           x="247.05576"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           xml:space="preserve"><tspan
+             id="tspan3173-3-1-0-5-7"
+             style="font-size:20px;font-style:normal;font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Bold Oblique"
+             y="-171.3889"
+             x="247.05576"
+             sodipodi:role="line">bitonické třídění:</tspan><tspan
+             id="tspan3175-23-5-6-2-3"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-151.40234"
+             x="247.05576"
+             sodipodi:role="line">slaveMethod</tspan></text>
+      </g>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m -42.836023,-311.96104 60,-30"
+         id="path3777"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 147.16398,-311.96104 -50.000003,-30"
+         id="path3779"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 317.16398,-311.96104 50,-30"
+         id="path3789"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 507.16398,-311.96104 -60,-30"
+         id="path3791"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0"
+         d="m 397.16399,-21.961047 -10,-60"
+         id="path3795"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0"
+         d="m 547.16399,-21.961047 -100,-60"
+         id="path3797"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 687.16398,-81.961053 -10,30"
+         id="path3799"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 230,102.36218 -100,70"
+         id="path3801"
+         inkscape:connector-curvature="0"
+         transform="translate(-52.836011,-584.32323)" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 250,432.36218 40,-40 420,0 0,-240 0,-10 -250,0 -40,-40"
+         id="path3803"
+         inkscape:connector-curvature="0"
+         transform="translate(-52.836011,-584.32323)"
+         sodipodi:nodetypes="ccccccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 470,432.36218 20,-20 240,0 0,-280 -240,0 -30,-30"
+         id="path3805"
+         inkscape:connector-curvature="0"
+         transform="translate(-52.836011,-584.32323)"
+         sodipodi:nodetypes="cccccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 740,432.36218 10,-20 0,-290 -230,0 -20,-20"
+         id="path3807"
+         inkscape:connector-curvature="0"
+         transform="translate(-52.836011,-584.32323)"
+         sodipodi:nodetypes="ccccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 340,102.36218 70,70"
+         id="path3809"
+         inkscape:connector-curvature="0"
+         transform="translate(-52.836011,-584.32323)"
+         sodipodi:nodetypes="cc" />
+      <rect
+         y="-21.961033"
+         x="-32.836006"
+         height="69.999985"
+         width="140"
+         id="rect2987-5-1-2-7-3-8-5"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:1.01036298;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         transform="translate(-209.89178,169.42787)"
+         inkscape:label="Layer 1"
+         id="layer1-4-5-5-7-9-4-6-7">
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="247.05576"
+           y="-171.3889"
+           id="text3759-8-1-2-6-5-1-5-5"
+           sodipodi:linespacing="125%"><tspan
+             id="tspan3874-1-6-14-4-1-0-4"
+             sodipodi:role="line"
+             x="247.05576"
+             y="-171.3889"
+             style="font-size:20px;font-style:oblique;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique">pertubace</tspan><tspan
+             sodipodi:role="line"
+             x="247.05576"
+             y="-146.44902"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3173-3-3-2-1"><tspan
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+   id="tspan4648">periodická p.</tspan>:</tspan><tspan
+             sodipodi:role="line"
+             x="247.05576"
+             y="-126.46246"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3175-23-7-6-00">slaveMethod</tspan></text>
+      </g>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 37.164004,-21.961032 -10,-30"
+         id="path4656"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m -112.836,-21.961032 90.000004,-30"
+         id="path4658"
+         inkscape:connector-curvature="0" />
+      <rect
+         y="-151.96104"
+         x="127.16399"
+         height="70.000015"
+         width="140"
+         id="rect2987-5-1-2-2-1"
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:0.63900965;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <g
+         transform="translate(-49.891785,39.427847)"
+         inkscape:label="Layer 1"
+         id="layer1-4-5-5-7-3-4">
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="247.05576"
+           y="-171.3889"
+           id="text3759-8-1-2-6-2-6"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             x="249.82919"
+             y="-171.3889"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3175-8-0"><tspan
+               style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+               id="tspan3217-1">wrapper pro </tspan></tspan><tspan
+             sodipodi:role="line"
+             x="249.82919"
+             y="-146.3889"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3225-7"><tspan
+               id="tspan3521-7"
+               style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"><tspan
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+   id="tspan3519-7">potomstvo</tspan>: </tspan></tspan><tspan
+             sodipodi:role="line"
+             x="247.05576"
+             y="-126.40234"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             id="tspan3524-7">masterMethod</tspan></text>
+      </g>
+      <rect
+         style="fill:#ffc800;fill-opacity:1;stroke:#000000;stroke-width:1.15470064;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect2987-5-1-2-7-3-3"
+         width="160"
+         height="80.000015"
+         x="127.16399"
+         y="-21.961048" />
+      <g
+         id="layer1-4-5-5-7-9-4-3"
+         inkscape:label="Layer 1"
+         transform="translate(-39.891789,169.42786)">
+        <text
+           sodipodi:linespacing="125%"
+           id="text3759-8-1-2-6-5-1-59"
+           y="-171.3889"
+           x="247.05576"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           xml:space="preserve"><tspan
+             style="font-size:20px;font-style:oblique;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-171.3889"
+             x="247.05576"
+             sodipodi:role="line"
+             id="tspan3874-1-6-14-4-1-9">ohodnocení</tspan><tspan
+             id="tspan3173-3-3-8"
+             style="font-size:20px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-146.44902"
+             x="247.05576"
+             sodipodi:role="line"><tspan
+   style="font-weight:bold;-inkscape-font-specification:Sans Bold Oblique"
+   id="tspan4741">sférická funkce</tspan>:</tspan><tspan
+             id="tspan3175-23-7-8"
+             style="font-size:14px;font-style:normal;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Oblique"
+             y="-126.46246"
+             x="247.05576"
+             sodipodi:role="line">slaveMethod</tspan></text>
+      </g>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 380,102.36218 50,50 260,0 0,220 -570,0 -60,60"
+         id="path4743"
+         inkscape:connector-curvature="0"
+         transform="translate(-52.836011,-584.32323)" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 250,502.36218 10,60"
+         id="path4745"
+         inkscape:connector-curvature="0"
+         transform="translate(-52.836011,-584.32323)" />
+    </g>
+  </g>
+</svg>

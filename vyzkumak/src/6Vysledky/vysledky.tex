@@ -1,0 +1,114 @@
+% -*-coding: utf-8 -*-
+
+Připomeňme, že nás nyní nezajímá rychlost konvergence algoritmů, nebo přesněji veličina $\frac{\text{doba konvergence}}{\text{počet vyčíslení účelové funkce}}$. Ta je velmi závislá na úloze, nastavení parametrů algoritmu a paralelizace ji -- až na zmíněný efekt superlineárního urychlení -- příliš neovlivní. Nyní nás zajímá doba výpočtu jednoho kroku algoritmu a zkrácení této doby při použití GPU.
+
+\section{Příprava testování}
+\subsection{Hardware}
+
+Hardwarová sestava pro testy byla následující:
+
+\begin{table}[h]
+    \begin{center}
+    \begin{tabular}{lcc}
+      \toprule
+      & CPU & GPU \\
+      \midrule
+      Název & AMD Phenom$^\mathrm{TM}$ II X4 945 & NVIDIA GeForce GTX 460 \\
+      Výpočetní jednotky & 4 (využita 1) & 336 (7 SM $\times$ 48 CUDA-jader) \\
+      Frekvence & 800 MHz & 675 MHz \\
+      Výpočetní schopnost & --- & 2.1 \\
+      Cache & 2 MB L2 & --- \\
+      RAM/DRAM & 4 GB & 768 MB GDDR3 \\
+      FSB & ? & 1800 MHz \\
+      \bottomrule
+    \end{tabular}
+    \caption{Testovací sestava}
+    \end{center}
+\end{table}
+
+Je nutné podotknout, že ani CPU, ani GPU zdaleka nejsou na špičce současných produktových řad. Při paralelizaci na dnešních nejvýkonnějších CPU (Intel Core i7 -- 4 jádra, 8 vláken \@3GHz) bychom mohli dosáhnout proti testovanému CPU teoretického urychlení cca $30\times$. Urychlení současné nejvýkonnější GPU (Nvidia GTX690 -- 3072 jader\@915Mhz, dvojnásobná rychlost zpracování instrukcí) oproti testované by se mohlo pohybovat kolem $25\times$. Technologický trend by tedy naše výsledky neměl výrazně vychýlit ve prospěch CPU.
+
+\subsection{Testované algoritmy a použité účelové funkce}
+Testovali jsem algoritmy náhodná střelba (RS), genetická optimalizace (GO), a simulované žíhání (SA). Jako účelové funkce jsem zvolili sférickou De Jongovu funkci č. 1 a problém \emph{sudoku}. De Jongova funkce č. 1 vypadá následovně:
+\[
+f_{DJ} = \sum_1^n x_i^2,
+\]
+kde $x_i$ je $i$-tá složka kandidáta. Počet dimenzí ($n$) byl nastaven na 5. Jednalo se tedy o jednoduchý problém s nízkou dimenzí, kde by měla vyniknout kvalita paralelizace zbylé logiky algoritmu.
+
+Problém \emph{sudoku} má simulovat hledání přípustného řešení za pomocí penalizační funkce. Úloha má 81 dimenzí, povolené hodnoty jsou celá čísla z $[1,9]$. Velikost penalizace odpovídá počtu konfliktů v řádcích, sloupcích a ve čtvercích. Úloha byla zvolena jako příklad většího, algoritmicky náročnějšího, avšak plně paralelizovatelného problému.
+
+\subsection{Parametry algoritmů}
+
+Uživatelské parametry u algoritmů byly zvoleny následovně:
+\begin{itemize}
+  \item RS: nemá parametry
+  \item GO: pravděpodobnost křížení: , pravděpodobnost mutace, rozptyl mutace
+  \item FSA.......
+\end{itemize}
+
+U algoritmů jsme měřili, jak dlouho trvá spočítat 100 generací. Na GPU byl spuštěn pro 20 různých konfigurací velikosti populace (32, 64, 128, 256, 512) a počtu paralelních populací (1, 10, 100, 1000). Na CPU jsme testovali jen 5 konfigurací se stejnými velikostmi populace, avšak pouze s jednou \bq paralelní\eq~ populací. U GO byla velikost potomstva nastavena vždy na dvojnásobek velikosti populace. V každé konfiguraci byl algoritmu spuštěn 50krát. Každý algoritmus byl tedy spuštěn pro každou účelovou funkci 1000krát na GPU a 250krát na CPU.
+
+\subsection{Měření času}
+
+K měření času jsme použili funkci \texttt{clock\_gettime} používající časomíru \texttt{CLOCK\_PROCESS\_CPUTIME\_ID}. Ta dává stabilní výsledky spotřebovaného času vlákna s přesností na nanosekundy. Při měření času na počítači se díky procesům v operačním systému (multitasking apod.) vyskytne několik hodnot ležících mimo hlavní shluk (outliers). Proto jako výsledný čas uvádíme \emph{median z oněch 50ti měření}. Do standardních odchylek jsou outliery započítány.
+
+Měření bylo celkem stabilní, při absenci outlierů klesala směrodatná odchylka na GPU času pod 1\% naměřené hodnoty, na CPU pak pod 3\%.
+
+\section{Výsledky}
+
+Vzhledem k tomu, že se jedná $20\times 12$ konfigurací, kompletní tabulky lze nalézt v sekci \note{ref appendix}. Zde uvedeme jen nejlepší a nejhorší výsledné zrychlení pro každý algoritmus a účelovou funkci. Uvedené časy jsou pro 100 generací. Výsledky pro De Jongovu sférickou funkci:
+
+\begin{table}[h]
+    \begin{center}
+    \begin{tabular}{lccccc}
+      \toprule
+      algoritmus &  & zrychlení & konfigurace & čas GPU (ms) & čas CPU (ms) \\
+      & & & & /1 populace & /1 populace \\
+      \midrule
+      \multirow{2}{*}{RS} & nejlepší & & & & \\
+                        & nejhorší & & & & \\
+      \multirow{2}{*}{GO} & nejlepší & & & & \\
+                        & nejhorší & & & & \\
+      \multirow{2}{*}{SA} & nejlepší & & & & \\
+                        & nejhorší & & & & \\
+      \bottomrule
+    \end{tabular}
+    \caption{Extrémní výsledky pro De Jongovu sférickou funkci}
+    \end{center}
+\end{table}
+
+Výsledky pro problém \emph{sudoku}:
+
+\begin{table}[h]
+    \begin{center}
+    \begin{tabular}{lccccc}
+      \toprule
+      algoritmus &  & zrychlení & konfigurace & čas GPU (ms) & čas CPU (ms) \\
+      & & & & /1 populace & /1 populace \\
+      \midrule
+      \multirow{2}{*}{RS} & nejlepší & & & & \\
+                        & nejhorší & & & & \\
+      \multirow{2}{*}{GO} & nejlepší & & & & \\
+                        & nejhorší & & & & \\
+      \multirow{2}{*}{SA} & nejlepší & & & & \\
+                        & nejhorší & & & & \\
+      \bottomrule
+    \end{tabular}
+    \caption{Extrémní výsledky pro sudoku}
+    \end{center}
+\end{table}
+
+%proc: AMD Phenom(tm) II X4 945 Processor
+%4 jadra 4x512KB cache
+%4GM RAM
+
+%GPU: GTX460 1GB/768MB GDDR5 RAM
+%7 SM 336 CUDA Cores 
+
+
+
+RSgpuSudoku --blbě
+12.052,12.122,12.591,14.08,20.025
+12.396,13.248,14.284,20.799,41.197
+28.988,38.757,72.79,139.79,304.12
+251.2,328.05,642,1291.1,2893
