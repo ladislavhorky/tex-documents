@@ -4,7 +4,7 @@ Pro paralelizaci na GPU jsme použili známé prostředí NVIDIA CUDA, z něhož
 
 \section{Úvod}
 
-Prostředí CUDA bylo původně rozšířením jazyka C, dnes již poskytuje takřka plnou podporu i pro \Cpp. To se projevilo zejména v přehlednosti kódu -- dříve nebylo možné napsat plně optimalizovaný kód pro GPU tak, aby zároveň zůstal čitelný. Díky tomu je dnes CUDA pružný, vysokoúrovňový nástroj dostupný široké programátorské veřejnosti. \note{není to moc reklama?}
+Prostředí CUDA bylo původně rozšířením jazyka C, dnes již poskytuje takřka plnou podporu i pro \Cpp. To se projevilo zejména v přehlednosti kódu -- dříve nebylo možné napsat plně optimalizovaný kód pro GPU tak, aby zároveň zůstal čitelný. Díky tomu je dnes CUDA pružný, vysokoúrovňový nástroj dostupný široké programátorské veřejnosti. 
 
 \subsection{Paralelní model}\label{GPU par model}
 
@@ -24,13 +24,13 @@ Sice se nejedná o paměť přímo na grafické kartě, ale pokud si chceme pře
 
 Jedná se o GPU-RAM, která není součástí GPU čipu. Na moderních GPU je sice částečně cacheovaná, nicméně představu o práci cache nám dá až profiler. Proto je dobré dodržovat i při přístupu do této paměti některá omezení.
 
-Nejefektivnějšího přístupu do globální paměti se dosáhne pomocí sloučených přístupů, tedy pokud vlákna s blízkými ID přistupují na blízké adresy v paměti. Protože čtení i zápis probíhá po větších blocích, umí GPU tyto blízké přístupy sloučit do menšího počtu instrukcí čtení, či zápisu.
+Nejefektivnějšího přístupu do globální paměti se dosáhne pomocí sloučených přístupů, tedy pokud vlákna s blízkými ID přistupují na blízké adresy v paměti. Protože čtení i~zápis probíhá po větších blocích, umí GPU tyto blízké přístupy sloučit do menšího počtu instrukcí čtení, či zápisu.
 
-Globální paměť je přístupná pro všechna vlákna a data v ní zůstávají po celou dobu běhu programu. Ve stejné paměti sídlí i lokální paměť, která je pro každé vlákno soukromá a ukládají se do ní automaticky např. velká pole používaná uvnitř vlákna. Použití této paměti je pro pomalost lépe se vyhnout -- například používáním sdílené paměti.
+Globální paměť je přístupná pro všechna vlákna a data v ní zůstávají po celou dobu běhu programu. Ve stejné paměti sídlí i lokální paměť, která je pro každé vlákno soukromá a~ukládají se do ní automaticky např. velká pole používaná uvnitř vlákna. Použití této paměti je pro pomalost lépe se vyhnout -- například používáním sdílené paměti.
 
 \subsubsection{Texturová a konstantní paměť}
 
-Toto jsou v zásadě dvě manuální cache a je možné z nich pouze číst. Bohužel, tyto paměti jsou obsluhovatelné pouze z CPU. Navíc, ukazatele do nich musí být deklarovány jako globální na úrovni souboru, což spolehlivě rozbije sebelepší objektový model. Proto jsme se po zkušenostech z minulé práce \note{citovat bakalářku} rozhodli je nepoužívat.
+Toto jsou v zásadě dvě manuální cache a je možné z nich pouze číst. Bohužel, tyto paměti jsou obsluhovatelné pouze z CPU. Navíc, ukazatele do nich musí být deklarovány jako globální na úrovni souboru, což spolehlivě rozbije sebelepší objektový model. Proto jsme se po zkušenostech z minulé práce \cite{bakalarka} rozhodli je nepoužívat.
 
 \subsubsection{Sdílená paměť}
 
@@ -46,4 +46,4 @@ Zde probereme další aspekty programování na GPU, které nevyplývají z pře
 
 GPU má daleko méně cache a kontrolní logiky než CPU a více místa na čipu věnuje výpočetním jádrům. Díky tomu GPU těžko zakrývá latence vyvolané přístupy do paměti. Proto využívá tzv. virtuální paralelizmus: vláken může běžet v bloku virtuálně paralelně velký počet, fyzicky paralelně běží pouze jeden warp (jen tolik vláken, kolik má SM výpočetních jader). SM aktivuje pro další výpočty pouze ty warpy, které na nic nečekají. Pokud bude mít blok málo vláken a na SM bude málo bloků, může se stát, že celý SM bude každou chvíli čekat na vyřízení přístupu do paměti. Hlavním způsobem, jak toto zlepšit je používání sdružených přístupů a pamětí s kratší latencí, tedy např. na začátku běhu kernelu načíst potřebná data z globální do sdílené paměti.
 
-Obecně lze říci, že lépe na GPU poběží algoritmus, jehož logika byla mírně změněna aby odpovídal požadavku vektorovosti kódu, než algoritmus, který se kvůli redukci práce sofistikovaně větví. Při psaní programu je dobré vzít v potaz, že paralelizace na GPU má nějakou historii a ke každému standardnímu algoritmu (od numerických simulací po třídění polí) již více, či méně úspěšná implementace na GPU existuje.
+Obecně lze říci, že lépe na GPU poběží algoritmus, jehož logika byla mírně změněna aby odpovídal požadavku vektorovosti kódu, než algoritmus, který se kvůli redukci práce sofistikovaně větví. Při psaní programu je dobré vzít v potaz, že paralelizace na GPU má nějakou historii a ke každému standardnímu algoritmu (od numerických simulací po~třídění polí) již více, či méně úspěšná implementace na GPU existuje.

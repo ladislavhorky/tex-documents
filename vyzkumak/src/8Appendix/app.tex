@@ -1,8 +1,8 @@
 \chapter{Naměřené výsledky}
 
-Následující tabulky obsahují časy, směrodatné odchylky a spočtená zrychlení pro všechny konfigurace a obě měřené účelové funkce.
+Následující tabulky obsahují časy, směrodatné odchylky a spočtená zrychlení pro všechny konfigurace a obě měřené účelové funkce. Směrodatné odchylky vyšší než jednotky procent je třeba přičíst na vrub outlierům.
 
-\section{Sférická funkce}
+\section{Sférická funkce (5 dimenzí)}\label{app SP}
 
 \begin{table}[h!]
     \begin{center}
@@ -131,7 +131,9 @@ GPU & 1000
 \end{table}
 \clearpage
 
-\section{Problém sudoku}
+K výsledkům RS na CPU je třeba komentář. Je vidět, že první sloupec není konzistentní se zbytkem výsledků -- jasně neodpovídá předpokládanému zdvojnásobení času při zdvojnásobení populace. Toto se nezměnilo ani při opakovaných měřeních. Delší čas by mohl být způsoben buď neodhalenou chybou v programu, nebo například špatným využíváním cache kvůli nevhodné velikosti dat. Z těchto důvodů první sloupec pro výběr nejlepších zrychlení v \ref{vysledky} nepoužíváme.
+
+\section{Problém sudoku (81 dimenzí)}\label{app SU}
 \begin{table}[h]
     \begin{center}
     \begin{tabular}{ccccccc}

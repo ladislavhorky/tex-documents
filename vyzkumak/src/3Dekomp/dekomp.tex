@@ -1,8 +1,8 @@
 % -*-coding: utf-8 -*-
 
-Nyní se dostáváme k popisu formalismu pro optimalizační algoritmy. Jak jsem řekli v úvodu, na paralelizaci musíme brát zřetel již teď, pokud chceme dosáhnout dobrých výsledků. Formalismus bude možná vypadat z pohledu OA nekonzistentně (mísí se zde různé úrovně abstrakce), ale je to daň za to, že takto přeformulovaný algoritmus bude posléze snadné implmentovat a paralelizovat.
+Nyní se dostáváme k popisu formalismu pro optimalizační algoritmy. Jak jsem řekli v~úvodu, na paralelizaci musíme brát zřetel již teď, pokud chceme dosáhnout dobrých výsledků. Formalismus bude možná vypadat z pohledu OA nekonzistentně (mísí se zde různé úrovně abstrakce), ale je to daň za to, že takto přeformulovaný algoritmus bude posléze snadné implmentovat a paralelizovat.
 
-Náš formalismus je kompromisem mezi několika pohledy: \note{je potřeba něco z toho víc vysvětlit?}
+Náš formalismus je kompromisem mezi několika pohledy:
 \begin{itemize}
   \item dekompozicí algoritmu na \emph{znovu použitelné} komponenty
   \item snadnou \emph{identifikací dílčích komponent} v původním algoritmu -- nezasvěcený člověk bude schopen převést klasicky popsaný algoritmus do našeho formalismu
@@ -27,12 +27,12 @@ Pro další výklad bude dobré upřesnit, případně předefinovat některé p
 \par{\textbf{Potomstvo} $Q$ je množina bodů, nebo jedinců (v konečně fázi vždy jedinců). $|Q| =\text{konst.}$ po celou dobu běhu algoritmu.}
 
 \par{\textbf{Krok populačního algoritmu} (přechod k nové generaci) je zobrazení $G = (G_0,...,G_N)$ takové, že
-$$(\forall x^j_{i+1} \in P_{i+1})( x^j_{i+1} = G_j(P_i,X))$$} 
+$$(\forall x^j_{i+1} \in P_{i+1})( x^j_{i+1} = G_j(P_i,X))$$}
 kde $X$ je náhoda a $N$ počet jedinců v populaci. Parametry algoritmu budiž skryty v $G$, není-li uvedeno jinak.
 
 \subsection{Iterační a populační přístup}\label{iteracni vs populacni}
 
-Jedna možnost dělení algoritmů je podle toho, zda pracují s jedním jedincem (SA, Náhodná střelba, S\&G), nebo s celou populací (GO, DE, ES). U iteračních závisí $x_{i+1}$ pouze na $x_i$, zatímco u populačních závisí $x^j_{i+1}$ na celé $P_i$, nebo její části. Je ovšem zřejmé, že \emph{iterační algoritmy můžeme taktéž formulovat jako populační}, kde spolu však jedinci nijak nekomunikují a populace představuje pouze sadu paralelně běžících nezávislých algoritmů. V kontextu iteračních algoritmů se definice \emph{kroku algoritmu} zúží následovně: 
+Jedna možnost dělení algoritmů je podle toho, zda pracují s jedním jedincem (SA, Náhodná střelba, S\&G), nebo s celou populací (GO, DE, ES). U iteračních závisí $x_{i+1}$ pouze na $x_i$, zatímco u populačních závisí $x^j_{i+1}$ na celé $P_i$, nebo její části. Je ovšem zřejmé, že~\emph{iterační algoritmy můžeme taktéž formulovat jako populační}, kde spolu však jedinci nijak nekomunikují a populace představuje pouze sadu paralelně běžících nezávislých algoritmů. V kontextu iteračních algoritmů se definice \emph{kroku algoritmu} zúží následovně:
 $$(\forall x^j_{i+1} \in P_{i+1})( x^j_{i+1} = G(x^j_i,X)),$$
 kde $G_0 = ... = G_N = G$.
 
@@ -45,7 +45,7 @@ Toto zobecnění je velice výhodné, uvážíme-li, že častým prostředkem j
   \varepsilon & >\frac{m}{M}(N-1)
 \end{align}
 
-Tedy superlineárního urychlení se dosáhne, pokud je poměr $m/M$ malý a počet nutných restartů algoritmu se bude zespodu blížit násobkům $N$. \note{hmm... nějak jsem rozjel. dávat sem ten poslední odstavec, nebo ho přesunout třeba do implementace, nebo tak?... zatím to nechávám tady.}
+Tedy superlineárního urychlení se dosáhne, pokud je poměr $m/M$ malý a počet nutných restartů algoritmu se bude zespodu blížit násobkům $N$.
 
 \subsection{Inspirace evolučními algoritmy}
 Evoluční algoritmy jsou v \cite{GO ebook} definovány jako \bq populační optimalizační algoritmy používající přírodou inspirované mechanismy jako křížení, mutace, přežití nejlepšího a přírodní výběr k tomu, aby iterativním způsobem zdokonalily množinu kandidátních řešení\eq. Tato definice zahrnuje velmi velkou škálu OA a pokud odhlédneme od důrazu na přírodní mechanismy a vezmeme v úvahu, že všechny algoritmy lze formulovat jako populační, zahrneme již prakticky všechny OA.
@@ -54,13 +54,12 @@ EA svou strukturou odpovídají námi požadovanému stavecnicovému pohledu, st
 
 Jako hrubý příklad může sloužit Žíhaná diferenciální evoluce (2007) \cite{DE annealed}, která se objevila až 10 let po DE a 20 let po SA. V oblasti terminologie se pak jedná o používání termínu selekce jak pro výběr jedinců ke křížení (GO), tak pro výběr jedinců do další generace (ES). Obdobná nekonzistence je u používání termínu mutace v GO a DE.
 
-\subsection{Specifika našeho přístupu} \note{nedat to pak až někam k závěru?}
+\subsection{Specifika našeho přístupu}
 Na internetu je již možné nalézt velké množství softwaru \cite{Evolving Objects}, \cite{PUGACE} umožňujícího konstruovat, nebo používat evoluční algoritmy pro řešení celé řady problémů. Typicky jsou však zaměřené právě jen na evoluční algoritmy a ty paralelizované na GPU často řeší jen jednu třídu problémů. Náš přístup se liší především:
 \begin{itemize}
   \item Důrazem na teoretickou část -- jak algoritmus přeformulovat, aby se dal vhodně implementovat
   \item Možnosti sériových (CPU) i paralelních (GPU)
   \item Širokou škálou implementovatelných algoritmů (nejen EA)
-  \item Jiným přístupem k paralelizaci na GPU \note{než \cite{PUGACE}}
 \end{itemize}
 
 \section{Návrh formalismu}
@@ -88,20 +87,18 @@ Ke komponentám bude vždy vysvětlující popis a po popisu implementace v dal�
 
 Komponenty mohou být jak statické, tak adaptivní. V následujícím popisu to nebereme v úvahu, neboť je to záležitost spíše implementační.
 
-\note{nepoužívání populace-potomstva, ale ponechání vnitřní logiky,zapouzdření myšlenek, schválně to nepopisujeme jako zobrazení, neboť to jsou často stochastické procesy. Již tady zmínit, že se omezujeme na jedince jakožto celočíselné řetězce? Komponenty jsou popisovány jako statické (neadaptivní)}
-
 \subsection{Inicializace}\label{def inicializace}
 
 Za inicializaci považujeme cokoliv, co se stane před hlavní smyčkou, tedy před začátkem samého algoritmu.
 \begin{itemize}
-  \item \textbf{Zdroj a cíl}: inicializace nemá zdrojovou množinu uvnitř algoritmu, jen uživatelské parametry. Výstupem je množina jedinců. Možná je například inicializace ze souboru, nebo pomocí výsledků běhu jiného OA.
+  \item \textbf{Zdroj a cíl}: inicializace nemá zdrojovou množinu uvnitř algoritmu, jen uživatelské parametry. Výstupem je množina jedinců. Možná je například inicializace ze~souboru, nebo pomocí výsledků běhu jiného OA.
   \item \textbf{Multiplicita}: nemá smysl.
   \item \textbf{Volitelnost}: až na výjimky (např. RS) je součástí každého algoritmu.
 \end{itemize}
 
 Z prvního bodu je jasné, že nutnou součástí inicializace je ohodnocení, abychom dostali z bodu jedince. To značí, že inicializace je v jistém smyslu složený objekt obsahující část, která nejprve vytvoří množinu \emph{bodů} a komponentu ohodnocení, která tuto množinu ohodnotí. Tato množina (většinou populace) ovšem nemusí být shodná s tou, která je ohodnocována v hlavní smyčce (většinou potomstvo).
 
-Výjimkou z potřeby inicializace je Random Shooting, u kterého se náhodná inicializace provede jako mutace, abychom ji na začátku neprováděli zbytečně. Stejně tomu bude i u jiných algoritmů nezávisejících na minulosti.
+Výjimkou z potřeby inicializace je Random Shooting, u kterého se náhodná inicializace provede jako mutace, abychom ji na začátku neprováděli zbytečně. Stejně tomu bude i~u~jiných algoritmů nezávisejících na minulosti.
 
 \subsection{Reprodukce}
 
@@ -109,19 +106,19 @@ O reprodukci má smysl mluvit, pokud algoritmus operuje s populací a potomstvem
 \begin{itemize}
   \item \textbf{Zdroj a cíl}: zdrojem je množina (populace $P$) jedinců, cílem je množina bodů (potomstvo $Q$).
   \item \textbf{Multiplicita}: libovolná. U neevolučních algoritmů bývá často $|P|=|Q|$ a reprodukce může dělat pouze čistou kopii. U evolučních je často $|P|>|Q|$, ale může tomu být i opačně (např. ES)
-  \item \textbf{Volitelnost}: u původně nepopulačních algoritmů bývá vynechána a vystačíme si s mutací. U populačních bývá vždy.
+  \item \textbf{Volitelnost}: u původně nepopulačních algoritmů bývá vynechána a vystačíme si s~mutací. U populačních bývá vždy.
 \end{itemize}
 
 Pokud má tato komponenta obě podčásti, selekci a křížení, sama většinou nic nedělá, jen jim poskytuje soubor budoucích rodičů (\emph{mating pool}). Ten je selekcí naplněn a křížení podle něj vytvoří potomstvo.
 
-Reprodukce však může být i jednodušší -- například u metody největšího spádu (Hill Climbing) vytvoří potomstvo jako body z okolí všech jedinců v populaci. U SA, FSA je potomstvem jen kopie populace. \note{zavádět malou nekonzistenci, že bychom dovolili mutaci mít zdrojový a cílový rozsah? -- u SA by tak mohla vytvářet potomky rovnou jako zmutované rodiče a ušetřili bychom jedno kopírování... pokud bychom ale chtěli v ES dělat potomky třeba jen z x nejlpeších, museli bychom stejně dělat reprodukci se selekcí}
+Reprodukce však může být i jednodušší -- například u metody největšího spádu (Hill Climbing) vytvoří potomstvo jako body z okolí všech jedinců v populaci. U SA, FSA je potomstvem jen kopie populace.
 
 \subsection{Selekce}
 
 Selekce je podkomponenta reprodukce, která naplní mating pool indexy z populace. Jediná informace, kterou selekce od jedince potřebuje, je jeho fitness. Všechny úpravy fitness musí tedy již být provedené.
 
 \begin{itemize}
-  \item \textbf{Zdroj a cíl}: zdrojem je množina fitness jedinců a jejich indexů, cílem je multimnožina indexů (mating pool $M$). Násobnost indexu konkrétního jedince v $M$ není omezená, je však závislá na jeho fitness.
+  \item \textbf{Zdroj a cíl}: zdrojem je množina fitness jedinců a jejich indexů, cílem je multimnožina indexů (mating pool $M$). Násobnost indexu konkrétního jedince v $M$ není omezená, měla by však být závislá na jeho fitness.
   \item \textbf{Multiplicita}: vždy je $|M| \leq k|Q|$, kde $k$ je počet rodičů nutných pro křížení. Křížením může vzniknout jen část potomstva.
   \item \textbf{Volitelnost}: pokud je přítomná, pak jedině v páru s křížením.
 \end{itemize}
@@ -139,7 +136,7 @@ Křížení deterministicky bere jedince (rodiče) podle mating pool a vytvář�
   \item \textbf{Implementované myšlenky}: parazitismus.
 \end{itemize}
 
-Do křížení může být zakomponována i \emph{pravděpodobnost křížení} používaná v GO. Pak se u prvních $l$ $k$-tic provede normální křížení a ze zbylých $k$-tic se pouze první jedinec zkopíruje do potomstva. Místo náhodně určených $k$-tic můžeme vzít prvních $l$ (tak, že $l/|Q|$ odpovídá pravděpodobnosti křížení), protože selekce vybrala $k$-tice nezávisle. To nám navíc umožní zmenšit mating pool, protože přesně víme, kolik potřebujeme rodičů a kolik jedinců budeme jen kopírovat.
+Do křížení může být zakomponována i \emph{pravděpodobnost křížení} používaná v GO. Pak~se u~prvních $l$ $k$-tic provede normální křížení a ze zbylých $k$-tic se pouze první jedinec zkopíruje do potomstva. Místo náhodně určených $k$-tic můžeme vzít prvních $l$ (tak, že $l/|Q|$ odpovídá pravděpodobnosti křížení), protože selekce vybrala $k$-tice nezávisle. To~nám navíc umožní zmenšit mating pool, protože přesně víme, kolik potřebujeme rodičů a~kolik jedinců budeme jen kopírovat.
 
 \subsection{Mutace}
 
@@ -150,9 +147,9 @@ Mutace mění body v zadané množině. Výsledek mutace bodu by neměl záviset
   \item \textbf{Volitelnost}: takřka vždy bývá součástí algoritmu.
 \end{itemize}
 
-\subsection{Pertubace \note{nebo pertuRbace?}}
+\subsection{Pertubace}
 
-Optimální řešení vždy hledáme na omezené množině. V našem případě je množinou mnohorozměrný interval, tedy v každé dimenzi máme dolní a horní mez. Pertubace zajišťuje návrat bodu do těchto mezí, pokud z ho nich nějaká předchozí operace vyhodí.
+Pertubace je technická komponenta. Optimální řešení vždy hledáme na omezené množině. V našem případě tvar množiny omezujeme na mnohorozměrný interval, tedy v každé dimenzi máme dolní a horní mez. Pertubace zajišťuje návrat bodu do těchto mezí, pokud z ho nich nějaká předchozí operace vyhodí. Pertubace přímo nesouvisí s problémem hledání přípustného řešení.
 \begin{itemize}
   \item \textbf{Zdroj a cíl}: zdrojem i cílem je stejná množina bodů.
   \item \textbf{Multiplicita}:  1:1.
@@ -201,4 +198,4 @@ Stop podmínka zjišťuje, kdy má algoritmus skončit. Podmínky můžou být r
 \vspace{1cm}
 Z popisu komponent je zřejmé, že formalismus je poměrně volný a jistě budou existovat algoritmy, které budeme schopni přeformulovat několika způsoby. Díky tomu můžeme při formulaci brát větší ohled na budoucí implementaci algoritmu a dosáhnout tak lepšího výsledku.
 
-Je jasné, že jakýkoliv konečný produkt bude více méně vždy kompromisem mezi dodržením logiky původního algoritmu a snadností a efektivitou jeho implementace. Náš formalismus se proces utváření produktu snaží vést takovou cestou, aby nutné kompromisy byly co nejmenší. \note{nedat to až do závěru?.. názor?}
+Je jasné, že jakýkoliv konečný produkt bude více méně vždy kompromisem mezi dodržením logiky původního algoritmu a snadností a efektivitou jeho implementace. Náš formalismus se proces utváření produktu snaží vést takovou cestou, aby nutné kompromisy byly co nejmenší.

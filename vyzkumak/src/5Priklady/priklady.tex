@@ -34,9 +34,9 @@ Dekompozice GO je také jednoduchá, avšak mnohem obsáhlejší, protože obsah
 
 Nejprve několik komentářů ke vztahu k formalismu. Jednak se zde naplňuje tvrzení, že výsledek je vždy kompromisem mezi formalismem a implementací, a zároveň se zde projevuje volnost, nebo spíše pružnost obou částí. K vztahu model-formalismus: za inicializaci musíme považovat celý wrapper, protože selekce vyžaduje množinu jedinců a tedy samostatná náhodná inicializace ani ohodnocení nemá smysl.
 
-Za mutaci má smysl taktéž označit celý wrapper, protože v případě že mutujeme pouze s jistou pravděpodobností (předána wrapperu v konstruktoru), má na starosti nastavení rozsahu pro obě podkomponenty. Pokud křížíme taktéž jen s jistou pravděpodobností, wrapperu předáme tuto pravděpodobnost a on nastaví rozsahy tak, aby emuloval stochastickou nezávislost obou operací. Pertubaci zavěsíme pod stejný wrapper, protože pouze gaussovská mutace může vybočit z mezí. 
+Za mutaci má smysl taktéž označit celý wrapper, protože v případě že mutujeme pouze s jistou pravděpodobností (předána wrapperu v konstruktoru), má na starosti nastavení rozsahu pro obě podkomponenty. Pokud křížíme taktéž jen s jistou pravděpodobností, wrapperu předáme tuto pravděpodobnost a on nastaví rozsahy tak, aby emuloval stochastickou nezávislost obou operací. Pertubaci zavěsíme pod stejný wrapper, protože pouze gaussovská mutace může vybočit z mezí.
 
-Nyní vysvětlíme přerušované čáry u podkomponent sjednocení, oddělení třídění a přesunu bude vysvětleno v implementační části. Sjednocení nahrazením je na rozdíl od jiných komponent svými podkomponentami definováno. Mutace by stále byla mutací, pokud by přičítaný šum měl jiný charakter nebo byla pertubace zrcadlová. Stejně tak reprodukce. Jde zde o nastavování mezí: u mutace stačí říci, že všechny podkomponenty budou pracovat nad jedním rozsahem, u reprodukce bude selekce vždy vybírat z populace a křížení vždy ukládat do potomstva. Sjednocení se od sebe však mohou podstatně lišit: u nahrazení musíme provést setřídění potomstva a nahrazení populace jeho nejlepší částí. V případě sjednocení s elitismem musíme nejprve setřídit populaci, elitu přesunout na její začátek, poté setřídit potomstvo a jeho nejlepší částí nahradit zbytek populace. Jsou to tedy čtyři operace vyžadující naprosto odlišné nastavení rozsahů. Z těchto důvodů jsou podkomponenty sjednocení přidány již v konstruktoru a nelze s nimi hýbat. Jeden ze způsobů, jak toto řešit, by bylo rozbourání sjednocení jako takového a nahradit ho jen posloupností třídění (spojených s přesunem) a přesunů. Tím by ovšem klesla efektivita (viz dále).
+Nyní vysvětlíme přerušované čáry u podkomponent sjednocení, oddělení třídění a přesunu bude vysvětleno v implementační části. Sjednocení nahrazením je na rozdíl od jiných komponent svými podkomponentami definováno. Mutace by stále byla mutací, pokud by přičítaný šum měl jiný charakter nebo byla pertubace zrcadlová. Stejně tak reprodukce. Jde zde o nastavování mezí: u mutace stačí říci, že všechny podkomponenty budou pracovat nad jedním rozsahem, u reprodukce bude selekce vždy vybírat z populace a křížení vždy ukládat do potomstva. Sjednocení se od sebe však mohou podstatně lišit: u nahrazení musíme provést setřídění potomstva a nahrazení populace jeho nejlepší částí. V~případě sjednocení s elitismem musíme nejprve setřídit populaci, elitu přesunout na její začátek, poté setřídit potomstvo a jeho nejlepší částí nahradit zbytek populace. Jsou to tedy čtyři operace vyžadující naprosto odlišné nastavení rozsahů. Z těchto důvodů jsou podkomponenty sjednocení přidány již v konstruktoru a nelze s nimi hýbat. Jeden ze~způsobů, jak toto řešit, by bylo rozbourání sjednocení jako takového a nahradit ho jen posloupností třídění (spojených s přesunem) a přesunů. Tím by ovšem klesla efektivita (viz dále).
 
 \subsection{Implementace slave komponent}
 
@@ -46,9 +46,9 @@ Implementace inicializace, ohodnocení a archivace byla popsána v předchozím 
 
 Jak bylo řečeno, reprodukce pouze nastavuje rozsahy: pro selekci na populaci, pro křížení na potomstvo. Jako uživatelský parametr jí předáváme pravděpodobnost křížení, která určuje, kolik počátečních bodů z potomstva vznikne křížením (zbytek bude jen zkopírován z populace).
 
-Jako selekci jsme zvolili 2-tournament -- z populace jsou vybráni náhodně dva jedinci a lepší je zařazen do mating pool. Na CPU se toto provádí, dokud není mating pool naplněn, na GPU spustíme kernel s tolika vlákny, kolik je velikost mating pool. Pokud je velikost mating pool příliš velká, spustíme kernel s maximálním počtem vláken (512 nebo 1024) -- pro tento případ je v kernelu cyklus, díky němuž může jedno vlákno naplnit tolik položek mating pool, kolik je třeba. Takto je řešen nedostatek vláken i u ostatních komponent.
+Jako selekci jsme zvolili 2-tournament -- z populace jsou vybráni náhodně dva jedinci a~lepší je zařazen do mating pool. Na CPU se toto provádí, dokud není mating pool naplněn, na GPU spustíme kernel s tolika vlákny, kolik je velikost mating pool. Pokud je velikost mating pool příliš velká, spustíme kernel s maximálním počtem vláken (512 nebo 1024) -- pro tento případ je v kernelu cyklus, díky němuž může jedno vlákno naplnit tolik položek mating pool, kolik je třeba. Takto je řešen nedostatek vláken i u ostatních komponent.
 
-Jednobodové křížení probíhá ve dvou fázích: nejprve křížením vytvoříme tolik potomků, kolik odpovídá pravděpodobnosti křížení, zbytek zkopírujeme podle indexů z mating pool. Reprodukce zařídí, aby mating pool obsahoval přesně (2$\times$počet jedinců vzniklých křížením + počet jedinců vzniklých kopírováním) indexů. Bod křížení je pro každého jedince vygenerován náhodně tak, aby vzniklý jedinec obsahoval vždy prvky z obou rodičů. Implementace na GPU je stejná jako popsaná, problémem je jen přístup do paměti. Protože k jedincům přistupujeme přes indexy z mating pool, jde o přístup relativně náhodný a tedy i pomalejší. Při zachování náhodnosti to ale jinak řešit nejde.
+Jednobodové křížení probíhá ve dvou fázích: nejprve křížením vytvoříme tolik potomků, kolik odpovídá pravděpodobnosti křížení, zbytek zkopírujeme podle indexů z mating pool. Reprodukce zařídí, aby mating pool obsahoval přesně (2$\times$počet jedinců vzniklých křížením + počet jedinců vzniklých kopírováním) indexů. Bod křížení je pro každého jedince vygenerován náhodně tak, aby vzniklý jedinec obsahoval vždy prvky z obou rodičů. Implementace na GPU je stejná jako popsaná, problémem je jen přístup do paměti. Protože k jedincům přistupujeme přes indexy z mating pool, jde o přístup relativně náhodný, a~tedy i pomalejší. Při zachování náhodnosti to ale jinak řešit nejde.
 
 \subsubsection{Mutace a pertubace}
 
@@ -60,9 +60,9 @@ Pertubaci jsem volili periodickou, implementace je zřejmá.
 
 První částí sjednocení nahrazením je třídění. Je nutné si uvědomit, že výstupem třídění není množina jedinců setříděná podle fitness, ale pouze \emph{množina indexů jedinců setříděná podle fitness}. Má to několik důvodů: jedinec může být relativně velký objekt a je zbytečné ho několikrát přesouvat, když to stačí udělat jednou. Na GPU se tento nevýhodný efekt ještě znásobí, uvážíme-li, že přesuny jsou značně náhodné. Navíc v případě sjednocení nahrazením bychom zbytečně třídili množinu, ze které budeme jen část kopírovat a poté jí zahodíme.
 
-Pro implementaci na GPU jsme použili osvědčené Bitonické třídění (BT), jehož popis lze najít například na wikipedii \note{citace}. Paralelní složitost BT je $O(\log_2^2 n)$. Na CPU pak \texttt{partial\_sort} ze standardní knihovny STL. Implementaci BT jsme pojali nejjednodušším možným způsobem. Z toho plyne omezení velikosti tříděné množiny na $2^k$, což pro pro běžně používané velikosti potomstva u GO není problém -- velikost stačí případně zaokrouhlit na nejbližší (vyšší) mocninu dvou. Pokud by byl počet jedinců, a s tím související počet vyčíslení fitness, kritický, bylo by dobré implementovat BT pro libovolnou velikost množiny. Na GPU vždy třídíme celou množinu, což je algoritmicky jednodušší, zatímco na CPU setřídíme jen část, kterou pak bude nahrazena populace.\vspace{0.2cm}
+Pro implementaci na GPU jsme použili osvědčené Bitonické třídění (BT), jehož popis lze najít například na wikipedii \cite{Bitonic}. Paralelní složitost BT je $O(\log_2^2 n)$. Na CPU pak \texttt{partial\_sort} ze standardní knihovny STL. Implementaci BT jsme pojali nejjednodušším možným způsobem. Z toho plyne omezení velikosti tříděné množiny na $2^k$, což pro pro běžně používané velikosti potomstva u GO není problém -- velikost stačí případně zaokrouhlit na nejbližší (vyšší) mocninu dvou. Pokud by byl počet jedinců, a s tím související počet vyčíslení fitness, kritický, bylo by dobré implementovat BT pro libovolnou velikost množiny. Na GPU vždy třídíme celou množinu, což je algoritmicky jednodušší, zatímco na CPU setřídíme jen část, kterou pak bude nahrazena populace.\vspace{0.2cm}
 
-Přesun je v našem případě bez problémů, protože cílová a zdrojová množina jsou disjunktní. V jiné komponentě by tomu ale tak být nemuselo a při sekvenčním přístupu by se nám mohlo stát, že přepíšeme data, která ještě budeme potřebovat. V paralelním kódu by mohla nastat podobně nebezpečná read-before-write situace\footnote{Správnost výsledku závisí na to, jestli se dřív vykoná čtení jedním vláknem, nebo zápis druhým. Pořadí operací různých vláken však není definované.}. Aby byl in-place přesun bezpečný i pokud jsou zdrojová cílová množina stejné, je nutné v sekvenčním kódu konflikty eliminovat, což při zachování částečného setřídění lze. Na GPU nejprve data zkopírujeme do sdílené paměti a poté na místo určení, protože řešení konfliktů by v paralelním kódu nebylo efektivní.
+Přesun je v našem případě bez problémů, protože cílová a zdrojová množina jsou disjunktní. V jiné komponentě by tomu ale tak být nemuselo a při sekvenčním přístupu by se nám mohlo stát, že přepíšeme data, která ještě budeme potřebovat. V paralelním kódu by mohla nastat podobně nebezpečná read-before-write situace\footnote{Správnost výsledku závisí na to, jestli se dřív vykoná čtení jedním vláknem, nebo zápis druhým. Pořadí operací různých vláken však není definované.}. Aby byl in-place přesun bezpečný i pokud jsou zdrojová cílová množina stejné, je nutné v sekvenčním kódu konflikty eliminovat, což při zachování částečného setřídění lze. Na GPU nejprve data zkopírujeme do sdílené paměti a poté na místo určení, protože řešení konfliktů by v~paralelním kódu nebylo efektivní.
 
 \section{Diferenciální evoluce}
 
@@ -72,9 +72,9 @@ Diferenciální evoluce má stejný strom komponent jako GO, liší se jen slave
 
 \subsubsection{Selekce}
 
-Do mating pool budeme vybírat pouze indexy jedinců $a,b,c$ z definice DE. Velikost mating pool bude tedy trojnásobek velikosti potomstva, a tedy i populace. Nejprve naplníme za pomoci co nejvíce vláken náhodně celý mating pool. Potom za pomoci $n = |Q|$ vláken postupně ověříme podmínky: 
+Do mating pool budeme vybírat pouze indexy jedinců $a,b,c$ z definice DE. Velikost mating pool bude tedy trojnásobek velikosti potomstva, a tedy i populace. Nejprve naplníme za~pomoci co nejvíce vláken náhodně celý mating pool. Potom za pomoci $n = |Q|$ vláken postupně ověříme podmínky:
 \begin{itemize}
-  \item $x == a$ ($x$ bude odpovídat ID threadu), pokud ano, inkrementujeme $a$\footnote{Ve skutečnosti inkrementujeme s přetečením -- pokud by $a$ přesáhlo nejvyšší povolený index, nastavíme ho na nejnižší povolený.}
+  \item Pokud $x == a$ ($x$ bude odpovídat ID threadu), inkrementujeme $a$.\footnote{Ve skutečnosti inkrementujeme s přetečením -- pokud by $a$ přesáhlo nejvyšší povolený index, nastavíme ho na nejnižší povolený.}
   \item To samé provedeme pro $x == b$, $x == c$.
   \item A postupně stejným způsobem zkontrolujeme kaskádovitě všechny nerovnosti, přičemž inkrementujeme vždy druhý z indexů, pokud budou shodné (tedy $a == b$, $a == c$, $b == c$).
 \end{itemize}
@@ -88,5 +88,24 @@ Křížení bude stejné, jako klasické jednobodové, včetně náhodně genero
 
 Jelikož vztah rodič-potomek je zde jednoznačný, ve sjednocení jednoduše porovnáme fitness potomka a rodiče. Pokud je lepší rodič, ponecháme ho v populaci, pokud potomek, nahradíme s ním rodiče. Teoreticky je možné toto jednoduché sjednocení \emph{bojem potomka s rodičem} nahradit žíhaným sjednocením, které bychom použili u SA a sestrojit tak zmíněnou Žíhanou DE. Nejednalo by se přitom jen o stejnou myšlenku, ale přímo o \emph{fyzicky stejnou komponentu} použitelnou v obou algoritmech.
 
+\section{SA, FSA}
 
+Strom simulovaného žíhání je na obrázku \ref{SA dekomp}.
+
+\begin{figure}[h!]
+\begin{center}
+  \includegraphics[width=\textwidth]{img/SA}
+  \caption{Dekomponované (rychlé) simulované žíhání}\label{SA dekomp}
+  \end{center}
+\end{figure}
+
+Složitostí se pohybuje mezi RS a GO. Použili jsme variantu, kdy máme pevné rozdělení okolí a měníme jen teplotu. Dala by se použít i mutace měnící rozptyl s teplotou. Pak by měly buď komponenty sjednocení a mutace každá svou teplotu, nebo by byla uložena v archivu, či populaci. Nyní má teplotu jen komponenta sjednocení. Cooling schedule se jí předává šablonovým parametrem -- čímž lze měnit, zda jde o SA, či FSA.
+
+Přibyly nám zde další dva wrappery. Reprodukční nastavuje \texttt{workingRange} (nyní bráno jako cílový rozsah) na potomstvo a \texttt{fullRange} na populaci. Wrapper sjednocení přesně naopak. Připomeňme, že u (F)SA je $|P|=|Q|$.
+
+\subsection{Implementace slave komponent}
+
+Implementace kopírování je triviální. Nepoužíváme žádnou vestavěnou funkci, neboť kandidáti nemusí v paměti ležet za sebou.
+
+U sjednocení poskytuje třída \texttt{cool} předaná jako šablonový parametr funkci \texttt{accept} s~parametry rozdíl energií a teplotou. Podle návratové hodnoty se rozhodne, zda provést kopírování, či ne. Ostatní komponenty již byly popsány dříve.
 

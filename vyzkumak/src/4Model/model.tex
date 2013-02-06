@@ -1,6 +1,6 @@
 % -*-coding: utf-8 -*-
 
-Nyní se dostáváme k implementaci námi popsaného formalismu, nazývejme jí dále modelem. Než přikročíme přímo k popisu, musíme dospecifikovat některé požadavky na model a rozebrat ty části algoritmů, které ve formalismu nejsou brány v úvahu, ale pro implementaci jsou důležité. V další kapitole budou následovat příklady konkrétních implementací některých OA.
+Nyní se dostáváme k implementaci námi popsaného formalismu, nazývejme jí dále modelem. Než přikročíme přímo k popisu, musíme dospecifikovat některé požadavky na model a~rozebrat ty části algoritmů, které ve formalismu nejsou brány v úvahu, ale pro implementaci jsou důležité. V další kapitole budou následovat příklady konkrétních implementací některých OA.
 
 \section{Specifikace požadavků na model a jeho omezení}
 
@@ -8,7 +8,7 @@ Při implementaci máme některé konkrétní požadavky a některé obecnějš�
 \begin{itemize}
   \item Pružný objektový model (v průběhu vývoje byl několikrát refaktorován a nelze to vyloučit ani v budoucnu).
   \item Jednoduché přepínání možností kompilace pro GPU a CPU s výhledem na možnost kombinace obou.
-  \item Oddělit implementaci od uživatele, ten by měl již pouze \bq skládat kostky\eq  nebo popisovat myšlenky.
+  \item Oddělit implementaci od uživatele, ten by měl již pouze \bq skládat kostky\eq ~nebo popisovat myšlenky.
   \item Možnost skládat algoritmus z kostek runtime.
   \item Minimalizaci počtu uživatelských parametrů.
   \item Vypořádání se vzhledem k paralelizaci se stavem, kdy výpočet účelové funkce zabere řádově více času, než zbytek algoritmu.
@@ -16,7 +16,7 @@ Při implementaci máme některé konkrétní požadavky a některé obecnějš�
   \item Účinnou paralelizaci respektující omezení GPU.
   \item Nevynucovat logiku populace-potomstvo tam, kde není nutná.
   \item Jednoduchý výstup poskytující jak výsledky výpočtu, tak případné ladící informace. Předpokládá se zpracování např. v MATLABu.
-  \item Omezení se na jednokriteriální optimalizace s perspektivou snadného rozšíření na vícekriteriální.
+  \item Omezení se na jednokriteriální optimalizace s perspektivou snadného rozšíření na~vícekriteriální.
 \end{itemize}
 
 Skládání algoritmu runtime je zásadní požadavek pro další high-level nástavby, avšak k tomuto požadavku jsme se dostali i z druhé strany. Tento přístup totiž vyžaduje RTTI\footnote{RunTime Type Identification} (viz dále), která bývá může při neopatrném používání kód celkem zpomalit. Původní přístup s obcházením RTTI pomocí šablonových parametrů a skládání algoritmu compile-time se ukázal jako neprůchozí z důvodu neúnosného bobtnání a nepřehlednosti kódu.
@@ -55,15 +55,15 @@ Když máme představu o tom, jak budou komponenty implementovány, vyvstává p
 
 Tento problém vyřešíme známou dvoufázovou konstrukcí objektů Nejprve vytvoříme instance od všech potřebných komponent a kontejnerů a předáme jim v konstruktoru jejich uživatelské parametry (rozptyly, pravděpodobnosti, velikosti populace atd.). Poté je navěsíme do \emph{stromu}, jehož kořenem je objekt algoritmu, tím určíme pořadí jejich volání a plně popíšeme požadovaný algoritmus. Nakonec zavoláme inicializaci hlavního objektu, která projde rekurzivně celý strom a zajistí, že se ke každé komponentě dostanou informace, které potřebuje.
 
-\section{Popis modelu} 
+\section{Popis modelu}
 
 Nejprve popíšeme kostru modelu a poté ukážeme vzorovou implementaci některých konkrétních komponent.
 
-Kostra se skládá ze tří vrstev: vrstvy komponent (metod), vrstvy poskytovatelů informací (providerů) a vrstvy rozhraní algoritmu. 
+Kostra se skládá ze tří vrstev: vrstvy komponent (metod), vrstvy poskytovatelů informací (providerů) a vrstvy rozhraní algoritmu.
 
 \subsection{Komponenty}
 
-V programu je nazýváme metodami. Od těchto tříd jsou odvozené konkrétní třídy pro třídění, inicializaci, ohodnocení, reprodukci a podobně. Diagram tříd je na obrázku \ref{methods}.
+V programu je nazýváme metodami. Od těchto tříd jsou odvozené konkrétní třídy pro~třídění, inicializaci, ohodnocení, reprodukci a podobně. Diagram tříd je na obrázku \ref{methods}.
 
 \begin{figure}[h!]
   \includegraphics[width=\textwidth]{img/methods}
@@ -74,13 +74,13 @@ V programu je nazýváme metodami. Od těchto tříd jsou odvozené konkrétní 
 
 Základní třídou v hierarchii dědění je \texttt{abstractGeneralMethod}, která definuje (minimální) rozhraní pro ostatní komponenty. Tím je jednak metoda \texttt{Init} s parametrem \texttt{generalInfoProvider *p} (o providerech viz dále), ze kterého si komponenta vytáhne všechny potřebné informace jako např. ukazatel na kontejner s jedinci nebo rozsah (\texttt{range}), ve kterém má pracovat. Druhá metoda \texttt{Perform} bez parametrů zajistí vykonání náplně komponenty.
 
-Na stejné úrovni jsou ještě finální třídy \texttt{stochasticMethod} a \texttt{rangedMethod}, které se od předchozí liší tím, že je dědí již jen komponenty, které je potřebují. Třída \texttt{stochasticMethod} se v případě výpočtů na CPU stará o inicializaci generátoru náhodných čísel, v případě GPU o inicializaci a uchovávání stavů generátorů v proměnné \texttt{devStates} uložené v globální paměti GPU. Při běhu algoritmu se již nijak neprojevuje, pouze v případě GPU musíme generátoru předat jako parametr jeho stav. Třída \texttt{rangedMethod} je předkem \texttt{slaveMethod} a při inicializaci se stará o zjištění rozsahů, na kterých má pracovat. Tyto rozsahy uloží do proměnných \texttt{workingRange} a \texttt{fullRange}. Druhý rozsah slouží pro případ, že by komponenta měla zpracovat pouze malou množinu jedinců, ale k jejímu zpracování by byly potřeba informace o větší množině jedinců (např. u nichingu \note{je to vidět, nebo to rozepsat?})
+Na stejné úrovni jsou ještě finální třídy \texttt{stochastic} \texttt{Method} a \texttt{rangedMethod}, které se od předchozí liší tím, že je dědí již jen komponenty, které je potřebují. Třída \texttt{stochastic} \texttt{Method} se v~případě výpočtů na CPU stará o inicializaci generátoru náhodných čísel, v případě GPU o inicializaci a uchovávání stavů generátorů v proměnné \texttt{devStates} uložené v globální paměti GPU. Při běhu algoritmu se již nijak neprojevuje, pouze v případě GPU musíme generátoru předat jako parametr jeho stav. Třída \texttt{rangedMethod} je předkem \texttt{slaveMethod} a při inicializaci se stará o zjištění rozsahů, na kterých má pracovat. Tyto rozsahy uloží do proměnných \texttt{workingRange} a \texttt{fullRange}. Druhý rozsah slouží pro případ, že by komponenta měla zpracovat pouze malou množinu jedinců, ale k jejímu zpracování by byly potřeba informace o větší množině jedinců (např. u nichingu vzdálenosti i od nezpracovávaných jedinců).
 
 \subsubsection{Master a slave komponenty}
 
-Třída \texttt{masterMethod} umožňuje větvení stromu komponent. Typickým potomkem této třídy je reprodukce obsahující selekci a křížení nebo komponenta sjednocení, která může obsahovat například třídění (vytvoření indexu) a přesun (podle indexu). Její inicializace musí zajistit především inicializaci na ní navěšených komponent -- zejména co se týče rozsahů. Metoda \texttt{Perform} pouze zavolá tutéž metodu postupně u všech podkomponent. Navěšení podkomponent se děje podobně jako v Java pomocí funkce \texttt{Add}, která podkomponentu uloží do vektoru \texttt{methods}, odkud je přístupná pro další použití. \texttt{Add} neprovádí žádné ověřování a všechny podkomponenty musí být přidány před inicializací.
+Třída \texttt{masterMethod} umožňuje větvení stromu komponent. Typickým potomkem této třídy je reprodukce obsahující selekci a křížení nebo komponenta sjednocení, která může obsahovat například třídění (vytvoření indexu) a přesun (podle indexu). Její inicializace musí zajistit především inicializaci na ní navěšených komponent -- zejména co se týče rozsahů. Metoda \texttt{Perform} pouze zavolá tutéž metodu postupně u všech podkomponent. Navěšení podkomponent se děje podobně jako v Java pomocí funkce \texttt{Add}\footnote{Ve schématu komponent v~\texttt{composedMethod} označena jako \texttt{AddExecution}.}, která podkomponentu uloží do vektoru \texttt{methods}, odkud je přístupná pro další použití. \texttt{Add} neprovádí žádné ověřování a všechny podkomponenty musí být přidány před inicializací.
 
-Pokud bude nějaký potomek \texttt{masterMethod} obsahovat pouze jednu podkomponentu, jedná se vlastně jen o wrapper, který upravuje (hlavně) rozsah podpomponenty. Takových wrapperů může být pod sebou více -- pak je dobré, pokud vnořený wrapper dědí i \texttt{rangedMethod}, aby nezničil úpravy předchozího wrapperu. Nejjednodušší a často používaný wrapper pouze nastavuje rozsah na populaci (nebo potomstvo).\vspace{0.2cm}
+Pokud bude nějaký potomek \texttt{masterMethod} obsahovat pouze jednu podkomponentu, jedná se vlastně jen o wrapper, který upravuje (hlavně) rozsah podpomponenty. Takových wrapperů může být pod sebou více -- pak je dobré, pokud vnořený wrapper dědí i~\texttt{rangedMethod}, aby nezničil úpravy předchozího wrapperu. Nejjednodušší a často používaný wrapper pouze nastavuje rozsah na populaci (nebo potomstvo).\vspace{0.2cm}
 
 Potomci \texttt{slaveMethod} již bez zdržování vykonávají zadanou činnost. Všechny informace a parametry získané v inicializaci jsou již upravené do konečné podoby nadřazenými master komponentami. V případě CPU obsahuje funkce \texttt{Perform} konkrétní část algoritmu, v případě GPU \texttt{Perform} jen zavolá kernel\footnote{Pro budoucí možné asynchronní spouštění výpočtů na GPU je důležité, aby \texttt{Perform} \emph{pouze} zavolala kernel a pokud možno nedělala nic dalšího.}, který ten samý algoritmus provede s daty na kartě. Slave komponenta nad sebou musí vždy mít alespoň jednu \texttt{masterMethod}, která určí rozsahy.
 
@@ -114,11 +114,11 @@ Init(...){ // inicializace nadřazené komponenty
     ...
 }
 \end{verbatim}
-Pokud nadřazená komponenta žádné informace nepřidává a neupravuje, může místo sebe předat podkomponentě objekt, který sama dostala při inicializaci. Podkomponenta následně zkusí ukazatel přetypovat na provider, jehož informace potřebuje. Přetypování se děje pomocí \texttt{dynamic\_cast} používající RTTI, což dovoluje bezpečně přetypovávat i na objekty odvozeného typu. Pokud předaný objekt není potomkem provideru, na který se snažíme přetypovat, \texttt{dynamic\_cast} vrátí nulový ukazatel, což můžeme ověřit a případně vrátit runtime chybu.
+Pokud nadřazená komponenta žádné informace nepřidává a neupravuje, může místo sebe předat podkomponentě objekt, který sama dostala při inicializaci. Podkomponenta následně zkusí ukazatel přetypovat na provider, jehož informace potřebuje. Přetypování se děje pomocí \texttt{dynamic\_cast} používající RTTI, což dovoluje bezpečně přetypovávat i~na~objekty odvozeného typu. Pokud předaný objekt není potomkem provideru, na který se snažíme přetypovat, \texttt{dynamic\_cast} vrátí nulový ukazatel, což můžeme ověřit a případně vrátit runtime chybu.
 
 \subsubsection{Ostatní providery}
 
-Nejběžnější je \texttt{populationProvider}, poskytující ukazatel na kontejner s jedinci, který potřebuje každá metoda. Stejně běžný je i \texttt{rangeProvider} poskytující \texttt{workingRange} a \texttt{fullRange}, protože alespoň první z rozsahů potřebují všechny slave komponenty.
+Nejběžnější je \texttt{populationProvider}, poskytující ukazatel na kontejner s jedinci, který potřebuje každá metoda. Stejně běžný je i \texttt{rangeProvider} poskytující \texttt{workingRange} a~\texttt{fullRange}, protože alespoň první z rozsahů potřebují všechny slave komponenty.
 
 Další providery jsou specifické pro komponenty. Sjednocení, které využívá třídění bude potomkem \texttt{sortResourceProvider}, který poskytuje setříděný seznam indexů jedinců. Ten je tříděním naplněn a poté (většinou) využit komponentou pro přesun. Reprodukce bude dědit \texttt{mateProvider}, poskytující mating pool. Adaptivní komponenty budou využívat informace od \texttt{generationProvider} -- ty si ovšem musí uložit celý provider a ne jen hodnotu, kterou z něj dostanou.
 
@@ -140,11 +140,11 @@ Narozdíl od master a slave komponent jsou \texttt{basicAlgorithm} a \texttt{can
   \end{center}
 \end{figure}
 
-Kontejner na jedince spolu s archivem se objektu předá již v konstruktoru. Jeden běh smyčky se spustí funkcí \texttt{NextGeneration}. V současnosti je typ kontejneru na kandidáty a archivu předáván jako šablonový parametr. Původním účelem tohoto řešení byla compile-time kontrola, zda kontejner poskytuje všechny funkce požadované komponentami. Během vývoje se však rozhraní kontejneru stabilizovalo, a tak bude v budoucnu kontrola případných zvláštních požadavků komponent na kontejner přesunuta do runtime stejným způsobem jako providery nahradily původní model s šablonovými parametry.
+Kontejner na jedince spolu s archivem se objektu předá již v konstruktoru. Jeden běh smyčky se spustí funkcí \texttt{NextGeneration}. V současnosti je typ kontejneru na kandidáty a~archivu předáván jako šablonový parametr. Původním účelem tohoto řešení byla compile-time kontrola, zda kontejner poskytuje všechny funkce požadované komponentami. Během vývoje se však rozhraní kontejneru stabilizovalo, a tak bude v budoucnu kontrola případných zvláštních požadavků komponent na kontejner přesunuta do runtime stejným způsobem jako providery nahradily původní model s šablonovými parametry.
 
 \subsubsection{Kontejner na kandidáty}
 
-Kontejner na jedince udržuje informace o populaci, potomstvu a mezích pro jedince. V současnosti část jeho rozhraní vypadá jako ve schématu, funkce \texttt{GetLowerLimit} a \texttt{GetUpperLimit} vrací příslušnou mez pro zadanou dimenzi. Rozhraní ještě obsahuje technické funkce jako \texttt{GetDim} a \texttt{GetPopsPerKernel} (viz \ref{paralelizace komp}). Vzhledem k tomu, že tyto funkce poskytují konstantní hodnoty a volá většina komponent, bylo by zbytečné kvůli nim vytvářet providery.
+Kontejner na jedince udržuje informace o populaci, potomstvu a mezích pro jedince. V~současnosti část jeho rozhraní vypadá jako ve schématu, funkce \texttt{GetLowerLimit} a~\texttt{Get} \texttt{UpperLimit} vrací příslušnou mez pro zadanou dimenzi. Rozhraní ještě obsahuje technické funkce jako \texttt{GetDim} a \texttt{GetPopsPerKernel} (viz \ref{paralelizace komp}). Vzhledem k tomu, že tyto funkce poskytují konstantní hodnoty a volá většina komponent, bylo by zbytečné kvůli nim vytvářet providery.
 
 Uvnitř kontejneru je minimálně pole obsahující souřadnice jedinců a pole obsahující fitness. Zatímco na CPU je první pole organizované tak, že v paměti za sebou jsou postupně všechny body, na GPU se osvědčilo uspořádání \emph{po souřadnicích}. Nejprve jsou tedy v paměti první souřadnice všech bodů, pak druhé atd., což je výhodnější pro paralelní přístup k jedincům.
 
@@ -152,12 +152,12 @@ Uvnitř kontejneru je minimálně pole obsahující souřadnice jedinců a pole 
 
 Archiv (kontejner) a archivační komponenta zasluhují zvláštní pozornost, neboť se starají o zaznamenání výsledků, ke kterým se musíme po skončení algoritmu nějak dostat. Zde opět využíváme toho, že komponenty jsou konstruovány mimo algoritmus a speciální funkce komponent tak nemusejí být volány skrze hlavní objekt, což by s sebou neslo značné bobtnání kódu při probublávání speciální funkčnosti celou hierarchií komponent.
 
-Funkce \texttt{Perform} u archivační komponenty má za úkol shromáždit data k archivaci a uložit je do archivu. Může taktéž vypočítávat a ukládat další potřebné charakteristiky. Archiv jakožto kontejner je, co se týče zacházení s daty na CPU a GPU, velmi podobný kontejneru na jedince, jen rozhraní se liší podle toho, co je třeba ukládat. V konstruktoru dostává archiv krom maximálního počtu generací k uložení i ukazatel na kontejner na jedince, z něhož si může vytáhnout potřebná data (dimenze, počet populací na kernel).
- 
+Funkce \texttt{Perform} u archivační komponenty má za úkol shromáždit data k archivaci a~uložit je do archivu. Může taktéž vypočítávat a ukládat další potřebné charakteristiky. Archiv jakožto kontejner je, co se týče zacházení s daty na CPU a GPU, velmi podobný kontejneru na jedince, jen rozhraní se liší podle toho, co je třeba ukládat. V konstruktoru dostává archiv krom maximálního počtu generací k uložení i ukazatel na kontejner na~jedince, z něhož si může vytáhnout potřebná data (dimenze, počet populací na kernel).
+
 Archivační komponenta má funkci \texttt{SaveToFile} určenou právě k přístupu zvenku. Tato metoda po zavolání uloží doposud neuloženou část archivu do souborů, jejichž předpona byla komponentě předána v konstruktoru. Způsoby použití archivační komponenty jsou v zásadě dva:
 \begin{itemize}
   \item \emph{release}: komponenta pracuje tak, jak bylo řečeno, funkci \texttt{SaveToFile} volá až uživatel po skončení algoritmu, uloží se vše naráz.
-  \item \emph{debug}: funkci \texttt{SaveToFile} zavoláme pokaždé na konci operace \texttt{Perform}, která shromažďuje data pro archivaci. Tím získáme částečné výsledky i pokud program v průběhu spadne, avšak znamená to neustálé kopírování dat z GPU (v případě, že je použita), a tedy jisté teoretické zpomalení.
+  \item \emph{debug}: funkci \texttt{SaveToFile} zavoláme pokaždé na konci operace \texttt{Perform}, která shromažďuje data pro archivaci. Tím získáme částečné výsledky i pokud program v~průbě\-hu spadne, avšak znamená to neustálé kopírování dat z GPU (v případě, že je použita), a tedy jisté teoretické zpomalení.
 \end{itemize}
 
 \section{Paralelizace komponent na GPU}\label{paralelizace komp}
@@ -172,7 +172,7 @@ Předchozí postup paralelizace platí hlavně pro případy, kdy je celý algor
 
 \subsection{Generování pseudonáhodných čísel na GPU}
 
-Ke generování pseudonáhodných čísel na GPU je použita knihovna CURand Library (\note{citace}), která nabízí jak funkce pro generování velkých sad náhodných čísel pro CPU, tak i funkce použitelné přímo v kernelech. Před použitím funkcí je nejprve nutné inicializovat požadovaný počet generátorů. K dispozici jich je celá škála; od jednoduchých kongruenčních až po Mersene Twister, my používáme základní XORWOW. O inicializaci se stará právě třída \texttt{stochasticMethod}. Funkci při volání musíme předat adresu stavu generátoru, který je funkcí zároveň změněn.
+Ke generování pseudonáhodných čísel na GPU je použita knihovna CURAND Library \cite{CURAND}, která nabízí jak funkce pro generování velkých sad náhodných čísel pro CPU, tak i~funkce použitelné přímo v kernelech. Před použitím funkcí je nejprve nutné inicializovat požadovaný počet generátorů. K dispozici jich je celá škála; od jednoduchých kongruenčních až po Mersene Twister, my používáme základní XORWOW. O inicializaci se stará právě třída \texttt{stochasticMethod}. Funkci při volání musíme předat adresu stavu generátoru, který je funkcí zároveň změněn.
 
 Námi používané funkce jsou \texttt{curand\_init} pro inicializaci, \texttt{curand\_uniform} generující pseudonáhodná čísla v intervalu $[0,1]$ a \texttt{curand\_normal2} generující dvojici nezávislých náhodných čísel $\sim N(0,1)$. Generována je rovnou dvojice, neboť funkce uvnitř používá Box-Mullerovu transformaci. Obě použité varianty funkcí vrací hodnoty typu \texttt{float}.
 
