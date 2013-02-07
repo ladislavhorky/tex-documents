@@ -15,7 +15,7 @@ Hardwarová sestava pro testy byla následující:
       \midrule
       Název & AMD Phenom$^\mathrm{TM}$ II X4 945 & NVIDIA GeForce GTX 460 \\
       Výpočetní jednotky & 4 (využita 1) & 336 (7 SM $\times$ 48 CUDA-jader) \\
-      Frekvence & 800 MHz & 675 MHz \\
+      Frekvence & 3000 MHz & 675 MHz \\
       Výpočetní schopnost & --- & 2.1 \\
       Cache & 2 MB L2 & --- \\
       RAM/DRAM & 4 GB & 768 MB GDDR3 \\
@@ -26,7 +26,7 @@ Hardwarová sestava pro testy byla následující:
     \end{center}
 \end{table}
 
-Je nutné podotknout, že ani CPU, ani GPU zdaleka nejsou na špičce současných produktových řad. Při paralelizaci na dnešních nejvýkonnějších CPU (Intel Core i7 -- 4 jádra, 8 vláken, 3GHz) bychom mohli dosáhnout proti testovanému CPU teoretického urychlení cca $30\times$. Urychlení současné nejvýkonnější GPU (Nvidia GTX690 -- 3072 jader, 915Mhz, dvojnásobná rychlost zpracování instrukcí) oproti testované by se mohlo pohybovat kolem $25\times$. Technologický trend by tedy naše výsledky neměl výrazně vychýlit ve prospěch CPU.
+Je nutné podotknout, že ani CPU, ani GPU zdaleka nejsou na špičce současných produktových řad. Při paralelizaci na dnešních nejvýkonnějších CPU (Intel Core i7 -- 4 jádra, 8 vláken, 3GHz) bychom mohli dosáhnout proti testovanému CPU teoretického urychlení cca $8\times$. Urychlení současné nejvýkonnější GPU (Nvidia GTX690 -- 3072 jader, 915Mhz, dvojnásobná rychlost zpracování instrukcí) oproti testované by se mohlo pohybovat kolem $10-20\times$. Záleží také na paměťové propustnosti. Technologický trend by tedy naše výsledky neměl výrazně vychýlit ve prospěch CPU.
 
 \subsection{Testované algoritmy a použité účelové funkce}
 Testovali jsem algoritmy náhodná střelba (RS), genetická optimalizace (GO), a simulované žíhání (SA). Jako účelové funkce jsem zvolili sférickou De Jongovu funkci č. 1 a problém \emph{sudoku}. De Jongova funkce č. 1 vypadá následovně:
@@ -92,7 +92,7 @@ Výsledky pro problém \emph{sudoku}:
                          & nejhorší & 6,62 & 32 (1) & 39,68 & 262,51 \\
       \multirow{2}{*}{SA} & nejlepší & 566 & 256 (1000) & 1,95 & 1102,1\\
                         & nejhorší & 4,96 & 32 (1) & 27,83 & 138,03\\
-                       
+
       \bottomrule
     \end{tabular}
     \caption{Extrémní výsledky pro sudoku}
@@ -101,9 +101,9 @@ Výsledky pro problém \emph{sudoku}:
 
 Z hodnocení RS u De Jongovy funkce byl vyřazen první sloupec (32 jedinců v populaci), neboť na CPU byl algoritmus z nějakého důvodu pomalejší, což mohlo být způsobeno špatným využitím cache kvůli nevhodným střídám v algoritmu -- dále viz \ref{app SP}. Stejné chování nastává i na GPU pro malé populace, viz \ref{SP graphs}.
 
-Dobrým výsledkem je, že u obou funkcí neběží algoritmy na GPU pomaleji než na CPU. Je to dáno tím, že i když je nutná jistá komunikace v populaci, mnoho komponent algoritmů je čistě paralelní. U De Jongovy funkce dosahujeme stabilního maximálního urychlení kolem 100 i přes, což je velmi slibné pro statistické testování chování různých OA, kde se většinou používá podobně výpočetně jednoduchá účelová funkce.
+Dobrým výsledkem je, že u obou funkcí neběží algoritmy na GPU pomaleji než na CPU. Je to dáno tím, že i když je nutná jistá komunikace v populaci, mnoho komponent algoritmů je čistě paralelní. U De Jongovy funkce dosahujeme stabilního maximálního urychlení kolem 100 i přes, což je velmi slibné pro statistické testování chování různých OA, kde se většinou používá podobně výpočetně jednoduchá účelová funkce. I zde se ovšem mohla projevit neoptimalita CPU kódu zmíněná níže. 
 
-Všimněme si, že pro problém \emph{sudoku} dosahuje maximální zrychlení větších hodnot, než je počet CUDA jader na GPU (336), která mají navíc nižší frekvenci než CPU. Je to dáno jednak tím, že výpočet účelové funkce je čistě vektorový, takže paralelizace má největší možný efekt a dále tím, že maximální propustnost (a frekvence) paměti na GPU je mnohem větší než na CPU. Pokud je přístupů do paměti hodně a jsou ideálně uspořádané, může se vyšší takt GPU pamětí výrazně projevit. Že se nejedná o omyl dosvědčují i nehorší hodnoty urychlení, které jsou zhruba 4krát větší, než u De Jongovy funkce, tedy ve stejném poměru, jako nejlepší výsledky.
+Všimněme si, že pro problém \emph{sudoku} dosahuje maximální zrychlení větších hodnot, než je počet CUDA jader na GPU (336), která mají navíc nižší frekvenci než CPU. Může to být jednak tím, že výpočet účelové funkce je čistě vektorový, takže paralelizace má největší možný efekt a dále tím, že maximální propustnost (a frekvence) paměti, která je při výpočtu intenzivně využívána,je na GPU mnohem větší než na CPU. Pokud je přístupů do paměti hodně a jsou ideálně uspořádané, může se vyšší takt GPU pamětí výrazně projevit. Výsledky jsou konzistentní i pro nehorší hodnoty urychlení, které jsou zhruba 4krát větší, než u De Jongovy funkce, tedy ve stejném poměru, jako nejlepší výsledky. Dalším důvodem může být neoptimální kód na CPU -- v tomto případě je použitý algoritmus naprosto stejný pro CPU i GPU, což však může GPU zvýhodnit. To by též dobře vysvětlovalo konzistentní výsledky.
 
 \begin{figure}[h!]
 \begin{center}
@@ -121,11 +121,13 @@ Všimněme si, že pro problém \emph{sudoku} dosahuje maximální zrychlení v�
 \end{figure}
 \clearpage
 
-Z přehledových grafů \ref{SP graphs}, \ref{SU graphs} je dobře vidět typické chování GPU. Vzhledem k tomu, že paralelizujeme většinu algoritmu způsobem populace na blok, zvýšení počtu populací nás z počátku nic nestojí, protože GPU má dostatek výpočetních zdrojů. Stejné je to při malé velikosti populace. Při větším počtu populací a jejich větších velikostech se karta začíná sytit. To je v grafech vidět na tam, kde závislost v obou osách přechází v lineární -- když tedy zdvojnásobíme (zdesetinásobíme) zadání, zdvojnásobí (zdesetinásobí) se čas výpočtu. 
+Z přehledových grafů \ref{SP graphs}, \ref{SU graphs} je dobře vidět typické chování GPU. Vzhledem k tomu, že paralelizujeme většinu algoritmu způsobem populace na blok, zvýšení počtu populací nás z počátku nic nestojí, protože GPU má dostatek výpočetních zdrojů. Stejné je to při malé velikosti populace. Při větším počtu populací a jejich větších velikostech se karta začíná sytit. To je v grafech vidět na tam, kde závislost v obou osách přechází v lineární -- když tedy zdvojnásobíme (zdesetinásobíme) zadání, zdvojnásobí (zdesetinásobí) se čas výpočtu.
 
 Maximálního zrychlení většinou není dosaženo při největší velikosti populace (512), ale na poloviční, či čtvrtinové. GPU se totiž snaží využít veškeré prostředky, a když jsou bloky malé, umístí jich na jeden SM několik, čímž zlepší překrývání paměťových latencí. Pokud jsou bloky příliš velké, vejde se jich na SM méně s větším \bq zbytkem\eq , čímž se zhorší využití prostředků.
 
 \section{Shrnutí}
 
 Provedené testy prokázaly, že se model chová dobře pro několik celkem odlišných zástupců široké množiny OA. Pro jednoduché účelové funkce můžeme očekávat, že u ostatních algoritmů se při větším počtu paralelních populací ($>100$) zrychlení bude pohybovat na podobné hladině, tedy kolem hodnoty 100. Klíčem ke stabilně dobrému urychlení je optimální vytížení GPU pomocí většího počtu paralelních populací a případně úprava velikosti populace.
+
+Na dobré nynější výsledky může mít ovšem značný vliv to, že použité algoritmy na GPU a CPU, vyjma zmíněného třídění a paralelní redukce, jsou stejné. Algoritmy byly přednostně navrženy pro použití na GPU a na CPU tedy mohou být neoptimální (nikoliv ovšem na první pohled). Částečně za to zřejmě může i povaha formalismu, který konstruujeme s vědomím budoucí paralelizace, což může mírně znevýhodnit sekvenční kód.
 

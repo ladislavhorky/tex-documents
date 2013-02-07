@@ -1,5 +1,5 @@
 % -*-coding: utf-8 -*-
-\documentclass[twoside,11pt,a4paper]{report}
+\documentclass[oneside,12pt,a4paper]{report}
 
 \newif\ifrelease % new boolean variable release. True = include some fancy content
 \releasetrue % and set it
@@ -37,13 +37,14 @@
 \usepackage{calc}
 \setlength{\textheight}{\paperheight -3cm -3cm}  % horni a dolni okraje 3cm, do tech se musi vejit header a footer
 \setlength{\textwidth}{\paperwidth -3.5cm -2.6cm}  % levy okraj 3,5cm (na vazbu), pravy okraj 2,5cm
-%\setlength{\oddsidemargin}{3.5cm -1in}
+\setlength{\oddsidemargin}{3.5cm -1in}
 \setlength{\topmargin}{(\paperheight-\textheight-\headheight-\headsep-\footskip)/2 - 1in}
+\setlength\voffset{-1in-5mm}
 %\usepackage{calc}
 %\setlength{\textheight}{9in}
 %\setlength{\textwidth}{6in}
-\setlength\oddsidemargin{(\paperwidth-\textwidth)/2 - 1in}
-\setlength\evensidemargin{(\paperwidth-\textwidth)/2 - 1in}
+%\setlength\oddsidemargin{(\paperwidth-\textwidth)/2 - 1in}
+%\setlength\evensidemargin{(\paperwidth-\textwidth)/2 - 1in}
 %\setlength\topmargin{(\paperheight-\textheight-\headheight-\headsep-\footskip)/2 - 1in}
 
 \parindent=6pt % odsazení 1. řádku odstavce
@@ -122,77 +123,26 @@
 \newcommand{\Vr}{\Verb[commandchars = \\\{\}]}
 \newcommand{\OOO}{$\mathcal{O}$}
 
-\newcolumntype{d}{D{,}{,}{4.2}}
-\newcolumntype{k}{D{,}{,}{2}}
-\newcolumntype{j}{D{,}{,}{1}}
-\newcolumntype{u}{D{,}{,}{0}}
-
-% Definice makra pro české uvozovky:
-\def\bq{\mbox{\kern.1ex\protect\raisebox{-1.3ex}[0pt][0pt]{''}\kern-.1ex}}
-\def\eq{\mbox{\kern-.1ex``\kern.1ex}}
-\def\ifundefined#1{\expandafter\ifx\csname#1\endcsname\relax }%
-\ifundefined{uv}%
-        \gdef\uv#1{\bq #1\eq}
-\fi
-
-\DeclareGraphicsExtensions{.pdf}
-
-% Dělení slov:=============================================
-\hyphenation{pře-klá-da-jí-cí}
-
-% =========================================================
 \begin{document}
 
-\ifrelease
-	\input{startpages.tex} % úvodní strany
-\fi
-    \newpage
-    \pagenumbering{roman}
-    \tableofcontents
+\thispagestyle{empty}
+~ 
+\vspace{17.5cm}
 
-    \chapter*{Úvod}
-    \pagenumbering{arabic}
-        \addcontentsline{toc}{chapter}{Úvod}
-        \input{src/0Uvod/uvod.tex}
-
-    \chapter{Přehled optimalizačních algoritmů}\label{heuristiky}
-        \input{src/1Heur/heuristiky.tex}
-
-    \chapter{Programování na GPU}\label{GPUkapitola}
-        \input{src/2GPU/gpu.tex}
-
-    \chapter{Dekompozice optimalizačního algoritmu}
-        \input{src/3Dekomp/dekomp.tex}
-
-    \chapter{Implementace dekompozičního modelu}
-        \input{src/4Model/model.tex}
-
-    \chapter{Příklady dekomponovaných algoritmů}
-        \input{src/5Priklady/priklady.tex}
-
-    \chapter{Testování a výsledky}
-        \input{src/6Vysledky/vysledky.tex}
-    \chapter*{Závěr}
-     \addcontentsline{toc}{chapter}{Závěr}
-         \input{src/7Zaver/zaver.tex}
-
-     \appendix
-
-    \input{src/8Appendix/app.tex}
-
-    %\chapter*{Závěr}
-    % \addcontentsline{toc}{chapter}{Závěr}
-    %    \input{src/6Zaver/zaver.tex}
-
-    % APENDIX
-
-    %\appendix
-
-    %\input{src/8Appendix/app.tex}
-
-    \addcontentsline{toc}{chapter}{Literatura}
-    \include{src/bibliography}
-
+\begin{center}
+  {\large \textsf{\textbf{VÝZKUMNÝ ÚKOL}}}
+  
+  \vspace{5mm}
+  {\Large \textsf{\textbf{CELOČÍSELNÉ OPTIMALIZAČNÍ HEURISTIKY}}}
+  
+    {\Large \textsf{\textbf{A JEJICH PARALELIZACE}}} 
+  
+  \vspace{5mm}
+  {\large \textsf{\textbf{LADISLAV HORKÝ}}}
+  
+  \vspace{3mm}
+  {\large \textsf{\textbf{2013}}}
+\end{center}
 
 
 \end{document} 

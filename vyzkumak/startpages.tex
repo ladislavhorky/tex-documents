@@ -8,7 +8,7 @@
 \newcommand{\nazevcz}{Celočíselné optimalizační heuristiky a jejich paralelizace}
 \newcommand{\nazeven}{Integer Heuristics and their paralellization}
 \newcommand{\autor}{Ladislav Horký}
-\newcommand{\rok}{2012}
+\newcommand{\rok}{2013}
 \newcommand{\vedouci}{doc. Ing. Jaromír Kukal Ph.D.}
 
 \newcommand{\pracovisteVed}{Katedra softwarového inženýrství \\
@@ -21,10 +21,10 @@
 \newcommand{\keyword}{Optimization algorithms, decomposition, paralelization, GPU, CUDA}
 \newcommand{\abstrCZ}{
 
-    Ve výzkumném úkolu zjišťujeme, jak můžeme využít GPU k urychlení výpočtů řady optimalizačních algoritmů (OA). V první části navrhujeme obecný formalismus pro OA, jehož prostřednictvím algoritmy rozložíme na znovupoužitelné komponenty. V další části navrhujeme objektový model, ve kterém tyto komponenty popíšeme, implementujeme a paralelizujeme. Paralelizaci provádíme v prostředí NVIDIA CUDA, známé dílčí algoritmy implementujeme osvědčeným způsobem. Následně ukazujeme, jak dekomponovat tři vybrané OA -- RS, GO a SA -- a testujeme urychlení výpočtů při použití GPU. Při použití De Jongovy účelové funkce č. 1 se urychlení pohybuje stabilně kolem úrovně 100, na problému Sudoku se dostáváme až na urychlení 566krát.}
+    Ve výzkumném úkolu zjišťujeme, jak můžeme využít GPU k urychlení výpočtů řady optimalizačních algoritmů (OA). V první části navrhujeme obecný formalismus pro OA, jehož prostřednictvím algoritmy rozložíme na znovupoužitelné komponenty. V další části navrhujeme objektový model, ve kterém tyto komponenty popíšeme, implementujeme a paralelizujeme. Paralelizaci provádíme v prostředí NVIDIA CUDA, známé dílčí algoritmy implementujeme osvědčeným způsobem. Následně ukazujeme, jak dekomponovat tři vybrané OA -- RS, GO a SA -- a testujeme urychlení výpočtů při použití GPU. Při použití De Jongovy účelové funkce č. 1 se urychlení pohybuje stabilně kolem úrovně 100, na problému Sudoku se dostáváme až na urychlení 566krát. Nelze ovšem vyloučit neoptimalitu kódu pro CPU.}
 \newcommand{\abstrEN}{
 
-    In this Research work we aim for using GPU to speed up computation of optimization algorithms (OA). In the first phase, we develop a general formalism which enables us to decompose an algorithm into reusable components. In the second phase we develop an object model for description, implementation and parallelization of such components. Parallelization is carried out in the NVIDIA CUDA environment using well known implementations of parallel algorithms where possible. As an example we show the decomposition of three OAs -- RS, GO and SA -- and we test the speedup of computation when using GPU. When using De Jong function nr. 1 as purpose function, we achieve stable speedup of 100 times. On Sudoku problem we even achieve the maximal speedup of 566 times.}
+    In this Research work we aim for using GPU to speed up computation of optimization algorithms (OA). In the first phase, we develop a general formalism which enables us to decompose an algorithm into reusable components. In the second phase we develop an object model for description, implementation and parallelization of such components. Parallelization is carried out in the NVIDIA CUDA environment using well known implementations of parallel algorithms where possible. As an example we show the decomposition of three OAs -- RS, GO and SA -- and we test the speedup of computation when using GPU. When using De Jong function nr. 1 as purpose function, we achieve stable speedup of 100 times. On Sudoku problem we even achieve the maximal speedup of 566 times. However, this can be due to CPU code not being optimal.}
 
 %%% zde zacina kresleni dokumentu
 
@@ -69,8 +69,8 @@ Rok: & \rok
 
 % zadání VÚ
 \newpage
-\thispagestyle{empty} Před svázáním místo téhle strany \fbox{vložíte zadání práce} s podpisem
-děkana (bude to jediný oboustranný list ve Vaší práci) !!!!
+\thispagestyle{empty} %Před svázáním místo téhle strany \fbox{vložíte zadání práce} s podpisem
+%děkana (bude to jediný oboustranný list ve Vaší práci) !!!!
 
 % prohlášení
 \newpage
@@ -137,4 +137,4 @@ Rád bych poděkoval panu doc. Ing. Jaromíru Kukalovi Ph.D. a panu Ing. Tomáš
   \multicolumn{2}{l}{\odstavec{\textwidth}{{\em Abstract:} ~ \abstrEN \\ }} \\[5mm]
   {\em Key words:} & \odstavec{\delka}{\keyword}
 \end{tabular}
-\pagenumbering{arabic}
+\pagenumbering{arabic} 
